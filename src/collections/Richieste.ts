@@ -10,6 +10,9 @@ import { authenticated, noOne } from '../access'
  *
  * `create: noOne` blocca admin e REST API; la Server Action passa comunque
  * perché la Local API usa `overrideAccess: true` di default.
+ *
+ * `delete` resta invece consentita allo staff: senza, una richiesta di
+ * cancellazione dati (GDPR art. 17) non sarebbe eseguibile dall'admin.
  */
 const soloLettura = { readOnly: true } as const
 
@@ -20,7 +23,7 @@ export const Richieste: CollectionConfig = {
     create: noOne,
     read: authenticated,
     update: authenticated,
-    delete: noOne,
+    delete: authenticated,
   },
   admin: {
     useAsTitle: 'cognome',
@@ -28,6 +31,17 @@ export const Richieste: CollectionConfig = {
     group: 'Gestione',
   },
   defaultSort: '-createdAt',
+  hooks: {
+    beforeChange: [
+      ({ data, operation }) => {
+        // Il timestamp del consenso lo mette il server: quello che arriva dal client non prova nulla.
+        if (operation === 'create' && data.consenso) {
+          data.consensoAt = new Date().toISOString()
+        }
+        return data
+      },
+    ],
+  },
   fields: [
     {
       name: 'stato',

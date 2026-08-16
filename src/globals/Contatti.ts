@@ -1,12 +1,16 @@
 import type { GlobalConfig } from 'payload'
 
 import { authenticated, publicRead } from '../access'
+import { revalidaLayout } from '../hooks/revalidate'
 
 export const Contatti: GlobalConfig = {
   slug: 'contatti',
   label: 'Contatti',
+  versions: true,
   access: { read: publicRead, update: authenticated },
   admin: { group: 'Pagine fisse' },
+  // Email, telefono e social stanno anche nel footer: cambiano ovunque.
+  hooks: revalidaLayout(),
   fields: [
     { name: 'indirizzo', type: 'textarea', label: 'Indirizzo' },
     {

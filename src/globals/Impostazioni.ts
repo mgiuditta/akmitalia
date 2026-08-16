@@ -1,12 +1,15 @@
 import type { GlobalConfig } from 'payload'
 
 import { authenticated, publicRead } from '../access'
+import { revalidaLayout } from '../hooks/revalidate'
 
 export const Impostazioni: GlobalConfig = {
   slug: 'impostazioni',
   label: 'Impostazioni',
+  versions: true,
   access: { read: publicRead, update: authenticated },
   admin: { group: 'Sistema' },
+  hooks: revalidaLayout(),
   fields: [
     { name: 'siteName', type: 'text', required: true, label: 'Nome del sito', defaultValue: 'AKM Italia' },
     {

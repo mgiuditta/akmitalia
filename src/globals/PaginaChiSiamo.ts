@@ -1,6 +1,7 @@
 import type { Field, GlobalConfig } from 'payload'
 
 import { authenticated, publicRead } from '../access'
+import { revalidaGlobal } from '../hooks/revalidate'
 
 const sezione = (name: string, label: string): Field => ({
   name,
@@ -15,8 +16,10 @@ const sezione = (name: string, label: string): Field => ({
 export const PaginaChiSiamo: GlobalConfig = {
   slug: 'pagina-chi-siamo',
   label: 'Pagina Chi Siamo',
+  versions: true,
   access: { read: publicRead, update: authenticated },
   admin: { group: 'Pagine fisse' },
+  hooks: revalidaGlobal('/chi-siamo'),
   fields: [
     sezione('storia', 'Storia'),
     sezione('valori', 'Valori'),

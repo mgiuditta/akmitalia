@@ -65,9 +65,21 @@ ABBIATEGRASSO (MI)
   docenti    Istruttore Vittorio, Trainer Luca
 ```
 
-L'estrazione si fa dalla REST API di WordPress (`/wp-json/wp/v2/pages`) più un parser
-sull'HTML degli accordion. Lo script di seed va scritto per essere **rieseguibile**
-(upsert per slug), non one-shot: i dati andranno corretti a mano più volte prima del lancio.
+L'estrazione si fa dalla REST API di WordPress (`/wp-json/wp/v2/pages/7426`) più un parser
+sull'HTML degli accordion — che sono di **Live Composer** (`dslc-accordion`), non di Elementor.
+
+Due script, non uno:
+
+| Script | Cosa fa |
+|---|---|
+| `pnpm tsx scripts/estrai-centri.ts` | WordPress → `data/centri.json`, committato e correggibile a mano. Risolve anche le coordinate seguendo i link corti di Google Maps (`!3d`/`!4d` nell'URL finale) e **non sovrascrive** lat/lng e mappature già sistemate. |
+| `pnpm seed [--dry-run]` | `data/centri.json` → database, upsert per slug. Rieseguibile: due esecuzioni non creano duplicati. |
+
+Il seed si ferma — invece di indovinare — se manca la mappatura di una disciplina, se un ruolo
+docente non è fra quelli previsti, o se un centro non ha coordinate.
+
+Prima esecuzione dell'estrattore: **19 centri**, 8 etichette di disciplina distinte, 0 righe
+non riconosciute.
 
 ## News ed eventi
 

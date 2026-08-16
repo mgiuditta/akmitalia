@@ -81,7 +81,18 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    centri: {
+      eventi: 'eventi';
+      richieste: 'richieste';
+    };
+    corsi: {
+      centri: 'centri';
+    };
+    docenti: {
+      centri: 'centri';
+    };
+  };
   collectionsSelect: {
     centri: CentriSelect<false> | CentriSelect<true>;
     corsi: CorsiSelect<false> | CorsiSelect<true>;
@@ -197,6 +208,16 @@ export interface Centri {
         id?: string | null;
       }[]
     | null;
+  eventi?: {
+    docs?: (number | Eventi)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  richieste?: {
+    docs?: (number | Richieste)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -255,13 +276,18 @@ export interface Media {
 export interface Docenti {
   id: number;
   nome: string;
+  ruolo?: ('istruttore' | 'trainer' | 'maestro' | 'direttore-tecnico' | 'presidente') | null;
   /**
-   * Es. Istruttore, Trainer.
+   * Es. cintura nera 2° dan.
    */
-  ruolo?: string | null;
   grado?: string | null;
   foto?: (number | null) | Media;
   bio?: string | null;
+  centri?: {
+    docs?: (number | Centri)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -302,42 +328,14 @@ export interface Corsi {
    * Ordine di comparsa nell’elenco corsi.
    */
   ordine?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "news".
- */
-export interface News {
-  id: number;
-  titolo: string;
   /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   * Compilato dagli orari delle schede centro: qui non si modifica.
    */
-  generateSlug?: boolean | null;
-  slug: string;
-  data: string;
-  copertina?: (number | null) | Media;
-  /**
-   * Usato nell’elenco e come meta description.
-   */
-  estratto?: string | null;
-  contenuto?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  centri?: {
+    docs?: (number | Centri)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -384,6 +382,64 @@ export interface Eventi {
   ctaLink?: string | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "richieste".
+ */
+export interface Richieste {
+  id: number;
+  stato: 'nuova' | 'contattata' | 'iscritta' | 'archiviata';
+  note?: string | null;
+  centro: number | Centri;
+  cognome: string;
+  nome: string;
+  dataNascita?: string | null;
+  telefono?: string | null;
+  email: string;
+  messaggio?: string | null;
+  consenso: boolean;
+  consensoAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news".
+ */
+export interface News {
+  id: number;
+  titolo: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  data: string;
+  copertina?: (number | null) | Media;
+  /**
+   * Usato nell’elenco e come meta description.
+   */
+  estratto?: string | null;
+  contenuto?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -414,26 +470,7 @@ export interface Pagine {
   } | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "richieste".
- */
-export interface Richieste {
-  id: number;
-  stato: 'nuova' | 'contattata' | 'iscritta' | 'archiviata';
-  note?: string | null;
-  centro: number | Centri;
-  cognome: string;
-  nome: string;
-  dataNascita?: string | null;
-  telefono?: string | null;
-  email: string;
-  messaggio?: string | null;
-  consenso: boolean;
-  consensoAt?: string | null;
-  updatedAt: string;
-  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -441,6 +478,7 @@ export interface Richieste {
  */
 export interface User {
   id: number;
+  nome: string;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -591,6 +629,8 @@ export interface CentriSelect<T extends boolean = true> {
         note?: T;
         id?: T;
       };
+  eventi?: T;
+  richieste?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -607,6 +647,7 @@ export interface CorsiSelect<T extends boolean = true> {
   descrizione?: T;
   immagine?: T;
   ordine?: T;
+  centri?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -620,6 +661,7 @@ export interface DocentiSelect<T extends boolean = true> {
   grado?: T;
   foto?: T;
   bio?: T;
+  centri?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -637,6 +679,7 @@ export interface NewsSelect<T extends boolean = true> {
   contenuto?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -654,6 +697,7 @@ export interface EventiSelect<T extends boolean = true> {
   ctaLink?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -666,6 +710,7 @@ export interface PagineSelect<T extends boolean = true> {
   contenuto?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -743,6 +788,7 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  nome?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

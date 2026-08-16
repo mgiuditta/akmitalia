@@ -1,6 +1,7 @@
 import type { Field, GlobalConfig } from 'payload'
 
 import { authenticated, publicRead } from '../access'
+import { revalidaGlobal } from '../hooks/revalidate'
 
 /**
  * Le nove pagine della vecchia sezione "storia del krav maga" in una sola pagina ad ancore.
@@ -20,8 +21,10 @@ const sezione = (name: string, label: string): Field => ({
 export const PaginaKravMaga: GlobalConfig = {
   slug: 'pagina-krav-maga',
   label: 'Pagina Krav Maga',
+  versions: true,
   access: { read: publicRead, update: authenticated },
   admin: { group: 'Pagine fisse' },
+  hooks: revalidaGlobal('/krav-maga'),
   fields: [
     sezione('cosE', 'Cos’è il Krav Maga'),
     sezione('imiLichtenfeld', 'Imi Lichtenfeld'),

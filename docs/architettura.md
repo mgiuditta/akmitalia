@@ -34,11 +34,12 @@ akmitalia/
 | `indirizzo` | text | |
 | `citta`, `provincia`, `cap` | text | `provincia` serve a raggruppare l'elenco |
 | `mapsUrl` | text | link a Google Maps, no SDK |
-| `lat`, `lng` | number | opzionali, per un'eventuale mappa statica |
+| `lat`, `lng` | number | **obbligatori**: alimentano il JSON-LD `SportsActivityLocation` |
 | `attivo` | checkbox | default `true`; i centri chiusi spariscono da sito **e** form |
 | `orari` | array | vedi sotto |
 | `docenti` | relationship → `docenti`, hasMany | |
 | `foto` | upload → `media` | opzionale |
+| `eventi`, `richieste` | join | relazioni inverse, sola lettura |
 
 `orari[]`: `{ disciplina → corsi, giorni[] (lun…dom), oraInizio, oraFine, note }`
 
@@ -47,14 +48,15 @@ Sostituisce insieme: l'accordion Elementor, il PDF orari, e il dropdown hardcode
 **`corsi`** — le discipline
 
 `nome`, `slug`, `target` (adulti | ragazzi | bambini | donne | istruttori | aziende-ffoo),
-`sommario`, `descrizione` (Lexical), `immagine`, `ordine`.
+`sommario`, `descrizione` (Lexical), `immagine`, `ordine`, `centri` (join su `orari.disciplina`).
 
-**`docenti`** — `nome`, `ruolo`, `grado`, `foto`, `bio`.
+**`docenti`** — `nome`, `ruolo` (select: istruttore | trainer | maestro | direttore-tecnico |
+presidente), `grado`, `foto`, `bio`, `centri` (join).
 
-**`news`** — `titolo`, `slug`, `data`, `copertina`, `estratto`, `contenuto` (Lexical).
+**`news`** — `titolo`, `slug`, `data`, `copertina`, `estratto`, `contenuto` (Lexical). Con bozze.
 
 **`eventi`** — `titolo`, `slug`, `dataInizio`, `dataFine`, `centro` (rel), `luogo`, `descrizione`, `ctaLink`.
-Nessuna vista calendario a griglia: solo "prossimi eventi" + pagina dettaglio.
+Con bozze. Nessuna vista calendario a griglia: solo "prossimi eventi" + pagina dettaglio.
 
 **`richieste`** — le preiscrizioni
 
@@ -63,7 +65,9 @@ Nessuna vista calendario a griglia: solo "prossimi eventi" + pagina dettaglio.
 
 Nell'admin tutti i campi sono in sola lettura tranne `stato` e `note`: sono dati inviati
 dall'utente, non devono essere modificabili a posteriori. `create` è consentito solo alla
-Server Action, non dall'admin.
+Server Action, non dall'admin. `consensoAt` lo scrive un hook lato server: un timestamp di
+consenso che arriva dal client non prova nulla. La cancellazione resta permessa allo staff,
+altrimenti una richiesta GDPR non sarebbe eseguibile.
 
 **`media`** — upload su disco locale, resize con `sharp`. Niente S3/R2: sono poche centinaia di MB.
 
@@ -81,7 +85,21 @@ Un builder generico è più potente ma il cliente non lo userà: gli servono cin
 - `impostazioni` — SEO di default, logo, testo footer
 
 Le sole pagine libere sono quelle legali, in una collezione `pagine` con `titolo` + `slug` + rich text
-(privacy, cookie, 5x1000).
+(privacy, cookie, 5x1000). Anche `pagine` ha le bozze.
+
+I globals hanno `versions: true`: nessun flusso di pubblicazione, solo lo storico per tornare
+indietro dopo una modifica sbagliata. Le collezioni anagrafiche (`centri`, `corsi`, `docenti`)
+non hanno bozze: non sono contenuti editoriali.
+
+### Bozze e lettura pubblica
+
+Dove ci sono le bozze, `read` è `authenticatedOrPublished`: lo staff vede tutto, il pubblico
+solo `_status: published`. Senza, una bozza mai pubblicata sarebbe leggibile dalla REST API.
+
+### GraphQL
+
+Disabilitato (`graphQL: { disable: true }`), route rimosse. Il sito legge con la Local API:
+sarebbe solo superficie pubblica in più da tenere d'occhio.
 
 ## Routing
 
@@ -96,7 +114,8 @@ Le sole pagine libere sono quelle legali, in una collezione `pagine` con `titolo
 | `/contatti` | statica + form (Server Action) |
 | `/[slug]` | pagine legali |
 
-Revalidation on-demand: hook `afterChange` su ogni collezione → `revalidatePath` / `revalidateTag`.
+Revalidation on-demand: `src/hooks/revalidate.ts`, montato come `afterChange`/`afterDelete` su ogni
+collezione e global. `context.disableRevalidate` la spegne per seed e script.
 Il cliente salva e vede il sito aggiornato subito, senza aspettare l'ISR.
 
 ## SEO

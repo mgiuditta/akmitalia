@@ -10,6 +10,8 @@ Sette fasi. La fase 2 è un punto di approvazione: non si prosegue senza il sì 
 - `docker-compose.yml` di sviluppo: solo Postgres
 - Payload con `i18n: { fallbackLanguage: 'it' }` → admin in italiano
 - Collezioni e globals come da [architettura.md](architettura.md), `payload generate:types`
+- Bozze sui contenuti editoriali, `versions` sui globals, join per le relazioni inverse
+- Hook di revalidation (`src/hooks/revalidate.ts`), GraphQL disabilitato, script di migrazione
 
 Fatto quando: `/admin` si apre in italiano e si crea un centro con orari.
 
@@ -40,7 +42,8 @@ Fatto quando: il cliente ha visto la home e ha detto sì. Non prima.
 
 ## Fase 5 — Contenuti
 
-- Script di seed rieseguibile (upsert per slug) per i 22 centri
+- Script di estrazione e di seed (già scritti, vedi [contenuti.md](contenuti.md)):
+  rilanciare `estrai-centri.ts` per completare le coordinate, poi `pnpm seed`
 - **Conferma col cliente** di quali centri sono attivi (vedi [contenuti.md](contenuti.md))
 - Testi delle 9 pagine riscritti e validati
 - Video spostati su YouTube, embed con façade

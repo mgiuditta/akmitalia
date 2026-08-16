@@ -1,13 +1,15 @@
 import type { CollectionConfig } from 'payload'
 import { slugField } from 'payload'
 
-import { authenticated, publicRead } from '../access'
+import { authenticated, authenticatedOrPublished } from '../access'
+import { revalidaCollezione } from '../hooks/revalidate'
 
 export const Eventi: CollectionConfig = {
   slug: 'eventi',
   labels: { singular: 'Evento', plural: 'Eventi' },
+  versions: { drafts: true },
   access: {
-    read: publicRead,
+    read: authenticatedOrPublished,
     create: authenticated,
     update: authenticated,
     delete: authenticated,
@@ -18,6 +20,7 @@ export const Eventi: CollectionConfig = {
     group: 'Contenuti',
   },
   defaultSort: 'dataInizio',
+  hooks: revalidaCollezione((doc) => ['/eventi', `/eventi/${doc.slug}`, '/']),
   fields: [
     { name: 'titolo', type: 'text', required: true, label: 'Titolo' },
     slugField({ useAsSlug: 'titolo' }),

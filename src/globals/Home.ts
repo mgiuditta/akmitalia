@@ -1,12 +1,15 @@
 import type { GlobalConfig } from 'payload'
 
 import { authenticated, publicRead } from '../access'
+import { revalidaGlobal } from '../hooks/revalidate'
 
 export const Home: GlobalConfig = {
   slug: 'home',
   label: 'Home',
+  versions: true,
   access: { read: publicRead, update: authenticated },
   admin: { group: 'Pagine fisse' },
+  hooks: revalidaGlobal('/'),
   fields: [
     {
       name: 'hero',

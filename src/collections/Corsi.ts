@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { slugField } from 'payload'
 
 import { authenticated, publicRead } from '../access'
+import { revalidaCollezione } from '../hooks/revalidate'
 
 export const Corsi: CollectionConfig = {
   slug: 'corsi',
@@ -18,6 +19,7 @@ export const Corsi: CollectionConfig = {
     group: 'Contenuti',
   },
   defaultSort: 'ordine',
+  hooks: revalidaCollezione((doc) => ['/corsi', `/corsi/${doc.slug}`, '/']),
   fields: [
     { name: 'nome', type: 'text', required: true, label: 'Nome' },
     slugField({ useAsSlug: 'nome' }),
@@ -50,6 +52,18 @@ export const Corsi: CollectionConfig = {
       label: 'Ordine',
       defaultValue: 0,
       admin: { position: 'sidebar', description: 'Ordine di comparsa nell’elenco corsi.' },
+    },
+    {
+      name: 'centri',
+      type: 'join',
+      collection: 'centri',
+      on: 'orari.disciplina',
+      label: 'Dove si pratica',
+      admin: {
+        allowCreate: false,
+        defaultColumns: ['nome', 'provincia', 'attivo'],
+        description: 'Compilato dagli orari delle schede centro: qui non si modifica.',
+      },
     },
   ],
 }

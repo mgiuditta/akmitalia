@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { slugField } from 'payload'
 
 import { authenticated, publicRead } from '../access'
+import { revalidaCollezione } from '../hooks/revalidate'
 
 const ORA = /^([01]\d|2[0-3])[:.][0-5]\d$/
 
@@ -23,6 +24,7 @@ export const Centri: CollectionConfig = {
     group: 'Contenuti',
   },
   defaultSort: 'nome',
+  hooks: revalidaCollezione((doc) => ['/centri', `/centri/${doc.slug}`, '/']),
   fields: [
     { name: 'nome', type: 'text', required: true, label: 'Nome', admin: { description: 'Es. Abbiategrasso.' } },
     slugField({ useAsSlug: 'nome' }),
@@ -136,6 +138,25 @@ export const Centri: CollectionConfig = {
         },
         { name: 'note', type: 'text', label: 'Note' },
       ],
+    },
+    {
+      name: 'eventi',
+      type: 'join',
+      collection: 'eventi',
+      on: 'centro',
+      label: 'Eventi in questo centro',
+      admin: { defaultColumns: ['titolo', 'dataInizio'] },
+    },
+    {
+      name: 'richieste',
+      type: 'join',
+      collection: 'richieste',
+      on: 'centro',
+      label: 'Preiscrizioni ricevute',
+      admin: {
+        allowCreate: false,
+        defaultColumns: ['cognome', 'nome', 'stato', 'createdAt'],
+      },
     },
   ],
 }
