@@ -67,8 +67,15 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
+    centri: Centri;
+    corsi: Corsi;
+    docenti: Docenti;
+    news: News;
+    eventi: Eventi;
+    pagine: Pagine;
+    richieste: Richieste;
     media: Media;
+    users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -76,8 +83,15 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
+    centri: CentriSelect<false> | CentriSelect<true>;
+    corsi: CorsiSelect<false> | CorsiSelect<true>;
+    docenti: DocentiSelect<false> | DocentiSelect<true>;
+    news: NewsSelect<false> | NewsSelect<true>;
+    eventi: EventiSelect<false> | EventiSelect<true>;
+    pagine: PagineSelect<false> | PagineSelect<true>;
+    richieste: RichiesteSelect<false> | RichiesteSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -87,8 +101,20 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    home: Home;
+    'pagina-krav-maga': PaginaKravMaga;
+    'pagina-chi-siamo': PaginaChiSiamo;
+    contatti: Contatti;
+    impostazioni: Impostazioni;
+  };
+  globalsSelect: {
+    home: HomeSelect<false> | HomeSelect<true>;
+    'pagina-krav-maga': PaginaKravMagaSelect<false> | PaginaKravMagaSelect<true>;
+    'pagina-chi-siamo': PaginaChiSiamoSelect<false> | PaginaChiSiamoSelect<true>;
+    contatti: ContattiSelect<false> | ContattiSelect<true>;
+    impostazioni: ImpostazioniSelect<false> | ImpostazioniSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -119,6 +145,298 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "centri".
+ */
+export interface Centri {
+  id: number;
+  /**
+   * Es. Abbiategrasso.
+   */
+  nome: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  palestra: string;
+  indirizzo: string;
+  citta: string;
+  /**
+   * Sigla a 2 lettere. Raggruppa l’elenco dei centri.
+   */
+  provincia: string;
+  cap?: string | null;
+  /**
+   * Il link "condividi" di Google Maps. Nessuna API, solo un link.
+   */
+  mapsUrl?: string | null;
+  /**
+   * Es. 45.3985
+   */
+  lat: number;
+  /**
+   * Es. 8.9192
+   */
+  lng: number;
+  /**
+   * Se disattivato il centro sparisce dal sito e dal form di preiscrizione.
+   */
+  attivo?: boolean | null;
+  foto?: (number | null) | Media;
+  docenti?: (number | Docenti)[] | null;
+  /**
+   * Sostituisce il PDF orari: questi sono gli orari veri, indicizzabili.
+   */
+  orari?:
+    | {
+        disciplina: number | Corsi;
+        giorni: ('lun' | 'mar' | 'mer' | 'gio' | 'ven' | 'sab' | 'dom')[];
+        oraInizio: string;
+        oraFine: string;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  /**
+   * Descrive l’immagine a chi non la vede. Obbligatorio.
+   */
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    hero?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "docenti".
+ */
+export interface Docenti {
+  id: number;
+  nome: string;
+  /**
+   * Es. Istruttore, Trainer.
+   */
+  ruolo?: string | null;
+  grado?: string | null;
+  foto?: (number | null) | Media;
+  bio?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "corsi".
+ */
+export interface Corsi {
+  id: number;
+  nome: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  target: 'adulti' | 'ragazzi' | 'bambini' | 'donne' | 'istruttori' | 'aziende-ffoo';
+  /**
+   * Una o due righe, usate nelle card e nella meta description.
+   */
+  sommario?: string | null;
+  descrizione?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  immagine?: (number | null) | Media;
+  /**
+   * Ordine di comparsa nell’elenco corsi.
+   */
+  ordine?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news".
+ */
+export interface News {
+  id: number;
+  titolo: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  data: string;
+  copertina?: (number | null) | Media;
+  /**
+   * Usato nell’elenco e come meta description.
+   */
+  estratto?: string | null;
+  contenuto?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "eventi".
+ */
+export interface Eventi {
+  id: number;
+  titolo: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  dataInizio: string;
+  dataFine?: string | null;
+  /**
+   * Se l’evento si svolge in un centro tecnico.
+   */
+  centro?: (number | null) | Centri;
+  /**
+   * Per gli eventi fuori dai centri. Se vuoto si usa l’indirizzo del centro.
+   */
+  luogo?: string | null;
+  descrizione?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Opzionale: modulo esterno, pagina Facebook, ecc.
+   */
+  ctaLink?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pagine".
+ */
+export interface Pagine {
+  id: number;
+  titolo: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  contenuto?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "richieste".
+ */
+export interface Richieste {
+  id: number;
+  stato: 'nuova' | 'contattata' | 'iscritta' | 'archiviata';
+  note?: string | null;
+  centro: number | Centri;
+  cognome: string;
+  nome: string;
+  dataNascita?: string | null;
+  telefono?: string | null;
+  email: string;
+  messaggio?: string | null;
+  consenso: boolean;
+  consensoAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -141,25 +459,6 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -186,12 +485,40 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'centri';
+        value: number | Centri;
+      } | null)
+    | ({
+        relationTo: 'corsi';
+        value: number | Corsi;
+      } | null)
+    | ({
+        relationTo: 'docenti';
+        value: number | Docenti;
+      } | null)
+    | ({
+        relationTo: 'news';
+        value: number | News;
+      } | null)
+    | ({
+        relationTo: 'eventi';
+        value: number | Eventi;
+      } | null)
+    | ({
+        relationTo: 'pagine';
+        value: number | Pagine;
+      } | null)
+    | ({
+        relationTo: 'richieste';
+        value: number | Richieste;
       } | null)
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -237,6 +564,182 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "centri_select".
+ */
+export interface CentriSelect<T extends boolean = true> {
+  nome?: T;
+  generateSlug?: T;
+  slug?: T;
+  palestra?: T;
+  indirizzo?: T;
+  citta?: T;
+  provincia?: T;
+  cap?: T;
+  mapsUrl?: T;
+  lat?: T;
+  lng?: T;
+  attivo?: T;
+  foto?: T;
+  docenti?: T;
+  orari?:
+    | T
+    | {
+        disciplina?: T;
+        giorni?: T;
+        oraInizio?: T;
+        oraFine?: T;
+        note?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "corsi_select".
+ */
+export interface CorsiSelect<T extends boolean = true> {
+  nome?: T;
+  generateSlug?: T;
+  slug?: T;
+  target?: T;
+  sommario?: T;
+  descrizione?: T;
+  immagine?: T;
+  ordine?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "docenti_select".
+ */
+export interface DocentiSelect<T extends boolean = true> {
+  nome?: T;
+  ruolo?: T;
+  grado?: T;
+  foto?: T;
+  bio?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news_select".
+ */
+export interface NewsSelect<T extends boolean = true> {
+  titolo?: T;
+  generateSlug?: T;
+  slug?: T;
+  data?: T;
+  copertina?: T;
+  estratto?: T;
+  contenuto?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "eventi_select".
+ */
+export interface EventiSelect<T extends boolean = true> {
+  titolo?: T;
+  generateSlug?: T;
+  slug?: T;
+  dataInizio?: T;
+  dataFine?: T;
+  centro?: T;
+  luogo?: T;
+  descrizione?: T;
+  ctaLink?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pagine_select".
+ */
+export interface PagineSelect<T extends boolean = true> {
+  titolo?: T;
+  generateSlug?: T;
+  slug?: T;
+  contenuto?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "richieste_select".
+ */
+export interface RichiesteSelect<T extends boolean = true> {
+  stato?: T;
+  note?: T;
+  centro?: T;
+  cognome?: T;
+  nome?: T;
+  dataNascita?: T;
+  telefono?: T;
+  email?: T;
+  messaggio?: T;
+  consenso?: T;
+  consensoAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        hero?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -256,24 +759,6 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -314,6 +799,480 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home".
+ */
+export interface Home {
+  id: number;
+  hero: {
+    titolo: string;
+    sottotitolo?: string | null;
+    ctaLabel?: string | null;
+    ctaHref?: string | null;
+    immagine?: (number | null) | Media;
+  };
+  inEvidenza?:
+    | {
+        titolo: string;
+        testo?: string | null;
+        href?: string | null;
+        immagine?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  video?: {
+    /**
+     * Solo l’ID, es. dQw4w9WgXcQ. Il video si carica solo al click.
+     */
+    youtubeId?: string | null;
+    copertina?: (number | null) | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pagina-krav-maga".
+ */
+export interface PaginaKravMaga {
+  id: number;
+  cosE?: {
+    titolo?: string | null;
+    contenuto?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  imiLichtenfeld?: {
+    titolo?: string | null;
+    contenuto?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  idf?: {
+    titolo?: string | null;
+    contenuto?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  principi?: {
+    titolo?: string | null;
+    contenuto?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  caratteristiche?: {
+    titolo?: string | null;
+    contenuto?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  attrezzatura?: {
+    titolo?: string | null;
+    contenuto?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  /**
+   * Alimenta anche i dati strutturati FAQPage per Google.
+   */
+  faq?:
+    | {
+        domanda: string;
+        risposta: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pagina-chi-siamo".
+ */
+export interface PaginaChiSiamo {
+  id: number;
+  storia?: {
+    titolo?: string | null;
+    contenuto?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  valori?: {
+    titolo?: string | null;
+    contenuto?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  riconoscimenti?: {
+    titolo?: string | null;
+    contenuto?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  codiceEtico?: {
+    titolo?: string | null;
+    contenuto?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  rassegnaStampa?: {
+    titolo?: string | null;
+    contenuto?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  partner?:
+    | {
+        nome: string;
+        logo?: (number | null) | Media;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contatti".
+ */
+export interface Contatti {
+  id: number;
+  indirizzo?: string | null;
+  email?: string | null;
+  telefono?: string | null;
+  social?:
+    | {
+        piattaforma: 'facebook' | 'instagram' | 'youtube' | 'tiktok' | 'linkedin';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Resta scaricabile, ma gli orari veri stanno nelle schede centro.
+   */
+  pdfOrari?: (number | null) | Media;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "impostazioni".
+ */
+export interface Impostazioni {
+  id: number;
+  siteName: string;
+  /**
+   * Usato quando la pagina non ne ha uno proprio.
+   */
+  seoTitleDefault?: string | null;
+  seoDescriptionDefault?: string | null;
+  ogImage?: (number | null) | Media;
+  logo?: (number | null) | Media;
+  testoFooter?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home_select".
+ */
+export interface HomeSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        titolo?: T;
+        sottotitolo?: T;
+        ctaLabel?: T;
+        ctaHref?: T;
+        immagine?: T;
+      };
+  inEvidenza?:
+    | T
+    | {
+        titolo?: T;
+        testo?: T;
+        href?: T;
+        immagine?: T;
+        id?: T;
+      };
+  video?:
+    | T
+    | {
+        youtubeId?: T;
+        copertina?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pagina-krav-maga_select".
+ */
+export interface PaginaKravMagaSelect<T extends boolean = true> {
+  cosE?:
+    | T
+    | {
+        titolo?: T;
+        contenuto?: T;
+      };
+  imiLichtenfeld?:
+    | T
+    | {
+        titolo?: T;
+        contenuto?: T;
+      };
+  idf?:
+    | T
+    | {
+        titolo?: T;
+        contenuto?: T;
+      };
+  principi?:
+    | T
+    | {
+        titolo?: T;
+        contenuto?: T;
+      };
+  caratteristiche?:
+    | T
+    | {
+        titolo?: T;
+        contenuto?: T;
+      };
+  attrezzatura?:
+    | T
+    | {
+        titolo?: T;
+        contenuto?: T;
+      };
+  faq?:
+    | T
+    | {
+        domanda?: T;
+        risposta?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pagina-chi-siamo_select".
+ */
+export interface PaginaChiSiamoSelect<T extends boolean = true> {
+  storia?:
+    | T
+    | {
+        titolo?: T;
+        contenuto?: T;
+      };
+  valori?:
+    | T
+    | {
+        titolo?: T;
+        contenuto?: T;
+      };
+  riconoscimenti?:
+    | T
+    | {
+        titolo?: T;
+        contenuto?: T;
+      };
+  codiceEtico?:
+    | T
+    | {
+        titolo?: T;
+        contenuto?: T;
+      };
+  rassegnaStampa?:
+    | T
+    | {
+        titolo?: T;
+        contenuto?: T;
+      };
+  partner?:
+    | T
+    | {
+        nome?: T;
+        logo?: T;
+        url?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contatti_select".
+ */
+export interface ContattiSelect<T extends boolean = true> {
+  indirizzo?: T;
+  email?: T;
+  telefono?: T;
+  social?:
+    | T
+    | {
+        piattaforma?: T;
+        url?: T;
+        id?: T;
+      };
+  pdfOrari?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "impostazioni_select".
+ */
+export interface ImpostazioniSelect<T extends boolean = true> {
+  siteName?: T;
+  seoTitleDefault?: T;
+  seoDescriptionDefault?: T;
+  ogImage?: T;
+  logo?: T;
+  testoFooter?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
