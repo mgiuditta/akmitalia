@@ -33,13 +33,14 @@ docker-compose.yml
 - **Caddy** e non Nginx: ottiene e rinnova i certificati da solo, il Caddyfile è di sei righe
   e non c'è certbot da tenere in cron.
 - **Media** su volume Docker montato in `/app/media`. Vanno nel backup: non sono nel database.
-- **`output: 'standalone'`** in `next.config.ts`, altrimenti l'immagine Docker pesa un ordine
-  di grandezza in più.
+- **`node_modules` completo** nell'immagine, niente `output: 'standalone'`: la CLI `payload migrate`
+  serve al primo avvio del container e ha bisogno di `tsx` per leggere `payload.config.ts`.
+  L'immagine è più pesante, ma il container si migra da solo (`CMD: payload migrate && next start`).
 
 ## Variabili d'ambiente
 
 ```
-DATABASE_URI=postgres://payload:***@db:5432/akm
+POSTGRES_PASSWORD=<password del database>
 PAYLOAD_SECRET=<64 caratteri casuali>
 NEXT_PUBLIC_SERVER_URL=https://www.akm-italia.it
 SMTP_HOST= SMTP_PORT= SMTP_USER= SMTP_PASS=
@@ -54,8 +55,13 @@ EMAIL_TO=<segreteria AKM>
 ssh akm
 cd /opt/akm
 git pull
-docker compose up -d --build
+docker compose -f docker-compose.prod.yml up -d --build
 ```
+
+Le migrazioni dello schema si generano **in locale** (`pnpm payload migrate:create`) e si committano
+in `src/migrations/`: in produzione il container le applica all'avvio, non fa `push` automatico.
+
+`docker-compose.yml` (senza `-f`) è invece il solo Postgres per lo sviluppo locale.
 
 Volutamente manuale. Una pipeline CI/CD per un sito che si aggiorna dal CMS e si ri-deploya
 poche volte l'anno è manutenzione che non ripaga. Se i deploy diventeranno frequenti,

@@ -1,0 +1,3 @@
+www.akm-italia.it, akm-italia.it {
+	reverse_proxy app:3000
+}
