@@ -1,5 +1,4 @@
 import React from 'react'
-import './styles.css'
 
 export const metadata = {
   description: 'Accademia Krav Maga Italia',
