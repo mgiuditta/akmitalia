@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-25T00:00:00.000Z",
+  "title": "Design System: AKM Italia",
+  "extensions": {
+    "colorMeta": {
+      "primary-text": { "role": "primary", "displayName": "Bianco Caldo", "canonical": "#FAFAFA" },
+      "secondary-text": { "role": "neutral", "displayName": "Grigio Neutro", "canonical": "#8A8A8A" },
+      "accent-theme": { "role": "tertiary", "displayName": "Rosso Azione", "canonical": "#C8102E" },
+      "accent-secondary": { "role": "tertiary", "displayName": "Verde Tricolore", "canonical": "#009246" },
+      "surface-bg": { "role": "neutral", "displayName": "Carbone Superficie", "canonical": "#161616" },
+      "base-bg": { "role": "neutral", "displayName": "Nero Dominante", "canonical": "#0B0B0B" },
+      "border-hairline": { "role": "neutral", "displayName": "Bordo Sottile", "canonical": "rgba(250,250,250,0.1)" }
+    },
+    "typographyMeta": {
+      "hero-display": { "displayName": "Display", "purpose": "Titoli hero, apertura di sezione. In uso su (home): Instrument Sans 500." },
+      "body": { "displayName": "Body", "purpose": "Corpo testo, navigazione, UI. DM Sans 400." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "hover-icon-rotate", "value": "transform: rotate(-20deg); transition: all 0.3s;", "purpose": "Rotazione icona nel bottone outline al passaggio del mouse." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "767px" },
+      { "name": "md", "value": "991px" },
+      { "name": "lg", "value": "1199px" },
+      { "name": "xl", "value": "1399px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Bottone a pillola, bordo pieno 2px, sfondo trasparente. Bottone primario del tema sulla home attiva.",
+      "html": "<a href=\"#\" class=\"ds-btn-outline\">Scopri di più</a>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; padding: 9px 25px; font-family: 'DM Sans', system-ui, sans-serif; font-weight: 500; font-size: 18px; line-height: 1; color: #FAFAFA; background-color: transparent; border: 2px solid #FAFAFA; border-radius: 50px; transition: all 0.3s; text-decoration: none; } .ds-btn-outline:hover { background-color: #FAFAFA; color: #161616; } .ds-btn-outline:focus-visible { outline: 2px solid #C8102E; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Inherited Studio",
+    "overview": "La struttura resta quella del tema ThemeForest Redox (venduto anche come 'Arrox — Creative Agency and Portfolio HTML Template'), Bootstrap 5 + SCSS + GSAP. I colori non sono più il placeholder arancio/quasi-nero di Redox: sono stati riportati alla palette reale AKM (nero/carbone/bianco/rosso/verde tricolore). Rosso e verde restano stime da schermo, da confermare sul logo reale quando disponibile. Quello che il sistema non ha ancora è un'identità propria dell'accademia: la libreria tipografica e i contenuti demo vanno filtrati o sostituiti componente per componente, non ereditati in blocco.",
+    "keyCharacteristics": [
+      "Dark by default sulla home attiva (className=\"dark\" su MainWrapper)",
+      "Full palette a due accenti: rosso primario (CTA, hover), verde secondario con parsimonia, su base nero/carbone/bianco",
+      "Bottoni a pillola, bordo pieno 2px, nessuna ombra come linguaggio primario di profondità",
+      "Libreria font sovrabbondante (6 famiglie) ereditata da un template multi-home"
+    ],
+    "rules": [
+      { "name": "The Primary Accent Rule", "body": "Il rosso (#C8102E) è l'accento primario che porta significato (CTA, hover, stati attivi). Il verde (#009246) è secondario, usato con parsimonia, mai al posto del rosso su CTA. Non introdurre altri colori-segnale senza aggiornare DESIGN.md.", "section": "colors" },
+      { "name": "The Two-Family Rule", "body": "Sulla home attiva sono in uso solo due famiglie (Instrument Sans + DM Sans). Ogni nuova pagina si attiene a queste due.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Nessuna superficie ha ombra a riposo. Profondità comunicata per bordo sottile o scarto cromatico.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do trattare il rosso #C8102E come accento primario, il verde #009246 con parsimonia",
+      "Do limitare i nuovi componenti a Instrument Sans + DM Sans",
+      "Do mantenere il sistema flat: bordo sottile o scarto cromatico invece di box-shadow",
+      "Do riusare la forma pillola + bordo 2px dei bottoni"
+    ],
+    "donts": [
+      "Don't far assomigliare nuove pagine al sito WordPress attuale",
+      "Don't lasciare che il sito si legga come un template 'creative agency' generico",
+      "Don't introdurre un'estetica da palestra/box lotta stereotipata",
+      "Don't usare outline: none su elementi interattivi senza sostituto visibile del focus",
+      "Don't caricare le quattro famiglie tipografiche non usate finché non valutate in audit performance"
+    ]
+  }
+}

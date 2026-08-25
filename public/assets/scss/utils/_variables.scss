@@ -49,24 +49,25 @@ work page css
 
 // Colors
 :root {
-  --primary: #111111;
-  --secondary: #555555;
-  --border: rgba(17, 17, 17, 0.1);
-  --bg: #111111;
-  --theme: #FF6A3A;
+  --primary: #0B0B0B;
+  --secondary: #4D4D4D;
+  --border: rgba(11, 11, 11, 0.1);
+  --bg: #0B0B0B;
+  --theme: #C8102E;
 
-  --black: #111111;
-  --black-2: #999999;
-  --white: #FFFFFF;
-  --white-2: #999999;
+  --black: #0B0B0B;
+  --black-2: #8A8A8A;
+  --white: #FAFAFA;
+  --white-2: #8A8A8A;
 
-  --action: #FF6A3A;
+  --action: #C8102E;
+  --accent-secondary: #009246; // tricolore, usato con parsimonia — vedi DESIGN.md
 
   .dark {
-    --primary: #ffffff;
-    --secondary: #999999;
-    --border: rgba(255, 255, 255, 0.1);
-    --bg: #171717;
+    --primary: #FAFAFA;
+    --secondary: #8A8A8A;
+    --border: rgba(250, 250, 250, 0.1);
+    --bg: #161616;
   }
 }
 

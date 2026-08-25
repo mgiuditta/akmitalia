@@ -53,7 +53,7 @@
                 position: relative;
 
                 @include dark {
-                    color: #555555;
+                    color: #4D4D4D;
                 }
 
                 @media #{$xxl} {
@@ -236,7 +236,7 @@
             font-weight: 400;
 
             @include dark {
-                color: #555555;
+                color: #4D4D4D;
             }
 
             @media #{$xxl} {
@@ -322,12 +322,12 @@
             }
 
             a {
-                color: #999999;
+                color: #8A8A8A;
                 transition: all 0.3s;
                 position: relative;
 
                 @include dark {
-                    color: #555555;
+                    color: #4D4D4D;
                 }
 
                 &::before {
@@ -509,7 +509,7 @@
             font-family: var(--font_dmsans);
 
             @include dark {
-                color: #555555;
+                color: #4D4D4D;
             }
 
             @media #{$xxl} {
@@ -600,12 +600,12 @@
             }
 
             a {
-                color: #999999;
+                color: #8A8A8A;
                 transition: all 0.3s;
                 position: relative;
 
                 @include dark {
-                    color: #555555;
+                    color: #4D4D4D;
                 }
 
                 &::before {
@@ -777,7 +777,7 @@
             font-weight: 400;
 
             @include dark {
-                color: #555555;
+                color: #4D4D4D;
             }
 
             @media #{$xxl} {
@@ -871,12 +871,12 @@
             }
 
             a {
-                color: #999999;
+                color: #8A8A8A;
                 transition: all 0.3s;
                 position: relative;
 
                 @include dark {
-                    color: #555555;
+                    color: #4D4D4D;
                 }
 
                 &::before {
@@ -1020,12 +1020,12 @@
             }
 
             a {
-                color: #999999;
+                color: #8A8A8A;
                 transition: all 0.3s;
                 position: relative;
 
                 @include dark {
-                    color: #555555;
+                    color: #4D4D4D;
                 }
 
                 &::before {
@@ -1274,11 +1274,11 @@
                     height: 10px;
                     right: -50%;
                     position: absolute;
-                    background-color: #999999;
+                    background-color: #8A8A8A;
                     transform: translate(-10px, 3px);
 
                     @include dark {
-                        background-color: #555555;
+                        background-color: #4D4D4D;
                     }
 
                     @media #{$xs} {
@@ -1308,7 +1308,7 @@
                 }
 
                 &:hover {
-                    color: #999999;
+                    color: #8A8A8A;
 
                     &::before {
                         width: 100%;
@@ -1345,7 +1345,7 @@
                 }
 
                 &:hover {
-                    color: #999999;
+                    color: #8A8A8A;
 
                     &::before {
                         width: 100%;
@@ -1414,7 +1414,7 @@
                 position: relative;
 
                 @include dark {
-                    color: #555555;
+                    color: #4D4D4D;
                 }
 
                 @media #{$xxl} {
@@ -1597,7 +1597,7 @@
             font-family: var(--font_dmsans);
 
             @include dark {
-                color: #555555;
+                color: #4D4D4D;
             }
 
             @media #{$xxl} {
@@ -1691,12 +1691,12 @@
             }
 
             a {
-                color: #999999;
+                color: #8A8A8A;
                 transition: all 0.3s;
                 position: relative;
 
                 @include dark {
-                    color: #555555;
+                    color: #4D4D4D;
                 }
 
                 &::before {
