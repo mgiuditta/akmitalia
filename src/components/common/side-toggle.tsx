@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import logo from "@/assets/imgs/logo/logo-light.png";
+import logo from "@/assets/imgs/logo-akm/akm-italia-nero-240.png";
 import Image from "next/image";
 import menuData from "@/data/menu-data";
 
@@ -30,7 +30,7 @@ export default function SideToggle({ isOpen, onSideToggle }: IProps) {
                 <Link href="/">
                   <Image
                     src={logo}
-                    alt="site logo"
+                    alt="AKM Italia"
                     style={{ height: "auto" }}
                   />
                 </Link>
@@ -91,36 +91,28 @@ export default function SideToggle({ isOpen, onSideToggle }: IProps) {
             <div className="offset-button">
               <Link href="/contact" className="rr-btn hover-bg-theme">
                 <span className="btn-wrap">
-                  <span className="text-one">{"Let's"} Talk</span>
-                  <span className="text-two">{"Let's"} Talk</span>
+                  <span className="text-one">Preiscriviti</span>
+                  <span className="text-two">Preiscriviti</span>
                 </span>
               </Link>
             </div>
             <div className="offset-widget-box">
-              <h2 className="title">Contact US</h2>
+              <h2 className="title">Contatti</h2>
               <div className="contact-meta">
                 <div className="contact-item">
                   <span className="icon">
                     <i className="fa-solid fa-location-dot"></i>
                   </span>
-                  <span className="text">3891 Ranchview Dr. Richardson</span>
+                  <span className="text">Oltre 20 centri in Lombardia</span>
                 </div>
                 <div className="contact-item">
                   <span className="icon">
                     <i className="fa-solid fa-envelope"></i>
                   </span>
                   <span className="text">
-                    <a href="mailto:hello@redoxagency.com">
-                      hello@redoxagency.com
+                    <a href="mailto:info@akm-italia.it">
+                      info@akm-italia.it
                     </a>
-                  </span>
-                </div>
-                <div className="contact-item">
-                  <span className="icon">
-                    <i className="fa-solid fa-phone"></i>
-                  </span>
-                  <span className="text">
-                    <a href="tel:(505)555-0125">(505) 555-0125</a>
                   </span>
                 </div>
               </div>

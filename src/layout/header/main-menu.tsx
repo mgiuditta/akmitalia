@@ -13,7 +13,7 @@ export default function MainMenu() {
             <Link href={item.href}>{item.title}</Link>
             {item.children && (
               <ul
-                className={`dp-menu ${item.title === 'Home' ? 'col-2' : ''
+                className={`dp-menu ${item.title === 'Corsi' ? 'col-2' : ''
                   }`}
               >
                 {item.children.map((child, childIndex) => (

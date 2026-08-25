@@ -1,57 +1,49 @@
-/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import React from "react";
 
+// Le 4 sezioni rispecchiano i 4 segmenti utente di PRODUCT.md, senza
+// gerarchia forzata tra loro (Design Principle 3 — smistamento).
 const ServiceArea = () => {
-  // Service data
-  const services = [
+  const segmenti = [
     {
       number: "(01)",
-      title: "Branding",
+      title: "Genitori",
       list: [
-        "Creative Direction",
-        "Brand Identity",
-        "Branding Strategy",
-        "Graphic Design",
-        "Startup",
+        "Antibullismo Bambini",
+        "Corsi Ragazzi",
+        "Krav Maga Junior",
+        "Disciplina e rispetto",
       ],
-      image: "/assets/imgs/gallery/image-3.webp",
     },
     {
       number: "(02)",
-      title: "UI-UX Design",
+      title: "Adulti e Donne",
       list: [
-        "UI UX Consulting",
-        "UX Research",
-        "Usability Testing",
-        "Wireframing",
-        "Prototyping",
+        "Krav Maga Adulti",
+        "Donna Sicura",
+        "Kick Boxing",
+        "Full Contact",
       ],
-      image: "/assets/imgs/gallery/image-4.webp",
     },
     {
       number: "(03)",
-      title: "Development",
+      title: "Aziende e Forze dell'Ordine",
       list: [
-        "WordPress",
-        "Webflow",
-        "Laravel Framework",
-        "React & Flutter",
-        "Design System",
+        "Corsi Speciali",
+        "Formazione FFOO",
+        "Corsi in azienda",
+        "Consulenza sicurezza",
       ],
-      image: "/assets/imgs/gallery/image-5.webp",
     },
     {
       number: "(04)",
-      title: "Digital Marketing",
+      title: "Praticanti Esistenti",
       list: [
-        "Online Marketing",
-        "SEO-Marketing",
-        "Strategy",
-        "Market Research",
-        "Social Reform",
+        "Trova il tuo centro",
+        "Orari e docenti",
+        "Corsi Istruttori",
+        "Eventi e stage",
       ],
-      image: "/assets/imgs/gallery/image-6.webp",
     },
   ];
 
@@ -63,34 +55,39 @@ const ServiceArea = () => {
             <div className="section-title-wrapper fade-anim">
               <div className="title-wrapper">
                 <h2 className="section-title font-instrumentsans-medium word-anim">
-                  Complex <br /> proficiency
+                  Per chi <br /> cerchi
                 </h2>
               </div>
             </div>
           </div>
           <div className="services-wrapper-box">
             <div className="services-wrapper-1">
-              {services.map((service, index) => (
+              {segmenti.map((segmento, index) => (
                 <div key={index} className="service-box fade-anim">
                   <div className="count">
-                    <span className="number">{service.number}</span>
+                    <span className="number">{segmento.number}</span>
                   </div>
                   <div className="content">
                     <h3 className="title">
-                      <Link href="/service-details">{service.title}</Link>
+                      <Link href="/about">{segmento.title}</Link>
                     </h3>
                     <ul className="service-list">
-                      {service.list.map((item, i) => (
+                      {segmento.list.map((item, i) => (
                         <li key={i}>
-                          <Link href="/service-details">{item}</Link>
+                          <Link href="/about">{item}</Link>
                         </li>
                       ))}
                     </ul>
                   </div>
-                  <div className="thumb">
-                    <img className="grow" src={service.image} alt="image" />
-                    {/* <Image className="grow" src={service.image} alt="image" width={545} height={265} style={{ height: "auto" }} /> */}
-                  </div>
+                  <div
+                    className="thumb"
+                    style={{
+                      backgroundColor: "var(--bg)",
+                      border: "1px solid var(--border)",
+                      width: "100%",
+                      aspectRatio: "545 / 265",
+                    }}
+                  />
                 </div>
               ))}
             </div>

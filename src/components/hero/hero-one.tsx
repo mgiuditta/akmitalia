@@ -1,35 +1,15 @@
-import Image from 'next/image'
-import shape_3 from '@/assets/imgs/shape/shape-3.webp';
-import shape_2 from '@/assets/imgs/shape/shape-2.webp';
-import shape_1 from '@/assets/imgs/shape/shape-1.webp';
+import Link from 'next/link'
 
+// Stat numbers (centri/anni) are placeholders — da validare col cliente prima del lancio (docs/contenuti.md)
 export default function HeroOne() {
   return (
     <section className="hero-area">
       <div className="container large">
         <div className="hero-area-inner section-spacing-top">
           <div className="hero-content section-spacing-bottom">
-            <div
-              className="award-wrapper fade-anim"
-              data-delay="0.90"
-              data-direction="left"
-              data-ease="back.out(4)"
-            >
-              <div className="circle-text-wrapper">
-                <div className="circle-text">
-                  <Image
-                    src={shape_3}
-                    alt="image"
-                    className="text"
-                  />
-                  <Image
-                    src={shape_2}
-                    alt="image"
-                    className="icon"
-                  />
-                </div>
-              </div>
-            </div>
+            {/* Spacer: preserva la 1a colonna (130px) della grid a 3 colonne del tema
+                — occupata in origine dal badge decorativo rimosso (non pertinente ad AKM) */}
+            <div aria-hidden="true" />
             <div className="section-header">
               <div className="section-title-wrapper">
                 <div className="title-wrapper">
@@ -37,18 +17,7 @@ export default function HeroOne() {
                     className="section-title font-instrumentsans-medium char-anim"
                     data-delay="0.45"
                   >
-                    Let’s sharpen your brand with
-                    <span>
-                      <Image
-                        className="title-shape-1 fade-anim"
-                        src={shape_1}
-                        alt="image"
-                        data-direction="right"
-                        data-delay="1.80"
-                        style={{height:'auto'}}
-                      />
-                    </span>
-                    quality work
+                    Krav Maga e autodifesa, con disciplina
                   </h2>
                 </div>
               </div>
@@ -58,17 +27,17 @@ export default function HeroOne() {
                 <div className="features-wrapper">
                   <div className="feature-box">
                     <div className="content">
-                      <span className="number">98%</span>
+                      <span className="number">20+</span>
                       <p className="text">
-                        Average clients satisfied and repeating
+                        Centri tecnici attivi in Lombardia
                       </p>
                     </div>
                   </div>
                   <div className="feature-box">
                     <div className="content">
-                      <span className="number">120+</span>
+                      <span className="number">30+</span>
                       <p className="text">
-                        Successfully projects done in 24 countries
+                        Anni di attività dell&apos;accademia
                       </p>
                     </div>
                   </div>
@@ -76,14 +45,28 @@ export default function HeroOne() {
               </div>
               <div className="text-wrapper fade-anim" data-delay="0.75">
                 <p className="text">
-                  We’re a digital products design & development agency that works
-                  passionately with the digital experiences.
+                  Corsi di Krav Maga e autodifesa per bambini, adulti, donne, aziende
+                  e forze dell&apos;ordine. Trova il centro più vicino e il corso giusto per te.
                 </p>
+              </div>
+              <div className="btn-wrapper fade-anim" data-delay="0.9">
+                <Link href="/contact" className="rr-btn btn-text-fli hover-bg-theme">
+                  <span className="btn-wrap">
+                    <span className="text-one">Trova il tuo centro</span>
+                    <span className="text-two">Trova il tuo centro</span>
+                  </span>
+                </Link>
+                <Link href="/about" className="rr-btn btn-border hover-bg-theme">
+                  <span className="btn-wrap">
+                    <span className="text-one">Scopri i corsi</span>
+                    <span className="text-two">Scopri i corsi</span>
+                  </span>
+                </Link>
               </div>
             </div>
           </div>
           <div className="big-text-wrapper">
-            <h2 className="big-text">Redox</h2>
+            <h2 className="big-text">AKM ITALIA</h2>
           </div>
         </div>
       </div>

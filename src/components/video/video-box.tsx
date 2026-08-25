@@ -1,10 +1,16 @@
-
+// Placeholder piatto: il global `home` prevede un video YouTube in evidenza,
+// non ancora fornito dal cliente — niente asset demo esterno nel frattempo.
 export default function VideoBox() {
   return (
     <div className="video-box">
-      <video className="video-area" loop={true} muted autoPlay playsInline>
-        <source src="https://rrdevs.net/project-video/group-meeting.mp4" type="video/mp4" />
-      </video>
+      <div
+        className="video-area d-flex align-items-center justify-content-center"
+        style={{ backgroundColor: 'var(--bg)', width: '100%', height: '100%' }}
+      >
+        <p className="text" style={{ color: 'var(--secondary)' }}>
+          Video in arrivo
+        </p>
+      </div>
     </div>
   )
 }

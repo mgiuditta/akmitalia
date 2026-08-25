@@ -1,9 +1,7 @@
 import AboutOne from "@/components/about/about-one";
-import ClientArea from "@/components/client/client-area";
 import CtaArea from "@/components/cta/cta-area";
 import FunFactArea from "@/components/fun-fact/fun-fact-area";
 import HeroOne from "@/components/hero/hero-one";
-import ParallaxImg from "@/components/parallax-img/parallax-img";
 import ProductivityArea from "@/components/productivity/productivity-area";
 import ServiceArea from "@/components/services/service-area";
 import TextSlider from "@/components/text-slider/text-slider";
@@ -64,10 +62,6 @@ export default function HomePage() {
             <FunFactArea />
             {/* Fun fact area end */}
 
-            {/* Client area start */}
-            <ClientArea />
-            {/* Client area end */}
-
             {/* Cta area start */}
             <CtaArea />
             {/* Cta area end */}
@@ -75,10 +69,6 @@ export default function HomePage() {
             {/* Productivity area start */}
             <ProductivityArea />
             {/* Productivity area end */}
-
-            {/* Parallax image start */}
-            <ParallaxImg />
-            {/* Parallax image end */}
           </main>
 
           {/* Footer area start */}

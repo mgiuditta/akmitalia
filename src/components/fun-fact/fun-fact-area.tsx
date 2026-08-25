@@ -1,5 +1,4 @@
-
-
+// Numeri placeholder — da validare col cliente prima del lancio (docs/contenuti.md)
 export default function FunFactArea() {
   return (
     <section className="funfact-area fade-anim">
@@ -8,8 +7,8 @@ export default function FunFactArea() {
           <div className="section-header section-spacing-top pin-element">
             <div className="section-title-wrapper">
               <div className="title-wrapper">
-                <h2 className="section-title font-instrumentsans-medium word-anim">Perfect <br />
-                  —activity</h2>
+                <h2 className="section-title font-instrumentsans-medium word-anim">AKM <br />
+                  —in numeri</h2>
               </div>
             </div>
           </div>
@@ -20,27 +19,24 @@ export default function FunFactArea() {
             <span className="line-4"></span>
             <div className="funfact-wrapper">
               <div className="funfact-item go-visible">
-                <span className="number">1.8M</span>
-                <p className="text">We helped to get companies with
-                  $200M+ funding.</p>
+                <span className="number">20+</span>
+                <p className="text">Centri tecnici attivi in Lombardia.</p>
               </div>
               <div className="funfact-item go-visible">
-                <span className="number">260+</span>
-                <p className="text">Crafted responsive, user-centered
-                  website & app.</p>
+                <span className="number">30+</span>
+                <p className="text">Anni di attività dell&apos;accademia.</p>
               </div>
               <div className="funfact-item go-visible">
-                <span className="number">12+</span>
-                <p className="text">We have had quite a run in our 12+ years of working.</p>
+                <span className="number">7</span>
+                <p className="text">Discipline: Krav Maga, Kick Boxing, Full Contact e altro.</p>
               </div>
               <div className="funfact-item go-visible">
-                <span className="number">80+</span>
-                <p className="text">Professional skilled designers and developers.</p>
+                <span className="number">4</span>
+                <p className="text">Province coperte in Lombardia.</p>
               </div>
               <div className="funfact-item go-visible">
-                <span className="number">99%</span>
-                <p className="text">Average 99% clients satisfaction
-                  with expertise.</p>
+                <span className="number">1000+</span>
+                <p className="text">Allievi formati nel corso degli anni.</p>
               </div>
             </div>
           </div>

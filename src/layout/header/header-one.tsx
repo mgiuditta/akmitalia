@@ -16,7 +16,7 @@ const Header = () => {
           <div className="header-area__inner">
             {/* Logo */}
             <div className="header__logo">
-              <Link href="/index">
+              <Link href="/">
                 <Image
                   src="/assets/imgs/logo-akm/akm-italia-nero-240.png"
                   className="normal-logo"
@@ -36,8 +36,8 @@ const Header = () => {
             <div className="header__button">
               <a href="/contact" className="rr-btn hover-bg-theme">
                 <span className="btn-wrap">
-                  <span className="text-one">Let’s Talk</span>
-                  <span className="text-two">Let’s Talk</span>
+                  <span className="text-one">Preiscriviti</span>
+                  <span className="text-two">Preiscriviti</span>
                 </span>
               </a>
             </div>

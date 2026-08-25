@@ -12,7 +12,7 @@ export default function CtaArea() {
               <div className="section-title-wrapper">
                 <div className="title-wrapper">
                   <h2 className="section-title font-instrumentsans-medium char-anim">
-                    <Link href="/contact">Let’s Work</Link>
+                    <Link href="/contact">Preiscriviti ora</Link>
                   </h2>
                 </div>
               </div>
