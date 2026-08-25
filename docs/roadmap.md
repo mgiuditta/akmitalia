@@ -15,13 +15,18 @@ Sette fasi. La fase 2 è un punto di approvazione: non si prosegue senza il sì 
 
 Fatto quando: `/admin` si apre in italiano e si crea un centro con orari.
 
-## Fase 2 — Design system + homepage  ⟵ gate
+## Fase 2 — Import del template Redox + homepage  ⟵ gate
 
-- Token Tailwind v4 in `@theme`: colori campionati dal logo, scala tipografica, spaziature
-- Font self-hosted con `next/font/local`
-- Ricalco SVG del logo (positivo, negativo, simbolo)
-- Componenti base: Button, Card, Section, Nav, Footer, Accordion, ImageSlot
-- **Homepage completa e navigabile**, con dati veri dal CMS
+Il design system costruito da zero è stato abbandonato (vedi nota in [design.md](design.md)):
+si importa il tema **Redox dark** così com'è.
+
+- ✅ Import completato: `public/assets` (SCSS, font, immagini, vendor), `src/{components,layout,data,types,utils}`,
+  35 route sotto `src/app/(frontend)/`
+- ✅ Isolamento verificato: `/admin` non eredita né Bootstrap né le classi body del tema
+- Scelta della home di base — candidata: `/marketing-agency` (unica con sezione blog)
+- Sostituzione dei dati finti del template con i contenuti dal CMS
+- Sostituzione dei font del template con il marchio AKM, ricalco SVG del logo
+- Rimozione delle 13 home e delle pagine portfolio non usate
 
 Fatto quando: il cliente ha visto la home e ha detto sì. Non prima.
 

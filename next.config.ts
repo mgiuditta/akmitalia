@@ -12,7 +12,21 @@ const nextConfig: NextConfig = {
       {
         pathname: '/api/media/file/**',
       },
+      {
+        pathname: '/assets/**',
+      },
     ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'rrdevs.net',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
+  sassOptions: {
+    quietDeps: true,
   },
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {

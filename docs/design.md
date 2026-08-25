@@ -1,5 +1,12 @@
 # Design system
 
+> **SUPERATO — 25/08/2026.** Il design system descritto qui sotto (tipografico, token Tailwind v4,
+> componenti costruiti da zero) **non viene realizzato**. Si è scelto di importare il template
+> ThemeForest **Redox** (variante dark) così com'è: Bootstrap 5 + SCSS + GSAP, 14 home e ~35 pagine.
+> Tailwind non è mai entrato nel progetto. Il documento resta come traccia dei vincoli reali
+> (mancanza di foto, accessibilità, logo da ricalcare in SVG) che valgono comunque sul tema Redox.
+
+
 ## Il vincolo che decide tutto
 
 Materiale disponibile: **solo i loghi in PNG**. Niente shooting, niente foto professionali,
