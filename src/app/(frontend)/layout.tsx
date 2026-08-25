@@ -134,6 +134,10 @@ const Sequel_sans_medium = localFont({
 export const metadata: Metadata = {
   title: "AKM Italia",
   description: "Accademia Krav Maga Italia",
+  icons: {
+    icon: "/assets/imgs/logo-akm/favicon-32.png",
+    apple: "/assets/imgs/logo-akm/favicon-180.png",
+  },
 };
 
 export default function RootLayout({

@@ -2,7 +2,6 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import Image from "next/image";
-import logo from "@/assets/imgs/logo/logo-2-light.png";
 import icon from "@/assets/imgs/icon/icon-1.webp";
 
 const Footer: React.FC = () => {
@@ -22,9 +21,10 @@ const Footer: React.FC = () => {
           <div className="footer-logo">
             <Link href="/">
               <Image
-                src={logo}
-                alt="site-logo"
-                style={{ height: "auto" }}
+                src="/assets/imgs/logo-akm/akm-italia-nero-240.png"
+                alt="AKM Italia"
+                width={64}
+                height={64}
               />
             </Link>
           </div>

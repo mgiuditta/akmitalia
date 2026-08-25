@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import logo from '@/assets/imgs/logo/logo-light.png';
 import MainMenu from './main-menu';
 import SideToggle from '@/components/common/side-toggle';
 
@@ -19,11 +18,11 @@ const Header = () => {
             <div className="header__logo">
               <Link href="/index">
                 <Image
-                  src={logo}
+                  src="/assets/imgs/logo-akm/akm-italia-nero-240.png"
                   className="normal-logo"
-                  alt="Site Logo"
-                  width={95}
-                  height={23}
+                  alt="AKM Italia"
+                  width={48}
+                  height={48}
                 />
               </Link>
             </div>

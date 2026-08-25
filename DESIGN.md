@@ -4,8 +4,8 @@ description: Accademia di Krav Maga in Lombardia — struttura Redox/Arrox, colo
 colors:
   primary-text: "#FAFAFA"
   secondary-text: "#8A8A8A"
-  accent-theme: "#C8102E"
-  accent-secondary: "#009246"
+  accent-theme: "#E30713"
+  accent-secondary: "#00963F"
   surface-bg: "#161616"
   base-bg: "#0B0B0B"
   border-hairline: "rgba(250,250,250,0.1)"
@@ -48,13 +48,14 @@ parte del sito live.
 
 La struttura resta quella del tema (Bootstrap 5 + SCSS + GSAP, token via CSS
 custom properties in `_variables.scss`), ma i colori non sono più il placeholder
-arancio/quasi-nero di Redox: sono stati riportati alla palette reale AKM già
-definita in `docs/design.md` (nero/carbone/bianco/rosso/verde tricolore),
+arancio/quasi-nero di Redox: sono stati riportati alla palette reale AKM,
 sostituendo ogni occorrenza dei vecchi valori Redox (`#FF6A3A`, `#111111`,
 `#171717`, `#999999`, `#555555`) nell'intero albero `public/assets/scss/`.
-Il rosso e il verde restano stime da schermo: **da campionare sul PNG del
-logo reale** quando disponibile (nessun logo AKM è ancora nel repo — i PNG
-in `public/assets/imgs/logo/` sono il logo demo del tema Redox).
+Il rosso (`#E30713`) e il verde (`#00963F`) sono campionati direttamente dal
+logo reale in `public/assets/imgs/logo-akm/akm-italia-nero.jpg` (non più una
+stima). Il logo
+demo del tema Redox resta in `public/assets/imgs/logo/`, non più referenziato
+da header/footer live.
 Quello che il sistema **non** ha ancora è un'identità propria dell'accademia:
 la libreria tipografica (sei font decorativi da agenzia creativa, pensati per
 distinguere 14 home intercambiabili) e i contenuti demo (portfolio, servizi
@@ -88,14 +89,14 @@ disciplinato" richiesto da PRODUCT.md.
   testo secondario, didascalie, elementi meno prioritari.
 
 ### Tertiary
-- **Rosso Azione** (`#C8102E`, token `--theme` / `--action`): accento
+- **Rosso Azione** (`#E30713`, token `--theme` / `--action`): accento
   primario del sistema. Non viene ridefinito da `.dark`, resta identico in
   entrambe le modalità. Usato su CTA, stati hover, dettagli decorativi.
-  Stima da schermo: **da confermare sul logo reale**.
-- **Verde Tricolore** (`#009246`, token `--accent-secondary`): accento
+  Campionato dal logo reale.
+- **Verde Tricolore** (`#00963F`, token `--accent-secondary`): accento
   secondario, non ancora cablato in componenti — riservato a usi puntuali
-  (separatori, dettagli) da introdurre con parsimonia. Stima da schermo:
-  **da confermare sul logo reale**.
+  (separatori, dettagli) da introdurre con parsimonia. Campionato dal logo
+  reale.
 
 ### Neutral
 - **Nero Dominante** (`#0B0B0B`, token `--bg` in modalità non-dark e
@@ -108,9 +109,9 @@ disciplinato" richiesto da PRODUCT.md.
   separatori, contorni deboli su superfici scure.
 
 ### Named Rules
-**The Primary Accent Rule.** Il rosso (`#C8102E`) è il colore che porta
+**The Primary Accent Rule.** Il rosso (`#E30713`) è il colore che porta
 l'azione ("fai questo", "questo è interattivo"): CTA, hover, stati attivi.
-Il verde (`#009246`) è un accento secondario, non un secondo colore-segnale:
+Il verde (`#00963F`) è un accento secondario, non un secondo colore-segnale:
 usarlo con parsimonia (dettagli, separatori puntuali), mai su CTA o stati
 interattivi al posto del rosso. Non introdurre altri colori-segnale senza
 aggiornare questo file: il tono "serio, disciplinato" di PRODUCT.md regge
@@ -183,8 +184,8 @@ Centri Tecnici · Krav Maga · Chi Siamo · News · Contatti).
 ## 6. Do's and Don'ts
 
 ### Do:
-- **Do** trattare il rosso `#C8102E` come accento primario (The Primary Accent
-  Rule): il verde `#009246` resta secondario e usato con parsimonia, niente
+- **Do** trattare il rosso `#E30713` come accento primario (The Primary Accent
+  Rule): il verde `#00963F` resta secondario e usato con parsimonia, niente
   altri colori-segnale senza aggiornare questo file.
 - **Do** limitare i nuovi componenti a Instrument Sans + DM Sans (The
   Two-Family Rule), anche se il tema espone altre quattro famiglie.
