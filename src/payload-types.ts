@@ -63,46 +63,48 @@ export type SupportedTimezones =
 
 export interface Config {
   auth: {
-    users: UserAuthOperations;
+    utenti: UtentiAuthOperations;
   };
   blocks: {};
   collections: {
-    centri: Centri;
-    corsi: Corsi;
-    docenti: Docenti;
+    pagine: Pagine;
     news: News;
     eventi: Eventi;
-    pagine: Pagine;
+    corsi: Corsi;
+    sedi: Sedi;
+    istruttori: Istruttori;
     richieste: Richieste;
     media: Media;
-    users: User;
+    utenti: Utenti;
+    redirects: Redirect;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
   collectionsJoins: {
-    centri: {
+    corsi: {
+      sedi: 'sedi';
+    };
+    sedi: {
       eventi: 'eventi';
       richieste: 'richieste';
     };
-    corsi: {
-      centri: 'centri';
-    };
-    docenti: {
-      centri: 'centri';
+    istruttori: {
+      sedi: 'sedi';
     };
   };
   collectionsSelect: {
-    centri: CentriSelect<false> | CentriSelect<true>;
-    corsi: CorsiSelect<false> | CorsiSelect<true>;
-    docenti: DocentiSelect<false> | DocentiSelect<true>;
+    pagine: PagineSelect<false> | PagineSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
     eventi: EventiSelect<false> | EventiSelect<true>;
-    pagine: PagineSelect<false> | PagineSelect<true>;
+    corsi: CorsiSelect<false> | CorsiSelect<true>;
+    sedi: SediSelect<false> | SediSelect<true>;
+    istruttori: IstruttoriSelect<false> | IstruttoriSelect<true>;
     richieste: RichiesteSelect<false> | RichiesteSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    users: UsersSelect<false> | UsersSelect<true>;
+    utenti: UtentiSelect<false> | UtentiSelect<true>;
+    redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -113,16 +115,10 @@ export interface Config {
   };
   fallbackLocale: null;
   globals: {
-    home: Home;
-    'pagina-krav-maga': PaginaKravMaga;
-    'pagina-chi-siamo': PaginaChiSiamo;
     contatti: Contatti;
     impostazioni: Impostazioni;
   };
   globalsSelect: {
-    home: HomeSelect<false> | HomeSelect<true>;
-    'pagina-krav-maga': PaginaKravMagaSelect<false> | PaginaKravMagaSelect<true>;
-    'pagina-chi-siamo': PaginaChiSiamoSelect<false> | PaginaChiSiamoSelect<true>;
     contatti: ContattiSelect<false> | ContattiSelect<true>;
     impostazioni: ImpostazioniSelect<false> | ImpostazioniSelect<true>;
   };
@@ -130,13 +126,13 @@ export interface Config {
   widgets: {
     collections: CollectionsWidget;
   };
-  user: User;
+  user: Utenti;
   jobs: {
     tasks: unknown;
     workflows: unknown;
   };
 }
-export interface UserAuthOperations {
+export interface UtentiAuthOperations {
   forgotPassword: {
     email: string;
     password: string;
@@ -156,70 +152,75 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "centri".
+ * via the `definition` "pagine".
  */
-export interface Centri {
+export interface Pagine {
   id: number;
-  /**
-   * Es. Abbiategrasso.
-   */
-  nome: string;
+  titolo: string;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
   generateSlug?: boolean | null;
   slug: string;
-  palestra: string;
-  indirizzo: string;
-  citta: string;
   /**
-   * Sigla a 2 lettere. Raggruppa l’elenco dei centri.
+   * Vuoto = pagina di primo livello. Es. «Krav Maga» per /krav-maga/faq.
    */
-  provincia: string;
-  cap?: string | null;
+  parent?: (number | null) | Pagine;
   /**
-   * Il link "condividi" di Google Maps. Nessuna API, solo un link.
+   * Calcolato da genitore + slug.
    */
-  mapsUrl?: string | null;
+  path?: string | null;
   /**
-   * Es. 45.3985
+   * La riga corta sopra il titolo. Es. «Missione AKM Italia».
    */
-  lat: number;
+  occhiello?: string | null;
   /**
-   * Es. 8.9192
+   * Il paragrafo sotto il titolo, in cima alla pagina.
    */
-  lng: number;
+  sommario?: string | null;
+  immagineHero?: (number | null) | Media;
   /**
-   * Se disattivato il centro sparisce dal sito e dal form di preiscrizione.
+   * I blocchi della pagina, uno sotto l altro.
    */
-  attivo?: boolean | null;
-  foto?: (number | null) | Media;
-  docenti?: (number | Docenti)[] | null;
-  /**
-   * Sostituisce il PDF orari: questi sono gli orari veri, indicizzabili.
-   */
-  orari?:
+  sezioni?:
     | {
-        disciplina: number | Corsi;
-        giorni: ('lun' | 'mar' | 'mer' | 'gio' | 'ven' | 'sab' | 'dom')[];
-        oraInizio: string;
-        oraFine: string;
-        note?: string | null;
+        titolo?: string | null;
+        testo: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
         id?: string | null;
       }[]
     | null;
-  eventi?: {
-    docs?: (number | Eventi)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
+  legacy?: {
+    /**
+     * Chiave di deduplicazione dell import.
+     */
+    wpId?: number | null;
+    url?: string | null;
   };
-  richieste?: {
-    docs?: (number | Richieste)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
   };
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -228,9 +229,17 @@ export interface Centri {
 export interface Media {
   id: number;
   /**
-   * Descrive l’immagine a chi non la vede. Obbligatorio.
+   * Descrive l immagine a chi non la vede. Obbligatorio.
    */
   alt: string;
+  didascalia?: string | null;
+  legacy?: {
+    /**
+     * Chiave di deduplicazione dell import.
+     */
+    wpId?: number | null;
+    url?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -271,141 +280,6 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "docenti".
- */
-export interface Docenti {
-  id: number;
-  nome: string;
-  ruolo?: ('istruttore' | 'trainer' | 'maestro' | 'direttore-tecnico' | 'presidente') | null;
-  /**
-   * Es. cintura nera 2° dan.
-   */
-  grado?: string | null;
-  foto?: (number | null) | Media;
-  bio?: string | null;
-  centri?: {
-    docs?: (number | Centri)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "corsi".
- */
-export interface Corsi {
-  id: number;
-  nome: string;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  target: 'adulti' | 'ragazzi' | 'bambini' | 'donne' | 'istruttori' | 'aziende-ffoo';
-  /**
-   * Una o due righe, usate nelle card e nella meta description.
-   */
-  sommario?: string | null;
-  descrizione?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  immagine?: (number | null) | Media;
-  /**
-   * Ordine di comparsa nell’elenco corsi.
-   */
-  ordine?: number | null;
-  /**
-   * Compilato dagli orari delle schede centro: qui non si modifica.
-   */
-  centri?: {
-    docs?: (number | Centri)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "eventi".
- */
-export interface Eventi {
-  id: number;
-  titolo: string;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  dataInizio: string;
-  dataFine?: string | null;
-  /**
-   * Se l’evento si svolge in un centro tecnico.
-   */
-  centro?: (number | null) | Centri;
-  /**
-   * Per gli eventi fuori dai centri. Se vuoto si usa l’indirizzo del centro.
-   */
-  luogo?: string | null;
-  descrizione?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Opzionale: modulo esterno, pagina Facebook, ecc.
-   */
-  ctaLink?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "richieste".
- */
-export interface Richieste {
-  id: number;
-  stato: 'nuova' | 'contattata' | 'iscritta' | 'archiviata';
-  note?: string | null;
-  centro: number | Centri;
-  cognome: string;
-  nome: string;
-  dataNascita?: string | null;
-  telefono?: string | null;
-  email: string;
-  messaggio?: string | null;
-  consenso: boolean;
-  consensoAt?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "news".
  */
 export interface News {
@@ -417,9 +291,10 @@ export interface News {
   generateSlug?: boolean | null;
   slug: string;
   data: string;
+  tipo: 'notizia' | 'stage-seminario' | 'rassegna-stampa' | 'comunicato';
   copertina?: (number | null) | Media;
   /**
-   * Usato nell’elenco e come meta description.
+   * Usato nell elenco e come descrizione di anteprima.
    */
   estratto?: string | null;
   contenuto?: {
@@ -437,23 +312,155 @@ export interface News {
     };
     [k: string]: unknown;
   } | null;
+  sedi?: (number | Sedi)[] | null;
+  istruttori?: (number | Istruttori)[] | null;
+  legacy?: {
+    /**
+     * Chiave di deduplicazione dell import.
+     */
+    wpId?: number | null;
+    url?: string | null;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pagine".
+ * via the `definition` "sedi".
  */
-export interface Pagine {
+export interface Sedi {
   id: number;
-  titolo: string;
+  /**
+   * Es. «Abbiategrasso - Dynamic Dance School».
+   */
+  nome: string;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
   generateSlug?: boolean | null;
   slug: string;
-  contenuto?: {
+  palestra?: string | null;
+  indirizzo: {
+    via?: string | null;
+    cap?: string | null;
+    citta: string;
+    /**
+     * Sigla a 2 lettere. Raggruppa l elenco dei centri.
+     */
+    provincia?: string | null;
+    nazione: 'IT' | 'CH';
+  };
+  /**
+   * Servono alla mappa dei centri. Le prendi dal link di Google Maps.
+   */
+  coordinate: {
+    lat: number;
+    lng: number;
+  };
+  /**
+   * Il link «condividi» di Google Maps. Nessuna API, solo un link.
+   */
+  mapsUrl?: string | null;
+  /**
+   * Se spento il centro sparisce dagli elenchi e dal form di preiscrizione.
+   */
+  attivo?: boolean | null;
+  descrizione?: string | null;
+  foto?: (number | null) | Media;
+  istruttori?: (number | Istruttori)[] | null;
+  /**
+   * Sostituisce il PDF orari: questi sono orari veri, indicizzabili.
+   */
+  orari?:
+    | {
+        disciplina: number | Corsi;
+        giorni: ('lun' | 'mar' | 'mer' | 'gio' | 'ven' | 'sab' | 'dom')[];
+        oraInizio: string;
+        oraFine: string;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  eventi?: {
+    docs?: (number | Eventi)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  richieste?: {
+    docs?: (number | Richieste)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  legacy?: {
+    /**
+     * Chiave di deduplicazione dell import.
+     */
+    wpId?: number | null;
+    url?: string | null;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "istruttori".
+ */
+export interface Istruttori {
+  id: number;
+  /**
+   * Come va scritto sul sito. Es. «M. Vittorio Porreca».
+   */
+  nome: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  /**
+   * Solo il nome, per gli spazi stretti. Es. «Vittorio».
+   */
+  nomeBreve?: string | null;
+  /**
+   * Numero piu basso = piu in alto nell elenco.
+   */
+  ordine?: number | null;
+  /**
+   * Es. «Presidente e Direttore Tecnico AKM Italia».
+   */
+  ruolo?: string | null;
+  qualifica?: ('istruttore' | 'trainer' | 'maestro' | 'direttore-tecnico' | 'presidente') | null;
+  /**
+   * Es. cintura nera 2 dan.
+   */
+  grado?: string | null;
+  /**
+   * La riga sotto il ruolo. Es. «Krav Maga Master Teacher».
+   */
+  livello?: string | null;
+  foto?: (number | null) | Media;
+  /**
+   * Una o due righe, usate nella card dell elenco.
+   */
+  sommario?: string | null;
+  bio?: {
     root: {
       type: string;
       children: {
@@ -468,15 +475,244 @@ export interface Pagine {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Una riga per titolo. Es. «Krav Maga Master Teacher CSEN-CONI».
+   */
+  credenziali?:
+    | {
+        voce: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Etichette brevi mostrate come tag. Es. «Formazione istruttori».
+   */
+  focus?:
+    | {
+        voce: string;
+        id?: string | null;
+      }[]
+    | null;
+  sedi?: {
+    docs?: (number | Sedi)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "corsi".
  */
-export interface User {
+export interface Corsi {
+  id: number;
+  nome: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  target: 'adulti' | 'ragazzi' | 'bambini' | 'donne' | 'istruttori' | 'aziende-ffoo';
+  /**
+   * Numero piu basso = piu in alto nell elenco.
+   */
+  ordine?: number | null;
+  /**
+   * La riga corta sopra il titolo. Es. «Percorso regolare».
+   */
+  occhiello?: string | null;
+  /**
+   * Una riga sola. Es. «Uomini e donne dai 16 anni».
+   */
+  aChiSiRivolge?: string | null;
+  /**
+   * Una o due righe, usate nelle card.
+   */
+  sommario: string;
+  descrizione?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Es. «Lezioni settimanali».
+   */
+  durata?: string | null;
+  /**
+   * Es. «Ingresso possibile durante l anno».
+   */
+  ingresso?: string | null;
+  /**
+   * Es. «Prova gratuita in sede».
+   */
+  cadenza?: string | null;
+  /**
+   * Etichette brevi mostrate come tag. Es. «Difesa da armi».
+   */
+  focus?:
+    | {
+        voce: string;
+        id?: string | null;
+      }[]
+    | null;
+  risultati?:
+    | {
+        voce: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Frasi intere. Es. «Chi vuole iniziare senza venire da sport da combattimento».
+   */
+  adattoA?:
+    | {
+        voce: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * La riga che dimostra il corso: numeri, sedi, qualifiche. Non promesse.
+   */
+  prova?: string | null;
+  azione?: string | null;
+  immagine?: (number | null) | Media;
+  /**
+   * Compilato dagli orari delle schede centro: qui non si modifica.
+   */
+  sedi?: {
+    docs?: (number | Sedi)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "eventi".
+ */
+export interface Eventi {
+  id: number;
+  titolo: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  dataInizio: string;
+  dataFine?: string | null;
+  /**
+   * Se l evento si svolge in un centro tecnico.
+   */
+  sede?: (number | null) | Sedi;
+  /**
+   * Per gli eventi fuori dai centri. Se vuoto si usa l indirizzo del centro.
+   */
+  luogo?: string | null;
+  copertina?: (number | null) | Media;
+  /**
+   * Usato nell elenco e come descrizione di anteprima.
+   */
+  estratto?: string | null;
+  descrizione?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  corsi?: (number | Corsi)[] | null;
+  /**
+   * Opzionale: modulo esterno, pagina Facebook, ecc.
+   */
+  ctaLink?: string | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "richieste".
+ */
+export interface Richieste {
+  id: number;
+  stato: 'nuova' | 'contattata' | 'iscritta' | 'archiviata';
+  note?: string | null;
+  /**
+   * Se e spenta la richiesta e arrivata ma la mail di avviso no: va guardata a mano.
+   */
+  emailInviata?: boolean | null;
+  cognome: string;
+  nome: string;
+  email: string;
+  telefono?: string | null;
+  dataNascita?: string | null;
+  sede?: (number | null) | Sedi;
+  /**
+   * Quello che l utente ha scelto nel form, testuale. Resta anche se il centro cambia nome.
+   */
+  sedeIndicata?: string | null;
+  corso?: (number | null) | Corsi;
+  /**
+   * Il form propone anche voci che non sono corsi («Stage o evento», «Altro»): quelle restano qui.
+   */
+  corsoIndicato?: string | null;
+  messaggio?: string | null;
+  consenso: boolean;
+  consensoAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "utenti".
+ */
+export interface Utenti {
   id: number;
   nome: string;
   updatedAt: string;
@@ -496,7 +732,46 @@ export interface User {
       }[]
     | null;
   password?: string | null;
-  collection: 'users';
+  collection: 'utenti';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "redirects".
+ */
+export interface Redirect {
+  id: number;
+  from: string;
+  to?: {
+    type?: ('reference' | 'custom') | null;
+    reference?:
+      | ({
+          relationTo: 'pagine';
+          value: number | Pagine;
+        } | null)
+      | ({
+          relationTo: 'news';
+          value: number | News;
+        } | null)
+      | ({
+          relationTo: 'eventi';
+          value: number | Eventi;
+        } | null)
+      | ({
+          relationTo: 'corsi';
+          value: number | Corsi;
+        } | null)
+      | ({
+          relationTo: 'sedi';
+          value: number | Sedi;
+        } | null)
+      | ({
+          relationTo: 'istruttori';
+          value: number | Istruttori;
+        } | null);
+    url?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -523,16 +798,8 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'centri';
-        value: number | Centri;
-      } | null)
-    | ({
-        relationTo: 'corsi';
-        value: number | Corsi;
-      } | null)
-    | ({
-        relationTo: 'docenti';
-        value: number | Docenti;
+        relationTo: 'pagine';
+        value: number | Pagine;
       } | null)
     | ({
         relationTo: 'news';
@@ -543,8 +810,16 @@ export interface PayloadLockedDocument {
         value: number | Eventi;
       } | null)
     | ({
-        relationTo: 'pagine';
-        value: number | Pagine;
+        relationTo: 'corsi';
+        value: number | Corsi;
+      } | null)
+    | ({
+        relationTo: 'sedi';
+        value: number | Sedi;
+      } | null)
+    | ({
+        relationTo: 'istruttori';
+        value: number | Istruttori;
       } | null)
     | ({
         relationTo: 'richieste';
@@ -555,13 +830,17 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'utenti';
+        value: number | Utenti;
+      } | null)
+    | ({
+        relationTo: 'redirects';
+        value: number | Redirect;
       } | null);
   globalSlug?: string | null;
   user: {
-    relationTo: 'users';
-    value: number | User;
+    relationTo: 'utenti';
+    value: number | Utenti;
   };
   updatedAt: string;
   createdAt: string;
@@ -573,8 +852,8 @@ export interface PayloadLockedDocument {
 export interface PayloadPreference {
   id: number;
   user: {
-    relationTo: 'users';
-    value: number | User;
+    relationTo: 'utenti';
+    value: number | Utenti;
   };
   key?: string | null;
   value?:
@@ -602,68 +881,40 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "centri_select".
+ * via the `definition` "pagine_select".
  */
-export interface CentriSelect<T extends boolean = true> {
-  nome?: T;
+export interface PagineSelect<T extends boolean = true> {
+  titolo?: T;
   generateSlug?: T;
   slug?: T;
-  palestra?: T;
-  indirizzo?: T;
-  citta?: T;
-  provincia?: T;
-  cap?: T;
-  mapsUrl?: T;
-  lat?: T;
-  lng?: T;
-  attivo?: T;
-  foto?: T;
-  docenti?: T;
-  orari?:
+  parent?: T;
+  path?: T;
+  occhiello?: T;
+  sommario?: T;
+  immagineHero?: T;
+  sezioni?:
     | T
     | {
-        disciplina?: T;
-        giorni?: T;
-        oraInizio?: T;
-        oraFine?: T;
-        note?: T;
+        titolo?: T;
+        testo?: T;
         id?: T;
       };
-  eventi?: T;
-  richieste?: T;
+  legacy?:
+    | T
+    | {
+        wpId?: T;
+        url?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "corsi_select".
- */
-export interface CorsiSelect<T extends boolean = true> {
-  nome?: T;
-  generateSlug?: T;
-  slug?: T;
-  target?: T;
-  sommario?: T;
-  descrizione?: T;
-  immagine?: T;
-  ordine?: T;
-  centri?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "docenti_select".
- */
-export interface DocentiSelect<T extends boolean = true> {
-  nome?: T;
-  ruolo?: T;
-  grado?: T;
-  foto?: T;
-  bio?: T;
-  centri?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -674,9 +925,25 @@ export interface NewsSelect<T extends boolean = true> {
   generateSlug?: T;
   slug?: T;
   data?: T;
+  tipo?: T;
   copertina?: T;
   estratto?: T;
   contenuto?: T;
+  sedi?: T;
+  istruttori?: T;
+  legacy?:
+    | T
+    | {
+        wpId?: T;
+        url?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -691,23 +958,169 @@ export interface EventiSelect<T extends boolean = true> {
   slug?: T;
   dataInizio?: T;
   dataFine?: T;
-  centro?: T;
+  sede?: T;
   luogo?: T;
+  copertina?: T;
+  estratto?: T;
   descrizione?: T;
+  corsi?: T;
   ctaLink?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pagine_select".
+ * via the `definition` "corsi_select".
  */
-export interface PagineSelect<T extends boolean = true> {
-  titolo?: T;
+export interface CorsiSelect<T extends boolean = true> {
+  nome?: T;
   generateSlug?: T;
   slug?: T;
-  contenuto?: T;
+  target?: T;
+  ordine?: T;
+  occhiello?: T;
+  aChiSiRivolge?: T;
+  sommario?: T;
+  descrizione?: T;
+  durata?: T;
+  ingresso?: T;
+  cadenza?: T;
+  focus?:
+    | T
+    | {
+        voce?: T;
+        id?: T;
+      };
+  risultati?:
+    | T
+    | {
+        voce?: T;
+        id?: T;
+      };
+  adattoA?:
+    | T
+    | {
+        voce?: T;
+        id?: T;
+      };
+  prova?: T;
+  azione?: T;
+  immagine?: T;
+  sedi?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sedi_select".
+ */
+export interface SediSelect<T extends boolean = true> {
+  nome?: T;
+  generateSlug?: T;
+  slug?: T;
+  palestra?: T;
+  indirizzo?:
+    | T
+    | {
+        via?: T;
+        cap?: T;
+        citta?: T;
+        provincia?: T;
+        nazione?: T;
+      };
+  coordinate?:
+    | T
+    | {
+        lat?: T;
+        lng?: T;
+      };
+  mapsUrl?: T;
+  attivo?: T;
+  descrizione?: T;
+  foto?: T;
+  istruttori?: T;
+  orari?:
+    | T
+    | {
+        disciplina?: T;
+        giorni?: T;
+        oraInizio?: T;
+        oraFine?: T;
+        note?: T;
+        id?: T;
+      };
+  eventi?: T;
+  richieste?: T;
+  legacy?:
+    | T
+    | {
+        wpId?: T;
+        url?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "istruttori_select".
+ */
+export interface IstruttoriSelect<T extends boolean = true> {
+  nome?: T;
+  generateSlug?: T;
+  slug?: T;
+  nomeBreve?: T;
+  ordine?: T;
+  ruolo?: T;
+  qualifica?: T;
+  grado?: T;
+  livello?: T;
+  foto?: T;
+  sommario?: T;
+  bio?: T;
+  credenziali?:
+    | T
+    | {
+        voce?: T;
+        id?: T;
+      };
+  focus?:
+    | T
+    | {
+        voce?: T;
+        id?: T;
+      };
+  sedi?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -719,12 +1132,16 @@ export interface PagineSelect<T extends boolean = true> {
 export interface RichiesteSelect<T extends boolean = true> {
   stato?: T;
   note?: T;
-  centro?: T;
+  emailInviata?: T;
   cognome?: T;
   nome?: T;
-  dataNascita?: T;
-  telefono?: T;
   email?: T;
+  telefono?: T;
+  dataNascita?: T;
+  sede?: T;
+  sedeIndicata?: T;
+  corso?: T;
+  corsoIndicato?: T;
   messaggio?: T;
   consenso?: T;
   consensoAt?: T;
@@ -737,6 +1154,13 @@ export interface RichiesteSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  didascalia?: T;
+  legacy?:
+    | T
+    | {
+        wpId?: T;
+        url?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -785,9 +1209,9 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
+ * via the `definition` "utenti_select".
  */
-export interface UsersSelect<T extends boolean = true> {
+export interface UtentiSelect<T extends boolean = true> {
   nome?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -805,6 +1229,22 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "redirects_select".
+ */
+export interface RedirectsSelect<T extends boolean = true> {
+  from?: T;
+  to?:
+    | T
+    | {
+        type?: T;
+        reference?: T;
+        url?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -848,290 +1288,29 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "home".
- */
-export interface Home {
-  id: number;
-  hero: {
-    titolo: string;
-    sottotitolo?: string | null;
-    ctaLabel?: string | null;
-    ctaHref?: string | null;
-    immagine?: (number | null) | Media;
-  };
-  inEvidenza?:
-    | {
-        titolo: string;
-        testo?: string | null;
-        href?: string | null;
-        immagine?: (number | null) | Media;
-        id?: string | null;
-      }[]
-    | null;
-  video?: {
-    /**
-     * Solo l’ID, es. dQw4w9WgXcQ. Il video si carica solo al click.
-     */
-    youtubeId?: string | null;
-    copertina?: (number | null) | Media;
-  };
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pagina-krav-maga".
- */
-export interface PaginaKravMaga {
-  id: number;
-  cosE?: {
-    titolo?: string | null;
-    contenuto?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  imiLichtenfeld?: {
-    titolo?: string | null;
-    contenuto?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  idf?: {
-    titolo?: string | null;
-    contenuto?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  principi?: {
-    titolo?: string | null;
-    contenuto?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  caratteristiche?: {
-    titolo?: string | null;
-    contenuto?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  attrezzatura?: {
-    titolo?: string | null;
-    contenuto?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  /**
-   * Alimenta anche i dati strutturati FAQPage per Google.
-   */
-  faq?:
-    | {
-        domanda: string;
-        risposta: string;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pagina-chi-siamo".
- */
-export interface PaginaChiSiamo {
-  id: number;
-  storia?: {
-    titolo?: string | null;
-    contenuto?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  valori?: {
-    titolo?: string | null;
-    contenuto?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  riconoscimenti?: {
-    titolo?: string | null;
-    contenuto?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  codiceEtico?: {
-    titolo?: string | null;
-    contenuto?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  rassegnaStampa?: {
-    titolo?: string | null;
-    contenuto?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  partner?:
-    | {
-        nome: string;
-        logo?: (number | null) | Media;
-        url?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contatti".
  */
 export interface Contatti {
   id: number;
-  indirizzo?: string | null;
-  email?: string | null;
+  email: string;
   telefono?: string | null;
+  /**
+   * In formato internazionale, es. +393401234567.
+   */
+  whatsapp?: string | null;
+  sedeLegale?: {
+    via?: string | null;
+    cap?: string | null;
+    citta?: string | null;
+    provincia?: string | null;
+  };
   social?:
     | {
-        piattaforma: 'facebook' | 'instagram' | 'youtube' | 'tiktok' | 'linkedin';
+        rete: 'facebook' | 'instagram' | 'youtube' | 'tiktok' | 'linkedin';
         url: string;
         id?: string | null;
       }[]
     | null;
-  /**
-   * Resta scaricabile, ma gli orari veri stanno nelle schede centro.
-   */
-  pdfOrari?: (number | null) | Media;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1142,165 +1321,47 @@ export interface Contatti {
 export interface Impostazioni {
   id: number;
   siteName: string;
-  /**
-   * Usato quando la pagina non ne ha uno proprio.
-   */
-  seoTitleDefault?: string | null;
-  seoDescriptionDefault?: string | null;
-  ogImage?: (number | null) | Media;
   logo?: (number | null) | Media;
+  ogImage?: (number | null) | Media;
   testoFooter?: string | null;
+  /**
+   * Compaiono nel footer e nella pagina 5x1000.
+   */
+  datiFiscali?: {
+    ragioneSociale?: string | null;
+    /**
+     * E il codice del 5x1000. Un errore qui costa donazioni.
+     */
+    codiceFiscale?: string | null;
+    partitaIva?: string | null;
+    iban?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "home_select".
- */
-export interface HomeSelect<T extends boolean = true> {
-  hero?:
-    | T
-    | {
-        titolo?: T;
-        sottotitolo?: T;
-        ctaLabel?: T;
-        ctaHref?: T;
-        immagine?: T;
-      };
-  inEvidenza?:
-    | T
-    | {
-        titolo?: T;
-        testo?: T;
-        href?: T;
-        immagine?: T;
-        id?: T;
-      };
-  video?:
-    | T
-    | {
-        youtubeId?: T;
-        copertina?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pagina-krav-maga_select".
- */
-export interface PaginaKravMagaSelect<T extends boolean = true> {
-  cosE?:
-    | T
-    | {
-        titolo?: T;
-        contenuto?: T;
-      };
-  imiLichtenfeld?:
-    | T
-    | {
-        titolo?: T;
-        contenuto?: T;
-      };
-  idf?:
-    | T
-    | {
-        titolo?: T;
-        contenuto?: T;
-      };
-  principi?:
-    | T
-    | {
-        titolo?: T;
-        contenuto?: T;
-      };
-  caratteristiche?:
-    | T
-    | {
-        titolo?: T;
-        contenuto?: T;
-      };
-  attrezzatura?:
-    | T
-    | {
-        titolo?: T;
-        contenuto?: T;
-      };
-  faq?:
-    | T
-    | {
-        domanda?: T;
-        risposta?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pagina-chi-siamo_select".
- */
-export interface PaginaChiSiamoSelect<T extends boolean = true> {
-  storia?:
-    | T
-    | {
-        titolo?: T;
-        contenuto?: T;
-      };
-  valori?:
-    | T
-    | {
-        titolo?: T;
-        contenuto?: T;
-      };
-  riconoscimenti?:
-    | T
-    | {
-        titolo?: T;
-        contenuto?: T;
-      };
-  codiceEtico?:
-    | T
-    | {
-        titolo?: T;
-        contenuto?: T;
-      };
-  rassegnaStampa?:
-    | T
-    | {
-        titolo?: T;
-        contenuto?: T;
-      };
-  partner?:
-    | T
-    | {
-        nome?: T;
-        logo?: T;
-        url?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contatti_select".
  */
 export interface ContattiSelect<T extends boolean = true> {
-  indirizzo?: T;
   email?: T;
   telefono?: T;
+  whatsapp?: T;
+  sedeLegale?:
+    | T
+    | {
+        via?: T;
+        cap?: T;
+        citta?: T;
+        provincia?: T;
+      };
   social?:
     | T
     | {
-        piattaforma?: T;
+        rete?: T;
         url?: T;
         id?: T;
       };
-  pdfOrari?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1311,11 +1372,17 @@ export interface ContattiSelect<T extends boolean = true> {
  */
 export interface ImpostazioniSelect<T extends boolean = true> {
   siteName?: T;
-  seoTitleDefault?: T;
-  seoDescriptionDefault?: T;
-  ogImage?: T;
   logo?: T;
+  ogImage?: T;
   testoFooter?: T;
+  datiFiscali?:
+    | T
+    | {
+        ragioneSociale?: T;
+        codiceFiscale?: T;
+        partitaIva?: T;
+        iban?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

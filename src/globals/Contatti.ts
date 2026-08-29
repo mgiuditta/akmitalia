@@ -1,52 +1,69 @@
 import type { GlobalConfig } from 'payload'
 
 import { authenticated, publicRead } from '../access'
-import { revalidaLayout } from '../hooks/revalidate'
 
 export const Contatti: GlobalConfig = {
   slug: 'contatti',
   label: 'Contatti',
   versions: true,
   access: { read: publicRead, update: authenticated },
-  admin: { group: 'Pagine fisse' },
-  // Email, telefono e social stanno anche nel footer: cambiano ovunque.
-  hooks: revalidaLayout(),
+  admin: { group: 'Sistema' },
   fields: [
-    { name: 'indirizzo', type: 'textarea', label: 'Indirizzo' },
     {
       type: 'row',
       fields: [
-        { name: 'email', type: 'email', label: 'Email' },
+        { name: 'email', type: 'email', required: true, label: 'Email' },
         { name: 'telefono', type: 'text', label: 'Telefono' },
+        {
+          name: 'whatsapp',
+          type: 'text',
+          label: 'WhatsApp',
+          admin: { description: 'In formato internazionale, es. +393401234567.' },
+        },
+      ],
+    },
+    {
+      name: 'sedeLegale',
+      type: 'group',
+      label: 'Sede legale',
+      fields: [
+        { name: 'via', type: 'text', label: 'Via e numero' },
+        {
+          type: 'row',
+          fields: [
+            { name: 'cap', type: 'text', label: 'CAP', maxLength: 5 },
+            { name: 'citta', type: 'text', label: 'Citta' },
+            { name: 'provincia', type: 'text', label: 'Provincia', maxLength: 2 },
+          ],
+        },
       ],
     },
     {
       name: 'social',
       type: 'array',
       label: 'Social',
+      labels: { singular: 'Profilo', plural: 'Profili' },
       fields: [
         {
-          name: 'piattaforma',
-          type: 'select',
-          required: true,
-          label: 'Piattaforma',
-          options: [
-            { label: 'Facebook', value: 'facebook' },
-            { label: 'Instagram', value: 'instagram' },
-            { label: 'YouTube', value: 'youtube' },
-            { label: 'TikTok', value: 'tiktok' },
-            { label: 'LinkedIn', value: 'linkedin' },
-          ] as const,
+          type: 'row',
+          fields: [
+            {
+              name: 'rete',
+              type: 'select',
+              required: true,
+              label: 'Rete',
+              options: [
+                { label: 'Facebook', value: 'facebook' },
+                { label: 'Instagram', value: 'instagram' },
+                { label: 'YouTube', value: 'youtube' },
+                { label: 'TikTok', value: 'tiktok' },
+                { label: 'LinkedIn', value: 'linkedin' },
+              ] as const,
+            },
+            { name: 'url', type: 'text', required: true, label: 'Indirizzo' },
+          ],
         },
-        { name: 'url', type: 'text', required: true, label: 'URL' },
       ],
-    },
-    {
-      name: 'pdfOrari',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'PDF orari di stagione',
-      admin: { description: 'Resta scaricabile, ma gli orari veri stanno nelle schede centro.' },
     },
   ],
 }

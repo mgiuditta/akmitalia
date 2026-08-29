@@ -2,8 +2,11 @@ import type { CollectionConfig } from 'payload'
 import { slugField } from 'payload'
 
 import { authenticated, authenticatedOrPublished } from '../access'
-import { revalidaCollezione } from '../hooks/revalidate'
 
+/**
+ * Stage e seminari: guardano avanti, si ordinano per data futura, hanno una sede
+ * e un link di iscrizione. Per questo non sono News.
+ */
 export const Eventi: CollectionConfig = {
   slug: 'eventi',
   labels: { singular: 'Evento', plural: 'Eventi' },
@@ -16,11 +19,10 @@ export const Eventi: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'titolo',
-    defaultColumns: ['titolo', 'dataInizio', 'centro'],
+    defaultColumns: ['titolo', 'dataInizio', 'sede', '_status'],
     group: 'Contenuti',
   },
-  defaultSort: 'dataInizio',
-  hooks: revalidaCollezione((doc) => ['/eventi', `/eventi/${doc.slug}`, '/']),
+  defaultSort: '-dataInizio',
   fields: [
     { name: 'titolo', type: 'text', required: true, label: 'Titolo' },
     slugField({ useAsSlug: 'titolo' }),
@@ -28,23 +30,54 @@ export const Eventi: CollectionConfig = {
       type: 'row',
       fields: [
         { name: 'dataInizio', type: 'date', required: true, label: 'Data inizio', index: true },
-        { name: 'dataFine', type: 'date', label: 'Data fine' },
+        {
+          name: 'dataFine',
+          type: 'date',
+          label: 'Data fine',
+          validate: (value: unknown, { siblingData }: { siblingData: Record<string, unknown> }) => {
+            const inizio = siblingData?.dataInizio
+            if (!value || !inizio) return true
+            return (
+              new Date(String(value)) >= new Date(String(inizio)) ||
+              'La data di fine non puo precedere quella di inizio.'
+            )
+          },
+        },
       ],
     },
     {
-      name: 'centro',
+      name: 'sede',
       type: 'relationship',
-      relationTo: 'centri',
-      label: 'Centro',
-      admin: { description: 'Se l’evento si svolge in un centro tecnico.' },
+      relationTo: 'sedi',
+      label: 'Centro tecnico',
+      index: true,
+      admin: { description: 'Se l evento si svolge in un centro tecnico.' },
     },
     {
       name: 'luogo',
       type: 'text',
       label: 'Luogo',
-      admin: { description: 'Per gli eventi fuori dai centri. Se vuoto si usa l’indirizzo del centro.' },
+      admin: {
+        description: 'Per gli eventi fuori dai centri. Se vuoto si usa l indirizzo del centro.',
+        condition: (_, siblingData) => !siblingData?.sede,
+      },
+    },
+    { name: 'copertina', type: 'upload', relationTo: 'media', label: 'Copertina' },
+    {
+      name: 'estratto',
+      type: 'textarea',
+      label: 'Estratto',
+      maxLength: 300,
+      admin: { description: 'Usato nell elenco e come descrizione di anteprima.' },
     },
     { name: 'descrizione', type: 'richText', label: 'Descrizione' },
+    {
+      name: 'corsi',
+      type: 'relationship',
+      relationTo: 'corsi',
+      hasMany: true,
+      label: 'Discipline coinvolte',
+    },
     {
       name: 'ctaLink',
       type: 'text',
