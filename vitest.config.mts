@@ -8,5 +8,8 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     include: ['tests/int/**/*.int.spec.ts'],
+    // Il primo getPayload crea lo schema su Postgres: 10s non bastano.
+    hookTimeout: 120000,
+    testTimeout: 60000,
   },
 })
