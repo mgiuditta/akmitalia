@@ -113,7 +113,7 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | 'it' | 'it'[];
   globals: {
     contatti: Contatti;
     impostazioni: Impostazioni;
@@ -122,7 +122,7 @@ export interface Config {
     contatti: ContattiSelect<false> | ContattiSelect<true>;
     impostazioni: ImpostazioniSelect<false> | ImpostazioniSelect<true>;
   };
-  locale: null;
+  locale: 'it';
   widgets: {
     collections: CollectionsWidget;
   };

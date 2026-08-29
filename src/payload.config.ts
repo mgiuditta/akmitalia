@@ -32,6 +32,12 @@ export default buildConfig({
     importMap: { baseDir: path.resolve(dirname) },
     meta: { titleSuffix: ' — AKM Italia' },
   },
+  // Sito monolingua: un solo locale cosi le API rispondono sempre `locale=it`
+  // invece di `undefined`. Nessun campo e' localized, quindi niente tabelle _locales.
+  localization: {
+    locales: ['it'],
+    defaultLocale: 'it',
+  },
   i18n: {
     fallbackLanguage: 'it',
     supportedLanguages: { it },
