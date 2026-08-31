@@ -1,0 +1,203 @@
+/* PROTOTIPO USA E GETTA — issue #7. La palette e' quella decisa in #5 e non cambia:
+   la variabile in prova sono i corpi, le interlinee e il ritmo verticale. */
+
+@font-face { font-family: 'Fira Sans'; src: url('/font/FiraSans-400.ttf') format('truetype'); font-weight: 400; font-display: block; }
+@font-face { font-family: 'Fira Sans'; src: url('/font/FiraSans-500.ttf') format('truetype'); font-weight: 500; font-display: block; }
+@font-face { font-family: 'Fira Sans'; src: url('/font/FiraSans-700.ttf') format('truetype'); font-weight: 700; font-display: block; }
+@font-face { font-family: 'Fira Sans'; src: url('/font/FiraSans-900.ttf') format('truetype'); font-weight: 900; font-display: block; }
+
+/* I sei ruoli risolti in #5, «Foglio chiaro». */
+:root {
+  --carta: oklch(0.985 0.006 150);
+  --carta-alta: oklch(0.998 0.002 150);
+  --inchiostro: oklch(0.22 0.014 152);
+  --grafite: oklch(0.505 0.012 152);
+  --riga: oklch(0.785 0.01 150);
+  --verde: oklch(0.44 0.075 152);
+  --rosso: oklch(0.46 0.105 36);
+  --errore: oklch(0.5 0.19 25);
+}
+
+html:has(.prototipo),
+body:has(.prototipo) {
+  margin: 0;
+  background: var(--carta);
+  color: var(--inchiostro);
+  font-family: 'Fira Sans', system-ui, sans-serif;
+  height: auto;
+}
+
+.prototipo {
+  font-family: 'Fira Sans', system-ui, sans-serif;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  /* La misura viene dalla griglia, non da un max-width isolato: la colonna e' larga
+     due terzi, e il testo dentro si ferma a 66ch (bersaglio) con tetto a 70. */
+  max-width: 76ch;
+  margin: 0 auto;
+  padding: 48px 24px 140px;
+}
+.prototipo * { box-sizing: border-box; }
+
+/* --- i sette livelli, tutti dai token della variante --- */
+
+.display {
+  font-size: var(--display-corpo); line-height: var(--display-interlinea);
+  letter-spacing: var(--display-tracking); font-weight: var(--display-peso); margin: 0;
+}
+.headline {
+  font-size: var(--headline-corpo); line-height: var(--headline-interlinea);
+  letter-spacing: var(--headline-tracking); font-weight: var(--headline-peso); margin: 0;
+}
+.title {
+  font-size: var(--title-corpo); line-height: var(--title-interlinea);
+  letter-spacing: var(--title-tracking); font-weight: var(--title-peso); margin: 0;
+}
+.body {
+  font-size: var(--body-corpo); line-height: var(--body-interlinea);
+  font-weight: var(--body-peso); max-width: 66ch; margin: 0;
+}
+.dato {
+  font-size: var(--dato-corpo); line-height: var(--dato-interlinea);
+  font-weight: var(--dato-peso); font-variant-numeric: tabular-nums;
+}
+.meta {
+  font-size: var(--meta-corpo); line-height: var(--meta-interlinea);
+  font-weight: var(--meta-peso); color: var(--grafite);
+}
+.label {
+  font-size: var(--label-corpo); line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking); font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps; color: var(--grafite);
+}
+
+/* --- struttura: il rapporto 2:1 attorno al titolo di gruppo e' un token, non un caso --- */
+
+.sezione { margin-top: var(--gruppo-sopra); }
+.sezione > h2 {
+  font-size: var(--label-corpo); line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking); font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps; color: var(--grafite);
+  margin: 0 0 var(--gruppo-sotto);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--riga);
+}
+.nota {
+  font-size: var(--meta-corpo); line-height: var(--meta-interlinea);
+  color: var(--grafite); max-width: 66ch; margin: 0 0 var(--gruppo-sotto);
+}
+
+/* --- elenco: righe a 1px, bordi collassati, l'ultima voce perde la riga --- */
+
+.elenco { border-top: 1px solid var(--riga); }
+.voce {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 24px;
+  padding: var(--voce-padding) 0;
+  margin-top: -1px;
+  border-top: 1px solid var(--riga);
+  border-bottom: 1px solid var(--riga);
+}
+.elenco > .voce:last-child { border-bottom: none; }
+.voce > .title { grid-column: 1; }
+.voce > .percorso { grid-column: 2; grid-row: 1; text-align: right; white-space: nowrap; }
+.voce > .indirizzo { grid-column: 1 / -1; color: var(--grafite); }
+.voce > .turni { grid-column: 1 / -1; margin-top: var(--blocco); }
+
+.percorso {
+  font-size: var(--label-corpo); line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking); font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps; color: var(--inchiostro);
+}
+.percorso::before { content: '— '; }
+.percorso[data-colore='verde'] { color: var(--verde); }
+.percorso[data-colore='rosso'] { color: var(--rosso); }
+.percorso[data-colore='carta']::before { content: '· '; }
+
+/* Dentro la voce cambia il peso, non il corpo: il turno e' un dato, il docente un meta. */
+.turni { display: grid; grid-template-columns: auto auto 1fr; gap: 2px 20px; align-items: baseline; }
+.turno-giorno {
+  font-size: var(--label-corpo); line-height: var(--dato-interlinea);
+  letter-spacing: var(--label-tracking); font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+}
+.turno-ore { font-size: var(--dato-corpo); line-height: var(--dato-interlinea); font-variant-numeric: tabular-nums; }
+.turno-corso { font-size: var(--dato-corpo); line-height: var(--dato-interlinea); }
+.turno-docenti {
+  grid-column: 3;
+  font-size: var(--meta-corpo); line-height: var(--meta-interlinea); color: var(--grafite);
+  margin-bottom: var(--blocco);
+}
+
+/* --- scheda sede: tabella chiave/valore, non prosa (GOV.UK summary-list) --- */
+
+.scheda { border-top: 1px solid var(--riga); }
+.scheda > div {
+  display: grid;
+  grid-template-columns: 30% 1fr auto;
+  gap: 0 24px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--riga);
+  align-items: baseline;
+}
+.scheda dt { font-weight: 700; font-size: var(--dato-corpo); line-height: var(--dato-interlinea); margin: 0; }
+.scheda dd { margin: 0; font-size: var(--dato-corpo); line-height: var(--dato-interlinea); font-variant-numeric: tabular-nums; }
+.scheda a { color: var(--verde); font-size: var(--meta-corpo); }
+
+/* --- righello della misura: il tetto duro dei 70 caratteri --- */
+
+.righello { position: relative; }
+.righello::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 70ch;
+  width: 1px;
+  background: var(--rosso);
+}
+.righello > .marca {
+  font-size: var(--label-corpo);
+  letter-spacing: var(--label-tracking);
+  font-variant-caps: all-small-caps;
+  color: var(--rosso);
+  position: absolute;
+  left: calc(70ch + 6px);
+  top: 0;
+}
+
+/* --- verifiche --- */
+
+.verifiche { width: 100%; border-collapse: collapse; }
+.verifiche td {
+  padding: 8px 12px 8px 0;
+  border-bottom: 1px solid var(--riga);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+  vertical-align: baseline;
+}
+.verifiche .val { font-variant-numeric: tabular-nums; color: var(--grafite); white-space: nowrap; }
+.verifiche .esito[data-passa='false'] { color: var(--errore); font-weight: 700; }
+
+/* --- barra di switch: estranea al design in prova --- */
+
+.switcher {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 4px; padding: 6px;
+  border-radius: 999px; background: #101418; color: #fff;
+  font-family: ui-monospace, monospace; font-size: 13px;
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.28); z-index: 99;
+}
+.switcher button { all: unset; cursor: pointer; padding: 6px 12px; border-radius: 999px; color: inherit; }
+.switcher button:hover { background: #2a3138; }
+.switcher span { padding: 0 12px; white-space: nowrap; }
+
+@media (max-width: 640px) {
+  .prototipo { padding: 32px 16px 140px; }
+  .voce { grid-template-columns: 1fr; }
+  .voce > .percorso { grid-column: 1; grid-row: auto; text-align: left; }
+  .turni { grid-template-columns: auto 1fr; }
+  .turno-corso, .turno-docenti { grid-column: 1 / -1; }
+  .scheda > div { grid-template-columns: 1fr; }
+}
