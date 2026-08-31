@@ -32,6 +32,18 @@ L'istruttore che tiene un dato **orario**. E' un ruolo, non una qualifica: la qu
 
 Il docente e' il **referente** della sede per il visitatore: e' la persona nominata sulla scheda. Non e' un recapito. AKM non pubblica telefono ne' email per centro: il contatto passa dal form, che instrada alla sede scelta.
 
+## Corso
+
+Cio' che si pratica: la disciplina a cui punta la riga di un **orario**, e insieme la sua pagina pubblica. Un corso ha un nome proprio («Krav Maga - Antiaggressione femminile»), dei **destinatari** e un **ruolo di colore**.
+
+I **destinatari** dicono a chi si rivolge il corso (adulti, ragazzi, bambini, donne, istruttori, aziende e forze dell'ordine). Non sono un percorso: un corso solo puo' rivolgersi a piu' di un pubblico, e infatti quasi tutti gli orari del corso regolare dicono «Adulti e Ragazzi».
+
+Il **ruolo di colore** e' uno dei quattro di `DESIGN.md` (Verde AKM, Rosso Mattone, Carta, Inchiostro). E' un ruolo, non un colore: si assegna scegliendo fra i quattro, non si sceglie una tinta.
+
 ## Percorso
 
-`[da risolvere in #12]` Il termine e' usato in tre modi incompatibili fra `PRODUCT.md`, `DESIGN.md` e l'enum `Corsi.target`. Finche' non e' risolto, non usarlo come se fosse definito.
+Il corso visto dal primo bivio. **Non e' una seconda entita'**: un percorso e' un corso marcato come voce di orientamento, con la sua **domanda** scritta in prima persona («Voglio sapermi difendere ogni giorno»).
+
+Il bivio e' la prima decisione che il sito chiede, e la domanda che risolve e' «qual e' il mio momento», non «quale disciplina». Per questo il percorso si sceglie per **chi domanda**, mai per eta': «crescita dei ragazzi» e' la voce del genitore e copre ogni corso che riguardi un minore; l'eta' sta nella scheda del corso e nella nota dell'orario, dove e' gia' scritta.
+
+Un corso nuovo **non** e' un percorso finche' qualcuno non lo marca. Il bivio resta corto per scelta editoriale, non per vincolo tecnico.

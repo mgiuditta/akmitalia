@@ -9,12 +9,14 @@
       "Open day 2026 in luoghi diversi dal centro: Saronno presenta a Varese, Milano Bisceglie a Via Pantigliate e a Palestra Parri. Sono luoghi evento, non nuovi indirizzi: la pagina Centri vince."
     ]
   },
-
   "corsi": [
     {
       "slug": "krav-maga-self-defense-system",
       "nome": "Krav Maga – Self Defense System",
       "target": "adulti",
+      "colore": "verde",
+      "inBivio": true,
+      "domanda": "Voglio sapermi difendere ogni giorno",
       "ordine": 1,
       "sommario": "Il corso regolare AKM: difesa personale a lezioni settimanali, aperto ad adulti e ragazzi."
     },
@@ -22,6 +24,9 @@
       "slug": "krav-maga-antibullismo",
       "nome": "Krav Maga – Antibullismo Self Defense System",
       "target": "bambini",
+      "colore": "carta",
+      "inBivio": true,
+      "domanda": "Cerco qualcosa per mio figlio",
       "ordine": 2,
       "sommario": "Percorso antibullismo per bambini e ragazzi, dai 9 anni, nei centri che lo tengono."
     },
@@ -29,37 +34,122 @@
       "slug": "krav-maga-antiaggressione-femminile",
       "nome": "Krav Maga – Antiaggressione femminile",
       "target": "donne",
+      "colore": "rosso",
+      "inBivio": true,
+      "domanda": "Voglio un corso per sole donne",
       "ordine": 3,
       "sommario": "Corso antiaggressione per sole donne, tenuto al Centro Tecnico Muggio."
     }
   ],
-
   "istruttori": [
-    { "slug": "vittorio-porreca", "nome": "Vittorio Porreca", "nomeBreve": "Vittorio", "qualifica": "maestro", "ordine": 1 },
-    { "slug": "omar-borghini", "nome": "Omar Borghini", "nomeBreve": "Omar", "qualifica": "maestro", "ordine": 2 },
-    { "slug": "alberto", "nome": "Alberto", "qualifica": "trainer", "ordine": 10 },
-    { "slug": "alessandro", "nome": "Alessandro", "qualifica": "trainer", "ordine": 10 },
-    { "slug": "claudio", "nome": "Claudio", "qualifica": "trainer", "ordine": 10 },
-    { "slug": "emanuela", "nome": "Emanuela", "qualifica": "trainer", "ordine": 10 },
-    { "slug": "luca", "nome": "Luca", "qualifica": "trainer", "ordine": 10 },
-    { "slug": "luca-m", "nome": "Luca M.", "qualifica": "trainer", "ordine": 10 },
-    { "slug": "marco", "nome": "Marco", "qualifica": "trainer", "ordine": 10 },
-    { "slug": "mirko", "nome": "Mirko", "qualifica": "trainer", "ordine": 10 },
-    { "slug": "monica", "nome": "Monica", "qualifica": "trainer", "ordine": 10 },
-    { "slug": "paolo", "nome": "Paolo", "qualifica": "trainer", "ordine": 10 },
-    { "slug": "stefano", "nome": "Stefano", "qualifica": "trainer", "ordine": 10 }
+    {
+      "slug": "vittorio-porreca",
+      "nome": "Vittorio Porreca",
+      "nomeBreve": "Vittorio",
+      "qualifica": "maestro",
+      "ordine": 1
+    },
+    {
+      "slug": "omar-borghini",
+      "nome": "Omar Borghini",
+      "nomeBreve": "Omar",
+      "qualifica": "maestro",
+      "ordine": 2
+    },
+    {
+      "slug": "alberto",
+      "nome": "Alberto",
+      "qualifica": "trainer",
+      "ordine": 10
+    },
+    {
+      "slug": "alessandro",
+      "nome": "Alessandro",
+      "qualifica": "trainer",
+      "ordine": 10
+    },
+    {
+      "slug": "claudio",
+      "nome": "Claudio",
+      "qualifica": "trainer",
+      "ordine": 10
+    },
+    {
+      "slug": "emanuela",
+      "nome": "Emanuela",
+      "qualifica": "trainer",
+      "ordine": 10
+    },
+    {
+      "slug": "luca",
+      "nome": "Luca",
+      "qualifica": "trainer",
+      "ordine": 10
+    },
+    {
+      "slug": "luca-m",
+      "nome": "Luca M.",
+      "qualifica": "trainer",
+      "ordine": 10
+    },
+    {
+      "slug": "marco",
+      "nome": "Marco",
+      "qualifica": "trainer",
+      "ordine": 10
+    },
+    {
+      "slug": "mirko",
+      "nome": "Mirko",
+      "qualifica": "trainer",
+      "ordine": 10
+    },
+    {
+      "slug": "monica",
+      "nome": "Monica",
+      "qualifica": "trainer",
+      "ordine": 10
+    },
+    {
+      "slug": "paolo",
+      "nome": "Paolo",
+      "qualifica": "trainer",
+      "ordine": 10
+    },
+    {
+      "slug": "stefano",
+      "nome": "Stefano",
+      "qualifica": "trainer",
+      "ordine": 10
+    }
   ],
-
   "sedi": [
     {
       "slug": "abbiategrasso",
       "nome": "Abbiategrasso - Dynamic Dance School",
       "palestra": "Dynamic Dance School",
       "attivo": false,
-      "indirizzo": { "via": "Via Alighieri n°110", "citta": "Abbiategrasso", "provincia": "MI", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via Alighieri n°110",
+        "citta": "Abbiategrasso",
+        "provincia": "MI",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://maps.app.goo.gl/EduAmV91VERhTeC47",
       "orari": [
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["gio"], "oraInizio": "20:00", "oraFine": "21:30", "note": "Adulti e Ragazzi", "docenti": ["vittorio-porreca", "luca"] }
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "gio"
+          ],
+          "oraInizio": "20:00",
+          "oraFine": "21:30",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "vittorio-porreca",
+            "luca"
+          ]
+        }
       ]
     },
     {
@@ -67,11 +157,38 @@
       "nome": "Binasco - Palestra Santa Corinna",
       "palestra": "Palestra Santa Corinna",
       "attivo": true,
-      "indirizzo": { "via": "SP30", "citta": "Binasco", "provincia": "MI", "nazione": "IT" },
+      "indirizzo": {
+        "via": "SP30",
+        "citta": "Binasco",
+        "provincia": "MI",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://maps.app.goo.gl/BFeZJWZk6Wn9P5wH9",
       "orari": [
-        { "disciplina": "krav-maga-antibullismo", "giorni": ["gio"], "oraInizio": "18:30", "oraFine": "19:30", "note": "Bambini dai 9 anni", "docenti": ["vittorio-porreca"] },
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["gio"], "oraInizio": "20:30", "oraFine": "22:00", "note": "Adulti e Ragazzi", "docenti": ["vittorio-porreca"] }
+        {
+          "disciplina": "krav-maga-antibullismo",
+          "giorni": [
+            "gio"
+          ],
+          "oraInizio": "18:30",
+          "oraFine": "19:30",
+          "note": "Bambini dai 9 anni",
+          "docenti": [
+            "vittorio-porreca"
+          ]
+        },
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "gio"
+          ],
+          "oraInizio": "20:30",
+          "oraFine": "22:00",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "vittorio-porreca"
+          ]
+        }
       ]
     },
     {
@@ -80,11 +197,38 @@
       "palestra": "Palestra Beauty Island",
       "attivo": true,
       "descrizione": "Il Centro Tecnico Bresso e inoltre il punto di riferimento per le zone di Sesto San Giovanni, Bruzzano e Bicocca.",
-      "indirizzo": { "via": "Via Leopardi n°5", "citta": "Bresso", "provincia": "MI", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via Leopardi n°5",
+        "citta": "Bresso",
+        "provincia": "MI",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://www.google.com/maps/place/Via+Giacomo+Leopardi,+5,+20091+Bresso+MI",
       "orari": [
-        { "disciplina": "krav-maga-antibullismo", "giorni": ["gio"], "oraInizio": "18:30", "oraFine": "19:30", "note": "Bambini", "docenti": ["omar-borghini"] },
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["gio"], "oraInizio": "20:30", "oraFine": "22:00", "note": "Adulti e Ragazzi", "docenti": ["omar-borghini"] }
+        {
+          "disciplina": "krav-maga-antibullismo",
+          "giorni": [
+            "gio"
+          ],
+          "oraInizio": "18:30",
+          "oraFine": "19:30",
+          "note": "Bambini",
+          "docenti": [
+            "omar-borghini"
+          ]
+        },
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "gio"
+          ],
+          "oraInizio": "20:30",
+          "oraFine": "22:00",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "omar-borghini"
+          ]
+        }
       ]
     },
     {
@@ -93,10 +237,28 @@
       "palestra": "Centro DREAMFIT",
       "attivo": true,
       "descrizione": "Il Centro Tecnico Brugherio e inoltre il punto di riferimento per le zone di Monza, San Damiano, Carugate, Cologno Monzese e Agrate Brianza.",
-      "indirizzo": { "via": "Via Enrico Fermi n°8", "citta": "Brugherio", "provincia": "MB", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via Enrico Fermi n°8",
+        "citta": "Brugherio",
+        "provincia": "MB",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://www.google.com/maps/place/Via+Enrico+Fermi,+8,+20861+Brugherio+MB",
       "orari": [
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["mer"], "oraInizio": "20:25", "oraFine": "21:55", "note": "Adulti e Ragazzi", "docenti": ["omar-borghini", "marco", "monica"] }
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "mer"
+          ],
+          "oraInizio": "20:25",
+          "oraFine": "21:55",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "omar-borghini",
+            "marco",
+            "monica"
+          ]
+        }
       ]
     },
     {
@@ -105,10 +267,26 @@
       "palestra": "Centro Bene-Fit",
       "attivo": true,
       "descrizione": "Il Centro Tecnico Cinisello Balsamo e inoltre il punto di riferimento per le zone di Sesto San Giovanni, Monza, Desio, Lissone, Cesano Maderno, Seregno, Limbiate, Nova Milanese e Muggio.",
-      "indirizzo": { "via": "Via E. De Amicis n°67", "citta": "Cinisello Balsamo", "provincia": "MI", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via E. De Amicis n°67",
+        "citta": "Cinisello Balsamo",
+        "provincia": "MI",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://www.google.com/maps/place/Via+E.+de+Amicis,+67,+20092+Cinisello+Balsamo+MI",
       "orari": [
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["lun"], "oraInizio": "20:15", "oraFine": "21:45", "note": "Adulti e Ragazzi", "docenti": ["luca-m"] }
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "lun"
+          ],
+          "oraInizio": "20:15",
+          "oraFine": "21:45",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "luca-m"
+          ]
+        }
       ]
     },
     {
@@ -117,10 +295,27 @@
       "palestra": "Scuola Omnicomprensivo",
       "attivo": true,
       "descrizione": "ATTENZIONE: l ingresso per il parcheggio e l entrata per la palestra sono momentaneamente in Via Boccaccio a Cesano Boscone (MI). Si consiglia di proseguire dopo il cancello fino ad arrivare in fondo alla rampa che porta alla palestra.",
-      "indirizzo": { "via": "Viale Italia n° 22/24", "citta": "Corsico", "provincia": "MI", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Viale Italia n° 22/24",
+        "citta": "Corsico",
+        "provincia": "MI",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://www.google.com/maps?daddr=Viale+Italia,+22/24,+20094+Corsico+MI",
       "orari": [
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["lun"], "oraInizio": "20:00", "oraFine": "21:30", "note": "Adulti e Ragazzi", "docenti": ["vittorio-porreca", "stefano"] }
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "lun"
+          ],
+          "oraInizio": "20:00",
+          "oraFine": "21:30",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "vittorio-porreca",
+            "stefano"
+          ]
+        }
       ]
     },
     {
@@ -129,10 +324,26 @@
       "palestra": "Milano Sport",
       "attivo": true,
       "descrizione": "Il Centro Tecnico Milano Affori e inoltre il punto di riferimento per le zone Niguarda, Bovisasca, Bruzzano, Bicocca, Parco Nord, Sesto San Giovanni.",
-      "indirizzo": { "via": "Via Iseo n°6", "citta": "Milano", "provincia": "MI", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via Iseo n°6",
+        "citta": "Milano",
+        "provincia": "MI",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://goo.gl/maps/GedcCDYdqA4Zp9yx6",
       "orari": [
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["gio"], "oraInizio": "20:30", "oraFine": "22:00", "note": "Adulti e Ragazzi", "docenti": ["alessandro"] }
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "gio"
+          ],
+          "oraInizio": "20:30",
+          "oraFine": "22:00",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "alessandro"
+          ]
+        }
       ]
     },
     {
@@ -141,11 +352,38 @@
       "palestra": "Gonzaga Sport Club",
       "attivo": true,
       "descrizione": "Il Centro Tecnico Milano 1 e inoltre il punto di riferimento per le zone Repubblica, Duomo, Stazione Centrale, Porta Venezia, Porta Garibaldi, Piazzale Loreto, Zona Buenos Aires, Lima, Gioia, Caiazzo, Zara, City Life, Portello, Citta Studi, Lambrate.",
-      "indirizzo": { "via": "Via Settembrini n°17/A (angolo Via Vitruvio)", "citta": "Milano", "provincia": "MI", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via Settembrini n°17/A (angolo Via Vitruvio)",
+        "citta": "Milano",
+        "provincia": "MI",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://goo.gl/maps/HaowN8Gw1u72",
       "orari": [
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["ven"], "oraInizio": "18:00", "oraFine": "19:15", "note": "Ragazzi", "docenti": ["vittorio-porreca"] },
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["ven"], "oraInizio": "19:30", "oraFine": "21:00", "note": "Adulti", "docenti": ["vittorio-porreca"] }
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "ven"
+          ],
+          "oraInizio": "18:00",
+          "oraFine": "19:15",
+          "note": "Ragazzi",
+          "docenti": [
+            "vittorio-porreca"
+          ]
+        },
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "ven"
+          ],
+          "oraInizio": "19:30",
+          "oraFine": "21:00",
+          "note": "Adulti",
+          "docenti": [
+            "vittorio-porreca"
+          ]
+        }
       ]
     },
     {
@@ -154,11 +392,38 @@
       "palestra": "Palestra Piscina Cardellino",
       "attivo": true,
       "descrizione": "Il Centro Tecnico Milano 2 e inoltre il punto di riferimento per le zone Milano Bisceglie, Primaticcio, Bande Nere, Inganni, Lorenteggio, City Life, Navigli, Baggio, Corsico, Cesano Boscone, Trezzano s/N, Settimo Milanese, Gaggiano.",
-      "indirizzo": { "via": "Via Cardellino n°3", "citta": "Milano", "provincia": "MI", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via Cardellino n°3",
+        "citta": "Milano",
+        "provincia": "MI",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://maps.app.goo.gl/x3Eh3Bz24mwFyfcP9",
       "orari": [
-        { "disciplina": "krav-maga-antibullismo", "giorni": ["mer"], "oraInizio": "18:30", "oraFine": "19:30", "note": "Bambini", "docenti": ["vittorio-porreca"] },
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["mer"], "oraInizio": "20:30", "oraFine": "22:00", "note": "Adulti e Ragazzi", "docenti": ["vittorio-porreca"] }
+        {
+          "disciplina": "krav-maga-antibullismo",
+          "giorni": [
+            "mer"
+          ],
+          "oraInizio": "18:30",
+          "oraFine": "19:30",
+          "note": "Bambini",
+          "docenti": [
+            "vittorio-porreca"
+          ]
+        },
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "mer"
+          ],
+          "oraInizio": "20:30",
+          "oraFine": "22:00",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "vittorio-porreca"
+          ]
+        }
       ]
     },
     {
@@ -167,10 +432,25 @@
       "palestra": "Palestra Dangerous Team",
       "attivo": false,
       "descrizione": "Il Centro Tecnico Muggio e dedicato ai corsi antiaggressione per sole donne.",
-      "indirizzo": { "via": "Via Sondrio n°45", "citta": "Muggio", "provincia": "MB", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via Sondrio n°45",
+        "citta": "Muggio",
+        "provincia": "MB",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://maps.app.goo.gl/GHevApczzP7SpBg59",
       "orari": [
-        { "disciplina": "krav-maga-antiaggressione-femminile", "giorni": ["lun"], "oraInizio": "20:30", "oraFine": "21:30", "docenti": ["omar-borghini"] }
+        {
+          "disciplina": "krav-maga-antiaggressione-femminile",
+          "giorni": [
+            "lun"
+          ],
+          "oraInizio": "20:30",
+          "oraFine": "21:30",
+          "docenti": [
+            "omar-borghini"
+          ]
+        }
       ]
     },
     {
@@ -179,10 +459,26 @@
       "palestra": "Istituto Comprensivo A. Gramsci",
       "attivo": true,
       "descrizione": "Il Centro Tecnico Mulazzano e inoltre il punto di riferimento per le zone di Melegnano, San Zenone al Lambro, Tavazzano, Sordio, Vizzolo Predabissi, Dresano, Casalmaiocco, Lodi.",
-      "indirizzo": { "via": "Via Ada Negri n° 44", "citta": "Mulazzano", "provincia": "LO", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via Ada Negri n° 44",
+        "citta": "Mulazzano",
+        "provincia": "LO",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://goo.gl/maps/RdwM2AftPdyqhmnG7",
       "orari": [
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["mer"], "oraInizio": "20:00", "oraFine": "21:30", "note": "Adulti e Ragazzi", "docenti": ["claudio"] }
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "mer"
+          ],
+          "oraInizio": "20:00",
+          "oraFine": "21:30",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "claudio"
+          ]
+        }
       ]
     },
     {
@@ -191,12 +487,50 @@
       "palestra": "Energy Club",
       "attivo": true,
       "descrizione": "Il Centro Tecnico Paderno Dugnano - Cusano Milanino e inoltre il punto di riferimento per le zone di Garbagnate, Bollate, Sesto San Giovanni e Limbiate.",
-      "indirizzo": { "via": "Viale dell Industria n°57", "citta": "Paderno Dugnano", "provincia": "MI", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Viale dell Industria n°57",
+        "citta": "Paderno Dugnano",
+        "provincia": "MI",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://goo.gl/maps/AcVy3AzfLSL2",
       "orari": [
-        { "disciplina": "krav-maga-antibullismo", "giorni": ["ven"], "oraInizio": "18:30", "oraFine": "19:30", "note": "Bambini", "docenti": ["omar-borghini"] },
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["mar"], "oraInizio": "20:30", "oraFine": "22:00", "note": "Adulti e Ragazzi", "docenti": ["omar-borghini"] },
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["ven"], "oraInizio": "20:00", "oraFine": "21:30", "note": "Adulti e Ragazzi", "docenti": ["omar-borghini"] }
+        {
+          "disciplina": "krav-maga-antibullismo",
+          "giorni": [
+            "ven"
+          ],
+          "oraInizio": "18:30",
+          "oraFine": "19:30",
+          "note": "Bambini",
+          "docenti": [
+            "omar-borghini"
+          ]
+        },
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "mar"
+          ],
+          "oraInizio": "20:30",
+          "oraFine": "22:00",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "omar-borghini"
+          ]
+        },
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "ven"
+          ],
+          "oraInizio": "20:00",
+          "oraFine": "21:30",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "omar-borghini"
+          ]
+        }
       ]
     },
     {
@@ -205,11 +539,39 @@
       "palestra": "Centro Dance Time Studio",
       "attivo": true,
       "descrizione": "Il Centro Tecnico Pogliano Milanese e inoltre il punto di riferimento per le zone di Vanzago, Villastanza, Nerviano, Barbaiana, Rho, Pero, Passirana, Fiera Milano, Cornaredo, Pregnana Milanese, Arluno, Corbetta.",
-      "indirizzo": { "via": "Via Piave n°18/20", "citta": "Pogliano Milanese", "provincia": "MI", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via Piave n°18/20",
+        "citta": "Pogliano Milanese",
+        "provincia": "MI",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://goo.gl/maps/3GH9LGKnFuH2",
       "orari": [
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["gio"], "oraInizio": "20:30", "oraFine": "22:00", "note": "Adulti e Ragazzi", "docenti": ["alberto"] },
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["sab"], "oraInizio": "15:00", "oraFine": "16:30", "note": "Adulti e Ragazzi", "docenti": ["vittorio-porreca", "emanuela"] }
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "gio"
+          ],
+          "oraInizio": "20:30",
+          "oraFine": "22:00",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "alberto"
+          ]
+        },
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "sab"
+          ],
+          "oraInizio": "15:00",
+          "oraFine": "16:30",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "vittorio-porreca",
+            "emanuela"
+          ]
+        }
       ]
     },
     {
@@ -218,10 +580,26 @@
       "palestra": "Centro Tecnico Aisha",
       "attivo": true,
       "descrizione": "Il Centro Tecnico Pontesesto-Rozzano e inoltre il punto di riferimento per le zone di Fizzonasco, Quinto Stampi, Noverasco, Opera, Pieve Emanuele e Zibido San Giacomo.",
-      "indirizzo": { "via": "Via Ludovico Ariosto n° 14", "citta": "Rozzano", "provincia": "MI", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via Ludovico Ariosto n° 14",
+        "citta": "Rozzano",
+        "provincia": "MI",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://goo.gl/maps/Zov4tzBWL5q",
       "orari": [
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["mer"], "oraInizio": "20:30", "oraFine": "22:00", "note": "Adulti e Ragazzi", "docenti": ["luca"] }
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "mer"
+          ],
+          "oraInizio": "20:30",
+          "oraFine": "22:00",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "luca"
+          ]
+        }
       ]
     },
     {
@@ -230,11 +608,40 @@
       "palestra": "Accademia Arte Danza",
       "attivo": false,
       "descrizione": "Sopra il Lidl, primo piano. Il Centro Tecnico San Donato Milanese e inoltre il punto di riferimento per le zone di Linate, Mezzate, Chiaravalle, Poasco, Sesto Ulteriano, San Giuliano Milanese, Mediglia e Robbiano.",
-      "indirizzo": { "via": "Via Angelo Moro n°85", "citta": "San Donato Milanese", "provincia": "MI", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via Angelo Moro n°85",
+        "citta": "San Donato Milanese",
+        "provincia": "MI",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://goo.gl/maps/SRrYgBPijdNS9f326",
       "orari": [
-        { "disciplina": "krav-maga-antibullismo", "giorni": ["mar"], "oraInizio": "19:00", "oraFine": "20:00", "note": "Bambini", "docenti": ["vittorio-porreca", "claudio"] },
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["mar"], "oraInizio": "20:15", "oraFine": "21:45", "note": "Adulti e Ragazzi", "docenti": ["vittorio-porreca", "claudio"] }
+        {
+          "disciplina": "krav-maga-antibullismo",
+          "giorni": [
+            "mar"
+          ],
+          "oraInizio": "19:00",
+          "oraFine": "20:00",
+          "note": "Bambini",
+          "docenti": [
+            "vittorio-porreca",
+            "claudio"
+          ]
+        },
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "mar"
+          ],
+          "oraInizio": "20:15",
+          "oraFine": "21:45",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "vittorio-porreca",
+            "claudio"
+          ]
+        }
       ]
     },
     {
@@ -243,10 +650,26 @@
       "palestra": "Accademia Arte Danza",
       "attivo": true,
       "descrizione": "Il Centro Tecnico San Giuliano Milanese e inoltre il punto di riferimento per le zone di Linate, Mezzate, Chiaravalle, Poasco, Sesto Ulteriano, San Donato Milanese, Mediglia, Robbiano e Peschiera Borromeo.",
-      "indirizzo": { "via": "Via Carducci n°5", "citta": "San Giuliano Milanese", "provincia": "MI", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via Carducci n°5",
+        "citta": "San Giuliano Milanese",
+        "provincia": "MI",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://maps.app.goo.gl/yDGoMnQAsUHyQtYq8",
       "orari": [
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["mar"], "oraInizio": "20:15", "oraFine": "21:45", "note": "Adulti e Ragazzi", "docenti": ["vittorio-porreca"] }
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "mar"
+          ],
+          "oraInizio": "20:15",
+          "oraFine": "21:45",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "vittorio-porreca"
+          ]
+        }
       ]
     },
     {
@@ -254,10 +677,26 @@
       "nome": "Saronno - Danza con Veronica",
       "palestra": "Danza con Veronica",
       "attivo": true,
-      "indirizzo": { "via": "Via Radice n°12", "citta": "Saronno", "provincia": "VA", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via Radice n°12",
+        "citta": "Saronno",
+        "provincia": "VA",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://maps.app.goo.gl/ZpmFRU9Xkbzi7HFb6",
       "orari": [
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["lun"], "oraInizio": "20:30", "oraFine": "22:00", "note": "Adulti e Ragazzi", "docenti": ["mirko"] }
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "lun"
+          ],
+          "oraInizio": "20:30",
+          "oraFine": "22:00",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "mirko"
+          ]
+        }
       ]
     },
     {
@@ -265,10 +704,26 @@
       "nome": "Sesto San Giovanni - Energy Club",
       "palestra": "Energy Club",
       "attivo": true,
-      "indirizzo": { "via": "Via Magenta n° 200", "citta": "Sesto San Giovanni", "provincia": "MI", "nazione": "IT" },
+      "indirizzo": {
+        "via": "Via Magenta n° 200",
+        "citta": "Sesto San Giovanni",
+        "provincia": "MI",
+        "nazione": "IT"
+      },
       "mapsUrl": "https://maps.app.goo.gl/LG3kGu4MJ9eoDvD37",
       "orari": [
-        { "disciplina": "krav-maga-self-defense-system", "giorni": ["mar"], "oraInizio": "20:30", "oraFine": "22:00", "note": "Adulti e Ragazzi", "docenti": ["paolo"] }
+        {
+          "disciplina": "krav-maga-self-defense-system",
+          "giorni": [
+            "mar"
+          ],
+          "oraInizio": "20:30",
+          "oraFine": "22:00",
+          "note": "Adulti e Ragazzi",
+          "docenti": [
+            "paolo"
+          ]
+        }
       ]
     }
   ]

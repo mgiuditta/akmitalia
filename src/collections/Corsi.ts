@@ -59,6 +59,46 @@ export const Corsi: CollectionConfig = {
       ],
     },
     {
+      type: 'row',
+      fields: [
+        {
+          name: 'colore',
+          type: 'select',
+          required: true,
+          label: 'Ruolo di colore',
+          // Enum chiuso sui quattro ruoli di DESIGN.md: si sceglie quale ruolo, mai quale
+          // colore. Un color picker qui e la fine della Regola della Bandiera Smontata.
+          options: [
+            { label: 'Verde AKM - sicurezza quotidiana', value: 'verde' },
+            { label: 'Rosso Mattone - antiaggressione', value: 'rosso' },
+            { label: 'Carta - crescita dei ragazzi', value: 'carta' },
+            { label: 'Inchiostro - formazione tecnica', value: 'inchiostro' },
+          ] as const,
+          defaultValue: 'inchiostro',
+        },
+        {
+          name: 'inBivio',
+          type: 'checkbox',
+          label: 'Voce del primo bivio',
+          defaultValue: false,
+          admin: {
+            description:
+              'Spento di default: un corso nuovo nasce come pagina, non come voce di orientamento.',
+          },
+        },
+      ],
+    },
+    {
+      name: 'domanda',
+      type: 'text',
+      label: 'Domanda del bivio',
+      maxLength: 60,
+      admin: {
+        condition: (data) => Boolean(data?.inBivio),
+        description: 'In prima persona, come la direbbe il visitatore. Es. «Voglio sapermi difendere ogni giorno».',
+      },
+    },
+    {
       name: 'occhiello',
       type: 'text',
       label: 'Occhiello',
