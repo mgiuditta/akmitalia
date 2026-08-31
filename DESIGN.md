@@ -60,9 +60,11 @@ Palette a quattro ruoli: tre colori di percorso derivati dal tricolore, spostati
 
 ## 3. Typography
 
-**Display Font:** una grottesca unica `[famiglia da scegliere in implementazione]`
+**Display Font:** una grottesca unica, **Fira Sans** (OFL 1.1, self-hostata, `pnpm font:scarica`)
 **Body Font:** la stessa famiglia, peso e dimensione diversi
 **Label/Mono Font:** la stessa famiglia in peso etichetta; una mono si introduce solo se un test dimostra che indirizzi e orari ne guadagnano
+
+**Quattro pesi, non di più:** 400 Body, 500 Title e Label, 700 Headline, 900 Display. Fira Sans non ha un file variabile: ogni peso in più è un file in più, circa 33 KB.
 
 **Character:** una sola voce, sobria e adulta, che cambia registro con il peso. Nessun contrasto serif/sans, nessun font «di personalità»: il carattere del sistema viene dal contenuto, non dal font. Ha il tono di un manuale operativo scritto bene, non di una campagna.
 
@@ -81,6 +83,10 @@ Palette a quattro ruoli: tre colori di percorso derivati dal tricolore, spostati
 **La Regola del Dato Nudo.** Indirizzi, orari, telefoni e qualifiche non scendono mai sotto il corpo del testo secondario e non vengono mai compressi in un'icona con tooltip. Sono la prova del principio «Presenza»: se sono difficili da leggere, il principio è tradito.
 
 **La Regola del Nome Proprio.** Ogni sezione che parla di una sede o di una persona la nomina per esteso a livello Title. «Il nostro centro di zona» non esiste: esiste «Rozzano, Centro Aisha».
+
+**La Regola della Cifra Tabulare.** Fira Sans ha le cifre proporzionali di default: ogni elemento che porta un dato (orari, civici, CAP, telefoni) dichiara `font-variant-numeric: tabular-nums`. Dimenticarlo non produce un errore, produce una colonna di orari storta che nessuno nota. Le colonne si dimensionano sulla cifra tabulare, che è più larga della proporzionale media.
+
+**La Regola del Maiuscoletto Vero.** Il livello Label usa `font-variant-caps: all-small-caps`, mai `small-caps`. Le sigle sono già maiuscole, e `smcp` da solo non le tocca: serve `c2sc`, che Fira Sans ha. Con una famiglia priva di maiuscoletto il browser non fallisce, sintetizza maiuscole rimpicciolite dalle aste troppo sottili: è il motivo per cui la famiglia è stata scelta anche su questo.
 
 ## 4. Elevation
 

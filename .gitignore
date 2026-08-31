@@ -54,3 +54,6 @@ node_modules/
 
 # worktree temporanei degli agenti
 /.claude/worktrees
+
+# Font self-hostati: si riscaricano con `pnpm font:scarica`
+public/font/
