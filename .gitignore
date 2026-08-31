@@ -51,3 +51,6 @@ node_modules/
 
 # binari scaricati dal WordPress: in git resta solo il manifest data/wp-media.json
 /data/wp-media
+
+# worktree temporanei degli agenti
+/.claude/worktrees

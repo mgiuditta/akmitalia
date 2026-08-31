@@ -64,7 +64,24 @@ export const Sedi: CollectionConfig = {
               label: 'Provincia',
               index: true,
               maxLength: 2,
-              admin: { description: 'Sigla a 2 lettere. Raggruppa l elenco dei centri.' },
+              admin: {
+                description:
+                  'Sigla a 2 lettere. Etichetta e filtro dell elenco, non intestazione: l elenco e alfabetico per comune. Per la Svizzera e il cantone (Chiasso: TI).',
+              },
+              // In Italia la provincia esiste sempre: si deriva dal comune in import (tabella ISTAT).
+              // Fuori Italia no: il cantone svizzero e un di piu, non un obbligo.
+              // La bozza e esente, come ogni altro campo obbligatorio di questa collection.
+              validate: (
+                value: unknown,
+                {
+                  data,
+                  siblingData,
+                }: { data: { _status?: string }; siblingData: { nazione?: string } },
+              ) =>
+                data?._status === 'draft' ||
+                siblingData?.nazione !== 'IT' ||
+                !!value ||
+                'Obbligatoria per i centri in Italia.',
               hooks: {
                 beforeValidate: [
                   ({ value }) => (typeof value === 'string' ? value.trim().toUpperCase() : value),
@@ -92,13 +109,16 @@ export const Sedi: CollectionConfig = {
       name: 'coordinate',
       type: 'group',
       label: 'Coordinate',
-      admin: { description: 'Servono alla mappa dei centri. Le prendi dal link di Google Maps.' },
+      admin: {
+        description:
+          'Opzionali: la mappa dei centri non e decisa, il link Maps qui sotto e tutta la feature. Le prendi dal link di Google Maps.',
+      },
       fields: [
         {
           type: 'row',
           fields: [
-            { name: 'lat', type: 'number', required: true, label: 'Latitudine', min: -90, max: 90 },
-            { name: 'lng', type: 'number', required: true, label: 'Longitudine', min: -180, max: 180 },
+            { name: 'lat', type: 'number', label: 'Latitudine', min: -90, max: 90 },
+            { name: 'lng', type: 'number', label: 'Longitudine', min: -180, max: 180 },
           ],
         },
       ],
