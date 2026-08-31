@@ -354,17 +354,17 @@ export interface Sedi {
     cap?: string | null;
     citta: string;
     /**
-     * Sigla a 2 lettere. Raggruppa l elenco dei centri.
+     * Sigla a 2 lettere. Etichetta e filtro dell elenco, non intestazione: l elenco e alfabetico per comune. Per la Svizzera e il cantone (Chiasso: TI).
      */
     provincia?: string | null;
     nazione: 'IT' | 'CH';
   };
   /**
-   * Servono alla mappa dei centri. Le prendi dal link di Google Maps.
+   * Opzionali: la mappa dei centri non e decisa, il link Maps qui sotto e tutta la feature. Le prendi dal link di Google Maps.
    */
-  coordinate: {
-    lat: number;
-    lng: number;
+  coordinate?: {
+    lat?: number | null;
+    lng?: number | null;
   };
   /**
    * Il link «condividi» di Google Maps. Nessuna API, solo un link.
@@ -386,6 +386,10 @@ export interface Sedi {
         giorni: ('lun' | 'mar' | 'mer' | 'gio' | 'ven' | 'sab' | 'dom')[];
         oraInizio: string;
         oraFine: string;
+        /**
+         * Chi tiene questa riga. E un ruolo dell orario, non una qualifica della persona: «Docente Istruttore M° Vittorio Porreca - Trainer Claudio» sono due docenti dello stesso slot.
+         */
+        docenti?: (number | Istruttori)[] | null;
         note?: string | null;
         id?: string | null;
       }[]
@@ -1062,6 +1066,7 @@ export interface SediSelect<T extends boolean = true> {
         giorni?: T;
         oraInizio?: T;
         oraFine?: T;
+        docenti?: T;
         note?: T;
         id?: T;
       };

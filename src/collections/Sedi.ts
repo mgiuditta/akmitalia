@@ -186,6 +186,17 @@ export const Sedi: CollectionConfig = {
             { name: 'oraFine', type: 'text', required: true, label: 'Alle', validate: validaOra },
           ],
         },
+        {
+          name: 'docenti',
+          type: 'relationship',
+          relationTo: 'istruttori',
+          hasMany: true,
+          label: 'Docenti',
+          admin: {
+            description:
+              'Chi tiene questa riga. E un ruolo dell orario, non una qualifica della persona: «Docente Istruttore M° Vittorio Porreca - Trainer Claudio» sono due docenti dello stesso slot.',
+          },
+        },
         { name: 'note', type: 'text', label: 'Note' },
       ],
     },
