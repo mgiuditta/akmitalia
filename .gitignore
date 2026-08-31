@@ -54,3 +54,6 @@ node_modules/
 
 # worktree temporanei degli agenti
 /.claude/worktrees
+
+# Prototipo #6: i font si riscaricano con `pnpm prototipo:font`
+public/prototipo-font/

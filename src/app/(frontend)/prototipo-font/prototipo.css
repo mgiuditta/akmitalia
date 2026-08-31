@@ -1,0 +1,205 @@
+/* PROTOTIPO USA E GETTA — issue #6. Non e' il design system, e' lo strumento per sceglierlo.
+   La scala qui sotto e' provvisoria: i valori esatti li decide #7. */
+
+@font-face {
+  font-family: 'Source Sans 3';
+  src: url('/prototipo-font/SourceSans3.ttf') format('truetype');
+  /* L'asse parte da 200 e il default e' 200: senza questo range si serve ExtraLight al posto del Regular. */
+  font-weight: 200 900;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Noto Sans';
+  src: url('/prototipo-font/NotoSans.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: block;
+}
+
+/* Fira Sans non ha variabile: quattro pesi = quattro file, ed e' meta' del confronto. */
+@font-face { font-family: 'Fira Sans'; src: url('/prototipo-font/FiraSans-300.ttf') format('truetype'); font-weight: 300; font-display: block; }
+@font-face { font-family: 'Fira Sans'; src: url('/prototipo-font/FiraSans-400.ttf') format('truetype'); font-weight: 400; font-display: block; }
+@font-face { font-family: 'Fira Sans'; src: url('/prototipo-font/FiraSans-500.ttf') format('truetype'); font-weight: 500; font-display: block; }
+@font-face { font-family: 'Fira Sans'; src: url('/prototipo-font/FiraSans-600.ttf') format('truetype'); font-weight: 600; font-display: block; }
+@font-face { font-family: 'Fira Sans'; src: url('/prototipo-font/FiraSans-700.ttf') format('truetype'); font-weight: 700; font-display: block; }
+@font-face { font-family: 'Fira Sans'; src: url('/prototipo-font/FiraSans-900.ttf') format('truetype'); font-weight: 900; font-display: block; }
+
+/* I token stanno su :root, non su .prototipo: body deve poterli leggere per
+   spegnere il fondo nero del template blank, e una variabile non risale ai genitori. */
+:root {
+  /* Neutri tinti verso il verde di marca, chroma 0.006. Mai #000, mai #fff (DESIGN.md). */
+  --carta: oklch(0.985 0.004 150);
+  --carta-2: oklch(0.962 0.006 150);
+  --inchiostro: oklch(0.24 0.008 150);
+  --inchiostro-2: oklch(0.5 0.006 150);
+  --riga: oklch(0.87 0.006 150);
+  --famiglia: 'Source Sans 3', system-ui, sans-serif;
+}
+
+/* Il template blank di Payload impone fondo nero e system-ui su html/body dal layout.
+   Qui si spegne, senza toccare quel file. */
+html:has(.prototipo),
+body:has(.prototipo) {
+  margin: 0;
+  background: var(--carta);
+  color: var(--inchiostro);
+  font-family: var(--famiglia);
+  font-size: 17px;
+  line-height: 1.6;
+  height: auto;
+}
+
+.prototipo {
+  color: var(--inchiostro);
+  font-family: var(--famiglia);
+
+  /* Il faux bold del browser va spento: un peso mancante deve saltare all'occhio. */
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  max-width: 78ch;
+  margin: 0 auto;
+  padding: 48px 24px 140px;
+}
+
+/* La famiglia si commuta sul :root, cosi anche body la eredita. */
+:root:has([data-font='fira']) { --famiglia: 'Fira Sans', system-ui, sans-serif; }
+:root:has([data-font='noto']) { --famiglia: 'Noto Sans', system-ui, sans-serif; }
+
+.prototipo * { box-sizing: border-box; }
+
+/* --- i cinque livelli di DESIGN.md, valori provvisori --- */
+
+.display { font-size: 44px; line-height: 1.05; font-weight: 900; letter-spacing: -0.015em; margin: 0; }
+.headline { font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; margin: 0; }
+.title { font-size: 20px; line-height: 1.3; font-weight: 500; margin: 0; }
+.body { font-size: 17px; line-height: 1.6; font-weight: 400; max-width: 66ch; margin: 0; }
+
+/* Label: maiuscoletto vero. `all-small-caps` e non `small-caps`, perche' le sigle
+   sono gia' maiuscole e `smcp` da solo non le tocca: serve anche `c2sc`. */
+.label {
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.06em;
+  color: var(--inchiostro-2);
+}
+
+/* Dato nudo: mai sotto il corpo secondario. 16px e' il pavimento fissato in #2. */
+.dato {
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Fira ha le cifre proporzionali di default: senza `tabular-nums` la colonna balla.
+   Source Sans e Noto sono tabulari di default e non hanno `tnum`, dove la
+   dichiarazione e' un no-op innocuo. */
+
+/* --- struttura --- */
+
+.sezione { margin: 64px 0 0; }
+.sezione > h2 {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.08em;
+  color: var(--inchiostro-2);
+  margin: 0 0 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--riga);
+}
+.nota {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--inchiostro-2);
+  max-width: 66ch;
+  margin: 8px 0 24px;
+}
+
+/* --- elenco sedi: righe a 1px, mai card --- */
+
+.elenco { border-top: 1px solid var(--riga); }
+.voce {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 24px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--riga);
+}
+.voce > .title { grid-column: 1; }
+.voce > .label { grid-column: 2; grid-row: 1; text-align: right; white-space: nowrap; }
+.voce > .indirizzo { grid-column: 1 / -1; font-size: 16px; color: var(--inchiostro-2); }
+.voce > .turni { grid-column: 1 / -1; margin-top: 12px; }
+.voce[data-attivo='false'] { color: var(--inchiostro-2); }
+
+/* Il turno e' il dato eroe: giorno, orario, corso, docente, tutto leggibile senza click. */
+.turni { display: grid; grid-template-columns: auto auto 1fr; gap: 4px 20px; align-items: baseline; }
+.turno-giorno { font-variant-caps: all-small-caps; letter-spacing: 0.05em; font-weight: 600; font-size: 14px; }
+.turno-ore { font-variant-numeric: tabular-nums; font-size: 16px; }
+.turno-corso { font-size: 16px; }
+.turno-docenti { grid-column: 3; font-size: 15px; color: var(--inchiostro-2); }
+
+/* --- confronto affiancato: le tre famiglie sullo stesso contenuto --- */
+
+.affiancato { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 24px; border-top: 1px solid var(--riga); }
+.colonna { padding: 20px 0; border-bottom: 1px solid var(--riga); min-width: 0; }
+.colonna > h3 {
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.08em;
+  color: var(--inchiostro-2);
+  margin: 0 0 12px;
+}
+.f-source { font-family: 'Source Sans 3', sans-serif; }
+.f-fira { font-family: 'Fira Sans', sans-serif; }
+.f-noto { font-family: 'Noto Sans', sans-serif; }
+
+/* Righello: le cifre devono stare in colonna perfetta, riga per riga. */
+.righello { font-variant-numeric: tabular-nums; font-size: 20px; line-height: 1.35; white-space: pre; }
+/* Deve stare DOPO .righello, altrimenti vince la dichiarazione tabulare e la prova non prova niente. */
+.righello.proporzionale { font-variant-numeric: proportional-nums; }
+
+.pesi > div { margin-bottom: 6px; }
+.p200 { font-weight: 200 } .p300 { font-weight: 300 } .p400 { font-weight: 400 }
+.p500 { font-weight: 500 } .p600 { font-weight: 600 } .p700 { font-weight: 700 }
+.p900 { font-weight: 900 }
+
+/* --- barra di switch: deve sembrare estranea al design in prova --- */
+
+.switcher {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 999px;
+  background: #101418;
+  color: #fff;
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.28);
+  z-index: 99;
+}
+.switcher button {
+  all: unset;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: inherit;
+}
+.switcher button:hover { background: #2a3138; }
+.switcher span { padding: 0 12px; white-space: nowrap; }
+
+@media (max-width: 640px) {
+  .prototipo { padding: 32px 16px 140px; }
+  .display { font-size: 34px; }
+  .voce { grid-template-columns: 1fr; }
+  .voce > .label { grid-column: 1; grid-row: auto; text-align: left; }
+  .turni { grid-template-columns: auto 1fr; }
+  .affiancato { grid-template-columns: 1fr; }
+  .turno-corso, .turno-docenti { grid-column: 1 / -1; }
+}
