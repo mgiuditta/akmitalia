@@ -30,31 +30,37 @@ Il movimento è coreografato ma di servizio: scorrendo, la pagina si compone com
 
 ## 2. Colors
 
-Palette a quattro ruoli: tre colori di percorso derivati dal tricolore, spostati fuori dai primari da bandiera, su un fondo neutro di carta e inchiostro. `[valori esatti da risolvere in implementazione]`
+Palette a quattro ruoli: tre colori di percorso derivati dal tricolore, spostati fuori dai primari da bandiera, su un fondo neutro di carta e inchiostro. I valori sono in oklch, che è la forma in cui sono stati scelti: il vincolo «neutro tinto di chroma 0.005-0.01» è una coordinata oklch, e in hex non si può nemmeno verificare. L'hex è lì solo per chi deve incollarlo altrove.
+
+Ogni rapporto qui sotto è calcolato, non stimato: il calcolatore sta sul branch `prototipo/palette`.
 
 ### Primary
 
-- **Verde AKM** `[hex/oklch da definire]`: verde bosco desaturato, non il verde bandiera. Porta il percorso «sicurezza quotidiana», l'adulto che è il pubblico primario. È il colore che compare più spesso e regge le CTA principali. Deve passare AA come testo su fondo chiaro: se non lo fa, va scurito, non alleggerito il testo.
+- **Verde AKM** `oklch(0.44 0.075 152)` `#2f5e3e`: verde bosco desaturato, non il verde bandiera. Porta il percorso «sicurezza quotidiana», l'adulto che è il pubblico primario. È il colore che compare più spesso e regge le CTA principali. Deve passare AA come testo su fondo chiaro: se non lo fa, va scurito, non alleggerito il testo. Passa nei due versi allo stesso rapporto, **7,19:1** come testo su Carta e **7,19:1** come fondo sotto testo Carta, ed è la ragione per cui è questo valore e non un verde più vivo.
 
 ### Secondary
 
-- **Rosso Mattone** `[hex/oklch da definire]`: rosso terroso, mai il rosso sangue. Porta il percorso «antiaggressione». Raro per definizione. Non è il colore dell'errore e non è il colore dell'urgenza commerciale.
+- **Rosso Mattone** `oklch(0.46 0.105 36)` `#883f2c`: rosso terroso, mai il rosso sangue. Porta il percorso «antiaggressione». Raro per definizione. Non è il colore dell'errore e non è il colore dell'urgenza commerciale. **7,18:1** su Carta.
+- **Rosso di sistema** `oklch(0.5 0.19 25)` `#b71824`: errori di form, avvisi, stati distruttivi. Esiste perché il Rosso Mattone non può fare questo lavoro (Regola del Rosso Riservato), ed è più saturo e più freddo apposta: affiancati, i due rossi non si scambiano. **6,36:1** su Carta.
 
 ### Tertiary
 
-- **Carta** `[hex/oklch da definire]`: il «bianco» del tricolore non è `#fff`, è il fondo caldo del documento, tinto verso il verde di chroma minima (0.005-0.01). Porta il percorso «crescita dei ragazzi» attraverso il contrasto di bordo e di peso, mai attraverso un riempimento invisibile.
+- **Carta** `oklch(0.985 0.006 150)` `#f7fbf8`: il «bianco» del tricolore non è `#fff`, è il fondo caldo del documento, tinto verso il verde di chroma minima (0.005-0.01). Porta il percorso «crescita dei ragazzi» attraverso il contrasto di bordo e di peso, mai attraverso un riempimento invisibile: il terzo percorso si scrive in Inchiostro come tutto il resto, e si distingue per segno, posizione e peso.
+- **Carta alta** `oklch(0.998 0.002 150)` `#fdfffe`: l'unico secondo fondo del sistema. Campi di form, superficie sollevata, testo sopra il Verde pieno. Non è `#fff` per un pelo, e quel pelo è la regola.
 
 ### Neutral
 
-- **Inchiostro** `[hex/oklch da definire]`: quasi nero tinto verso il verde di marca. Mai `#000`. Testo corrente, titoli, bordi pieni.
-- **Grafite** `[hex/oklch da definire]`: testo secondario, etichette, metadati di sede. Deve restare AA sul fondo Carta.
-- **Riga** `[hex/oklch da definire]`: divisori e bordi a 1px. L'elenco si struttura con righe, non con ombre.
+- **Inchiostro** `oklch(0.22 0.014 152)` `#161d17`: quasi nero tinto verso il verde di marca. Mai `#000`. Testo corrente, titoli, bordi pieni. **16,55:1** su Carta.
+- **Grafite** `oklch(0.505 0.012 152)` `#606761`: testo secondario, etichette, metadati di sede. Deve restare AA sul fondo Carta: **5,60:1**, con margine sufficiente a sopravvivere a un corpo piccolo.
+- **Riga** `oklch(0.785 0.01 150)` `#b5bbb6`: divisori e bordi a 1px. L'elenco si struttura con righe, non con ombre. **1,88:1** su Carta, sotto la soglia del testo perché testo non è: il minimo utile è quello sotto cui una riga a 1px sparisce sul fondo, e GOV.UK sta a circa 2,3:1.
 
 ### Named Rules
 
 **La Regola della Bandiera Smontata.** I tre colori di percorso non compaiono mai adiacenti in tre bande, colonne o blocchi contigui. Il tricolore vive intero solo nel wordmark. Ovunque altro, un percorso alla volta, nel suo contesto. Test in una frase: se una schermata sembra una bandiera italiana, riprogettala.
 
 **La Regola dell'Etichetta.** Nessun percorso è identificabile dal solo colore. Ogni occorrenza porta sempre il nome scritto, e cambia anche per forma, posizione o peso. Verde e rosso in coppia sono il caso peggiore per il daltonismo: se togliendo il colore la pagina diventa ambigua, è rotta.
+
+**La Regola dell'Etichetta Corta.** Dentro un elenco, l'etichetta di percorso porta il **target** del corso, «Adulti», «Bambini», «Donne», non il suo nome per esteso: i nomi veri sono lunghi il doppio della riga («Krav Maga – Antibullismo Self Defense System») e il nome completo ha già il suo posto, nella riga d'orario sotto. Il target è un campo che esiste già su `corsi` ed è corto per costruzione, quindi l'etichetta non può allungarsi mai.
 
 **La Regola del Rosso Riservato.** Il Rosso Mattone appartiene al percorso antiaggressione. Errori di form, avvisi e stati distruttivi usano un rosso di sistema distinto, oppure nessun rosso: parole e icona bastano.
 
