@@ -1,0 +1,96 @@
+/* I token del kit: colore (#5) e scala (#7). Unica fonte in CSS dei valori che
+   DESIGN.md descrive a parole. Non contiene componenti: solo custom properties.
+
+   Il modulo di ritmo verticale e' 4px, e ogni interlinea qui sotto e' un suo
+   multiplo intero. Quando un valore calcolato cade fuori dal modulo si sale al
+   multiplo successivo, mai si scende (Regola dell'Arrotondamento in Su). */
+
+:root {
+  /* --- colore: i sei ruoli, piu' la superficie alta e il rosso di sistema --- */
+  --carta: oklch(0.985 0.006 150);
+  --carta-alta: oklch(0.998 0.002 150);
+  --inchiostro: oklch(0.22 0.014 152);
+  --grafite: oklch(0.505 0.012 152);
+  --riga: oklch(0.785 0.01 150);
+  --verde: oklch(0.44 0.075 152);
+  --rosso: oklch(0.46 0.105 36);
+  --errore: oklch(0.5 0.19 25);
+
+  /* --- tipografia: una famiglia, quattro pesi, sette livelli --- */
+  --famiglia: 'Fira Sans', system-ui, sans-serif;
+
+  --display-corpo: 56px;
+  --display-interlinea: 60px;
+  --display-peso: 900;
+  --display-tracking: -0.015em;
+
+  --headline-corpo: 36px;
+  --headline-interlinea: 40px;
+  --headline-peso: 700;
+  --headline-tracking: -0.01em;
+
+  --title-corpo: 22px;
+  --title-interlinea: 28px;
+  --title-peso: 500;
+
+  --body-corpo: 18px;
+  --body-interlinea: 32px;
+  --body-peso: 400;
+
+  --dato-corpo: 16px;
+  --dato-interlinea: 28px;
+  --dato-peso: 400;
+
+  --meta-corpo: 14px;
+  --meta-interlinea: 20px;
+  --meta-peso: 400;
+
+  --label-corpo: 12px;
+  --label-interlinea: 16px;
+  --label-peso: 500;
+  --label-tracking: 0.03em;
+
+  /* --- spaziatura: scala sul modulo da 4px --- */
+  --spazio-1: 4px;
+  --spazio-2: 8px;
+  --spazio-3: 12px;
+  --spazio-4: 16px;
+  --spazio-5: 20px;
+  --spazio-6: 24px;
+  --spazio-7: 32px;
+  --spazio-8: 40px;
+  --spazio-9: 48px;
+  --spazio-10: 64px;
+
+  /* --- ritmo dell'elenco: il 2:1 attorno al titolo di gruppo e' un token --- */
+  --voce-padding: var(--spazio-5);
+  --gruppo-sopra: var(--spazio-8);
+  --gruppo-sotto: var(--spazio-5);
+  --blocco: var(--spazio-3);
+
+  /* --- misura: bersaglio 66ch, tetto duro 70ch --- */
+  --misura: 66ch;
+  --misura-max: 70ch;
+}
+
+/* Su schermo piccolo scendono i titoli, non il corpo: Body, Dato, Meta e Label
+   restano dove sono, perche' il pavimento del dato nudo e' una soglia di
+   leggibilita' e non una preferenza estetica. I gradini piccoli della scala di
+   spaziatura non si comprimono; i grandi si'. */
+@media (max-width: 640px) {
+  :root {
+    --display-corpo: 36px;
+    --display-interlinea: 40px;
+    --headline-corpo: 26px;
+    --headline-interlinea: 32px;
+    --title-corpo: 20px;
+    --title-interlinea: 28px;
+
+    --spazio-5: 16px;
+    --spazio-6: 16px;
+    --spazio-7: 24px;
+    --spazio-8: 24px;
+    --spazio-9: 32px;
+    --spazio-10: 40px;
+  }
+}

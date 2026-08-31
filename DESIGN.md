@@ -82,9 +82,34 @@ Ogni rapporto qui sotto è calcolato, non stimato: il calcolatore sta sul branch
 - **Body** (peso regolare, interlinea comoda, massimo 65-75ch): testo corrente, descrizioni percorso.
 - **Label** (peso etichetta, corpo piccolo, spaziatura aperta, maiuscoletto): qualifiche, province, sigle di riconoscimento, etichette di campo.
 
-`[valori esatti di scala, peso e interlinea da definire in implementazione]`
+Ai cinque livelli se ne aggiungono due che l'elenco ha reso necessari e che non sono titoli: il **Dato nudo**, che porta indirizzi, orari e telefoni, e il **Meta**, che porta provincia, docente e note di sede. Sette livelli in tutto, che è anche il tetto: se in una pagina compare un ottavo corpo, è di troppo.
+
+**Modulo di ritmo verticale: 4px. Ogni interlinea è un multiplo intero del modulo.**
+
+| Livello | Corpo | Interlinea | Peso | Tracking | Su mobile |
+|---|---|---|---|---|---|
+| Display | 56px | 60px | 900 | -0.015em | 36px |
+| Headline | 36px | 40px | 700 | -0.01em | 26px |
+| Title | 22px | 28px | 500 | 0 | 20px |
+| Body | 18px | 32px | 400 | 0 | invariato |
+| Dato nudo | 16px | 28px | 400 | 0 | invariato |
+| Meta | 14px | 20px | 400 | 0 | invariato |
+| Label | 12px | 16px | 500 | +0.03em | invariato |
+
+Il Body sta a 32 e non a 30 per la Regola dell'Arrotondamento qui sotto. Il salto Display/Headline è 1.56, ben oltre l'1.25 richiesto.
+
+**Ritmo verticale e spaziatura.** Scala allineata al modulo: `4, 8, 12, 16, 20, 24, 32, 40, 48, 64`. Su mobile si comprimono solo i gradini grandi: `20→16`, `24→16`, `32→24`, `40→24`, `48→32`, `64→40`.
+
+- **Voce di elenco:** 20px di padding verticale su desktop, 16px su mobile. Riga a 1px con `margin-top: -1px` per collassare i bordi; l'ultima voce perde la riga.
+- **Gruppo di voci:** 40px sopra il titolo di gruppo, 20px sotto. Il rapporto **2:1** è quello che fa leggere l'elenco come una serie di gruppi, e non è negoziabile in nessuno dei due sensi.
+- **Blocco dentro la voce** (l'attacco degli orari sotto l'indirizzo): 12px.
+- **Misura:** bersaglio 66ch, tetto duro 70ch. Il limite viene dalla griglia, non da un `max-width` isolato.
 
 ### Named Rules
+
+**La Regola dell'Arrotondamento in Su.** Quando un'interlinea calcolata cade fuori dal modulo da 4px, si sale al multiplo successivo, mai si scende. Il corpus consiglia 30px per il Body su una misura di 66ch, e 30 non è un multiplo di 4: si va a 32, non a 28. La direzione è fissata da TfL, che vieta di ridurre l'interlinea e non di aumentarla, e da qui discende che il modulo resta un vincolo e non diventa una linea guida.
+
+**La Regola del Peso Prima del Corpo.** Dentro una voce di elenco la gerarchia si fa cambiando peso, non corpo: nome della sede a 500, orario a 400, docente in Grafite. È la lezione di Bell Centennial, e in un elenco lungo cambiare peso costa meno spazio verticale che cambiare corpo. I sette corpi della scala servono a distinguere i livelli della pagina, non i livelli dentro la voce.
 
 **La Regola del Dato Nudo.** Indirizzi, orari, telefoni e qualifiche non scendono mai sotto il corpo del testo secondario e non vengono mai compressi in un'icona con tooltip. Sono la prova del principio «Presenza»: se sono difficili da leggere, il principio è tradito.
 

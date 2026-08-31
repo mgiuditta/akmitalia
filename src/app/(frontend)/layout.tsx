@@ -1,4 +1,5 @@
 import React from 'react'
+import './token.css'
 import './styles.css'
 
 export const metadata = {
