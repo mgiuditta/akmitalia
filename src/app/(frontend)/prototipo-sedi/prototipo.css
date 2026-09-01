@@ -1,0 +1,82 @@
+/* PROTOTIPO USA E GETTA — issue #8, «Elenco sedi e scheda sede: la prova del kit».
+   Guscio comune alle tre varianti: font, fondo, barra del prototipo. Tutto il
+   resto sta nei tre moduli, perche' ogni variante deve poter buttare via il
+   layout dell'altra. I valori vengono da token.css (#5 e #7): qui non se ne
+   inventa nessuno. */
+
+@font-face { font-family: 'Fira Sans'; src: url('/font/FiraSans-400.ttf') format('truetype'); font-weight: 400; font-display: block; }
+@font-face { font-family: 'Fira Sans'; src: url('/font/FiraSans-500.ttf') format('truetype'); font-weight: 500; font-display: block; }
+@font-face { font-family: 'Fira Sans'; src: url('/font/FiraSans-700.ttf') format('truetype'); font-weight: 700; font-display: block; }
+@font-face { font-family: 'Fira Sans'; src: url('/font/FiraSans-900.ttf') format('truetype'); font-weight: 900; font-display: block; }
+
+/* styles.css e' ancora il template vuoto di Payload, fondo nero e lang="en".
+   Si scavalca da qui invece di toccarlo: la sostituzione e' del fold-in, non
+   del prototipo. */
+html:has(.prototipo),
+body:has(.prototipo) {
+  height: auto;
+  margin: 0;
+  background: var(--carta);
+  color: var(--inchiostro);
+  font-family: var(--famiglia);
+  font-size: var(--body-corpo);
+  line-height: var(--body-interlinea);
+  -webkit-font-smoothing: antialiased;
+}
+
+.prototipo {
+  font-synthesis: none;
+  padding-bottom: 160px;
+}
+.prototipo *,
+.prototipo *::before,
+.prototipo *::after { box-sizing: border-box; }
+
+.prototipo a { color: inherit; }
+.prototipo a:focus-visible,
+.prototipo button:focus-visible,
+.prototipo summary:focus-visible {
+  outline: 3px solid var(--verde);
+  outline-offset: 2px;
+}
+
+/* Intestazione del prototipo: dichiaratamente non di design, sta fuori dal giudizio. */
+.prototipo-testata {
+  max-width: 70ch;
+  margin: 0 auto;
+  padding: var(--spazio-8) var(--spazio-6) var(--spazio-7);
+  color: var(--grafite);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+}
+.prototipo-testata strong { color: var(--inchiostro); font-weight: 500; }
+
+.switcher {
+  position: fixed;
+  left: 50%;
+  bottom: var(--spazio-6);
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: var(--spazio-3);
+  padding: var(--spazio-2) var(--spazio-3);
+  border-radius: 999px;
+  background: var(--inchiostro);
+  color: var(--carta);
+  box-shadow: 0 6px 24px oklch(0.22 0.014 152 / 0.35);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+}
+.switcher button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 20px;
+  cursor: pointer;
+}
+.switcher button:hover { background: oklch(1 0 0 / 0.14); }
