@@ -6,6 +6,11 @@
    multiplo successivo, mai si scende (Regola dell'Arrotondamento in Su). */
 
 :root {
+  /* Tema unico chiaro, dichiarato e non omesso (Regola del Tema Unico): tiene i
+     controlli nativi in chiaro sotto un OS scuro, e disattiva l'Auto Dark Theme
+     di Chrome su Android, che altrimenti inverte da solo la palette misurata. */
+  color-scheme: light;
+
   /* --- colore: i sei ruoli, piu' la superficie alta e il rosso di sistema --- */
   --carta: oklch(0.985 0.006 150);
   --carta-alta: oklch(0.998 0.002 150);
