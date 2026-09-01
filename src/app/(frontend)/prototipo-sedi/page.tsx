@@ -30,7 +30,6 @@ export default async function PrototipoSedi(props: {
     limit: 100,
     depth: 2,
     sort: 'indirizzo.citta',
-    overrideAccess: true,
   })
   const tutte = docs as Sede[]
   const sedi = prov ? tutte.filter((x) => x.indirizzo?.provincia === prov) : tutte

@@ -58,7 +58,6 @@ export default async function PrototipoScala(props: {
     limit: 100,
     depth: 2,
     sort: 'indirizzo.citta',
-    overrideAccess: true,
   })
   const sedi = docs as any[]
   const scheda = sedi.find((s) => (s.orari ?? []).length > 1) ?? sedi[0]
