@@ -306,3 +306,175 @@
     columns: 1;
   }
 }
+
+/* ------------------------------------------------- A1/A2/A3 · gli hero --- */
+
+/* Il titolo del bivio scende a Headline quando sopra c'e' un hero: il Display
+   e' uno solo per schermata, e in A1/A2/A3 lo porta l'hero. */
+.aTitoloSecondo {
+  font-size: var(--headline-corpo);
+  line-height: var(--headline-interlinea);
+  font-weight: var(--headline-peso);
+  letter-spacing: var(--headline-tracking);
+  margin-bottom: var(--gruppo-sotto);
+}
+
+/* --- A1 · invito: colonna sola, una sola azione primaria --- */
+
+.h1Hero {
+  max-width: var(--misura);
+  padding-bottom: var(--spazio-9);
+  margin-bottom: var(--spazio-9);
+  border-bottom: 1px solid var(--riga);
+}
+.h1Occhiello {
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  font-weight: var(--label-peso);
+  letter-spacing: var(--label-tracking);
+  font-variant-caps: all-small-caps;
+  color: var(--grafite);
+  margin-bottom: var(--spazio-3);
+}
+.h1Titolo {
+  font-size: var(--display-corpo);
+  line-height: var(--display-interlinea);
+  font-weight: var(--display-peso);
+  letter-spacing: var(--display-tracking);
+}
+.h1Testo {
+  margin-top: var(--spazio-5);
+  font-size: var(--body-corpo);
+  line-height: var(--body-interlinea);
+}
+.h1Fatti {
+  margin-top: var(--spazio-4);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  color: var(--grafite);
+  font-variant-numeric: tabular-nums;
+}
+.h1Azioni {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spazio-5);
+  margin-top: var(--spazio-7);
+}
+/* Una sola azione piena in pagina: il resto sono link. */
+.h1Azione {
+  display: inline-block;
+  padding: var(--spazio-3) var(--spazio-6);
+  min-height: 44px;
+  background: var(--verde);
+  color: var(--carta-alta);
+  text-decoration: none;
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  font-weight: 500;
+}
+.h1Azione:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.h1Secondaria {
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  color: var(--grafite);
+  text-underline-offset: 4px;
+}
+
+/* --- A2 · editoriale: griglia asimmetrica, dato nudo in colonna --- */
+
+.h2Hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: var(--spazio-9);
+  padding-bottom: var(--spazio-8);
+  margin-bottom: var(--spazio-9);
+  border-bottom: 3px solid var(--inchiostro);
+}
+.h2Titolo {
+  font-size: var(--display-corpo);
+  line-height: var(--display-interlinea);
+  font-weight: var(--display-peso);
+  letter-spacing: var(--display-tracking);
+}
+.h2Testo {
+  max-width: var(--misura);
+  margin-top: var(--spazio-5);
+  font-size: var(--body-corpo);
+  line-height: var(--body-interlinea);
+}
+.h2Dati {
+  align-self: end;
+  margin: 0;
+  border-top: 1px solid var(--riga);
+}
+.h2Dati > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spazio-4);
+  padding: var(--spazio-3) 0;
+  border-bottom: 1px solid var(--riga);
+}
+.h2Dati dt {
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  font-weight: var(--label-peso);
+  letter-spacing: var(--label-tracking);
+  font-variant-caps: all-small-caps;
+  color: var(--grafite);
+}
+.h2Dati dd {
+  margin: 0;
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: var(--title-peso);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- A3 · tesserino: intestazione di documento --- */
+
+.h3Hero {
+  max-width: var(--misura-max);
+  padding: var(--spazio-6) 0 var(--spazio-7);
+  margin-bottom: var(--spazio-9);
+  border-top: 3px solid var(--inchiostro);
+  border-bottom: 1px solid var(--riga);
+}
+.h3Etichette {
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  font-weight: var(--label-peso);
+  letter-spacing: var(--label-tracking);
+  font-variant-caps: all-small-caps;
+  color: var(--grafite);
+  margin-bottom: var(--spazio-5);
+}
+.h3Titolo {
+  font-size: var(--headline-corpo);
+  line-height: var(--headline-interlinea);
+  font-weight: var(--headline-peso);
+  letter-spacing: var(--headline-tracking);
+}
+.h3Testo {
+  margin-top: var(--spazio-4);
+  font-size: var(--body-corpo);
+  line-height: var(--body-interlinea);
+}
+.h3Fatti {
+  margin-top: var(--spazio-5);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  color: var(--grafite);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 860px) {
+  .h2Hero {
+    grid-template-columns: 1fr;
+    gap: var(--spazio-7);
+  }
+}

@@ -19,9 +19,12 @@ import { GIORNO_LUNGO, Percorso, comune, palestra, turni, viaCorta } from '../ce
 import type { Turno, Voce } from './dati'
 import stile from './varianti.module.css'
 
-export const nomeA = 'Il bivio secco'
-export const nomeB = "L'albo aperto"
-export const nomeC = 'Il posto prima del percorso'
+export const nomeA = 'bivio secco, senza hero'
+export const nomeA1 = 'hero invito'
+export const nomeA2 = 'hero editoriale'
+export const nomeA3 = 'hero tesserino'
+export const nomeB = "l'albo aperto"
+export const nomeC = 'il posto prima del percorso'
 
 export type Props = {
   voci: Voce[]
@@ -29,6 +32,7 @@ export type Props = {
   sedi: Sede[]
   comuni: string[]
   slot: number
+  istruttori: number
 }
 
 /** La prova attaccata a una voce del bivio: dove quel corso e' davvero in programma. */
@@ -50,30 +54,29 @@ function Programma({ v }: { v: Voce }) {
 
 /* ------------------------------------------------------------------ A ----- */
 
-/**
- * Il bivio e' la pagina. Nessuna riga di orientamento sopra: la prima cosa che
- * si legge e' la domanda, e la prova sta dentro la riga che la porta, non in una
- * sezione sua. Sotto, una sola riga di presenza e una sola di credenziali.
- */
-export function VarianteA({ voci, comuni, slot }: Props) {
+/** Il bivio: la parte di A che non e' in discussione, condivisa dalle quattro A. */
+function BivioSecco({ voci }: { voci: Voce[] }) {
   return (
-    <div className={stile.a}>
-      <h1 className={stile.aTitolo}>Qual è il tuo momento?</h1>
+    <ul className={stile.aBivio} id="bivio">
+      {voci.map((v) => (
+        <li key={v.corso.id}>
+          <Link className={stile.aVoce} href={`/corsi/${v.corso.slug}`}>
+            <span className={stile.aDomanda}>{v.corso.domanda}</span>
+            <span className={stile.aRiga}>
+              <Percorso corso={v.corso} />
+              <Programma v={v} />
+            </span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  )
+}
 
-      <ul className={stile.aBivio}>
-        {voci.map((v) => (
-          <li key={v.corso.id}>
-            <Link className={stile.aVoce} href={`/corsi/${v.corso.slug}`}>
-              <span className={stile.aDomanda}>{v.corso.domanda}</span>
-              <span className={stile.aRiga}>
-                <Percorso corso={v.corso} />
-                <Programma v={v} />
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-
+/** La coda di A: presenza e credenziali, una riga ciascuna. */
+function CodaA({ comuni, slot }: { comuni: string[]; slot: number }) {
+  return (
+    <>
       <p className={stile.aPresenza}>
         Ci si allena a {comuni.slice(0, -1).join(', ')} e {comuni.at(-1)}: {comuni.length} comuni,{' '}
         {slot} turni a settimana. <Link href="/centri">Indirizzi, giorni e orari</Link>.
@@ -82,6 +85,133 @@ export function VarianteA({ voci, comuni, slot }: Props) {
         I docenti sono diplomati dopo almeno quattro anni di percorso e un esame di abilitazione
         all&apos;insegnamento, e sono tesserati e assicurati CSEN.
       </p>
+    </>
+  )
+}
+
+/**
+ * A senza hero: la domanda e' la prima cosa in pagina. Resta come metro di
+ * paragone, per vedere che cosa l'hero aggiunge e che cosa allontana.
+ */
+export function VarianteA({ voci, comuni, slot }: Props) {
+  return (
+    <div className={stile.a}>
+      <h1 className={stile.aTitolo}>Qual è il tuo momento?</h1>
+      <BivioSecco voci={voci} />
+      <CodaA comuni={comuni} slot={slot} />
+    </div>
+  )
+}
+
+/* ----------------------------------------------------------------- A1 ----- */
+
+/**
+ * Hero invito: colonna sola, occhiello, titolo, una riga che toglie paura, tre
+ * fatti e **una sola** azione primaria. L'azione non e' «chiedi informazioni»:
+ * il Principio 2 vieta la richiesta di contatto prima che il bivio sia risolto,
+ * quindi porta ai centri, che e' la seconda domanda del visitatore.
+ */
+export function VarianteA1({ voci, sedi, comuni, slot }: Props) {
+  return (
+    <div className={stile.a}>
+      <header className={stile.h1Hero}>
+        <p className={stile.h1Occhiello}>Krav Maga in Lombardia</p>
+        <h1 className={stile.h1Titolo}>Difendersi si impara. Vicino a casa.</h1>
+        <p className={stile.h1Testo}>
+          Corsi per adulti, ragazzi e bambini in {sedi.length} centri tecnici tra Milano, Monza,
+          Lodi e Varese. Non serve esperienza: si parte da zero, con un docente diplomato.
+        </p>
+        <p className={stile.h1Fatti}>
+          {sedi.length} centri attivi · {comuni.length} comuni · {slot} turni a settimana
+        </p>
+        <p className={stile.h1Azioni}>
+          <Link className={stile.h1Azione} href="/centri">
+            Trova il centro più vicino
+          </Link>
+          <a className={stile.h1Secondaria} href="#bivio">
+            Oppure parti dalla tua domanda
+          </a>
+        </p>
+      </header>
+
+      <h2 className={stile.aTitoloSecondo}>Qual è il tuo momento?</h2>
+      <BivioSecco voci={voci} />
+      <CodaA comuni={comuni} slot={slot} />
+    </div>
+  )
+}
+
+/* ----------------------------------------------------------------- A2 ----- */
+
+/**
+ * Hero editoriale: griglia asimmetrica, la frase grande a sinistra e il dato
+ * nudo incolonnato a destra, separati da un filetto. Nessun bottone: l'invito
+ * e' la frase, e la prima azione resta il bivio, che comincia subito sotto.
+ */
+export function VarianteA2({ voci, sedi, comuni, slot, istruttori }: Props) {
+  const dati: [string, string][] = [
+    ['Centri attivi', String(sedi.length)],
+    ['Comuni', String(comuni.length)],
+    ['Turni a settimana', String(slot)],
+    ['Istruttori', String(istruttori)],
+  ]
+  return (
+    <div className={stile.a}>
+      <header className={stile.h2Hero}>
+        <div>
+          <h1 className={stile.h2Titolo}>Chi insegna, dove, e quando.</h1>
+          <p className={stile.h2Testo}>
+            AKM Italia tiene i suoi corsi di Krav Maga in {sedi.length} centri tecnici della
+            Lombardia. Ogni centro ha i suoi giorni, i suoi orari e il suo docente, e sono scritti
+            qui: non c&apos;è niente da chiedere per saperlo.
+          </p>
+        </div>
+        <dl className={stile.h2Dati}>
+          {dati.map(([k, v]) => (
+            <div key={k}>
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+            </div>
+          ))}
+        </dl>
+      </header>
+
+      <h2 className={stile.aTitoloSecondo}>Qual è il tuo momento?</h2>
+      <BivioSecco voci={voci} />
+      <CodaA comuni={comuni} slot={slot} />
+    </div>
+  )
+}
+
+/* ----------------------------------------------------------------- A3 ----- */
+
+/**
+ * Hero tesserino: l'intestazione di un documento, non di una campagna. Riga di
+ * etichette in maiuscoletto, nome per esteso, una riga che dice cos&apos;e', e le
+ * province scritte. E' la lettura piu' austera dell&apos;Albo, ed e' la meno
+ * «invitante» delle tre: sta qui per misurare quanto invito serve davvero.
+ */
+export function VarianteA3({ voci, sedi, comuni, slot }: Props) {
+  return (
+    <div className={stile.a}>
+      <header className={stile.h3Hero}>
+        <p className={stile.h3Etichette}>Registro pubblico · Lombardia · MI · MB · LO · VA</p>
+        <h1 className={stile.h3Titolo}>
+          Krav Maga per adulti, ragazzi e donne, in {sedi.length} centri tecnici.
+        </h1>
+        <p className={stile.h3Testo}>
+          Ogni centro con i suoi orari e il suo docente. Si comincia scegliendo la domanda che ti
+          somiglia, o il centro più vicino.
+        </p>
+        <p className={stile.h3Fatti}>
+          {sedi.length} centri · {comuni.length} comuni · {slot} turni a settimana ·{' '}
+          <Link href="/centri">l&apos;elenco completo</Link>
+        </p>
+      </header>
+
+      <h2 className={stile.aTitoloSecondo}>Qual è il tuo momento?</h2>
+      <BivioSecco voci={voci} />
+      <CodaA comuni={comuni} slot={slot} />
     </div>
   )
 }
