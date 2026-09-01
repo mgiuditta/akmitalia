@@ -23,14 +23,12 @@ const ROTTE = {
   home: { href: '/', etichetta: 'Home' },
   centri: { href: '/centri', etichetta: 'Centri' },
   contatta: { href: '/contatta', etichetta: 'Contatta' },
+  istruttori: { href: '/istruttori', etichetta: 'Istruttori' },
+  privacy: { href: '/privacy', etichetta: 'Privacy' },
 } as const
 
-/**
- * Il nucleo che non si toglie dall'admin.
- * ponytail: «contatta» entra qui quando la pagina esistera' (#19). Metterla
- * oggi sarebbe una voce di menu che porta a un 404.
- */
-const NUCLEO: (keyof typeof ROTTE)[] = ['centri']
+/** Il nucleo che non si toglie dall'admin: cio' che regge la conversione. */
+const NUCLEO: (keyof typeof ROTTE)[] = ['centri', 'contatta']
 
 /** Torna `null` per una voce non risolvibile: una pagina cancellata sparisce, non rompe. */
 export const risolvi = (v: Voce): { href: string; etichetta: string } | null => {

@@ -62,6 +62,8 @@ const voci = (name: string, label: string): Field => ({
         { label: 'Home', value: 'home' },
         { label: 'Centri tecnici', value: 'centri' },
         { label: 'Contatta', value: 'contatta' },
+        { label: 'Istruttori', value: 'istruttori' },
+        { label: 'Privacy', value: 'privacy' },
       ],
       admin: { condition: (_, s: Partial<Voce>) => s?.tipo === 'rotta' },
       validate: (value: unknown, { siblingData }: { siblingData: Partial<Voce> }) =>

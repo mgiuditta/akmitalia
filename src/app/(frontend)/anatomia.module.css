@@ -1,0 +1,118 @@
+/* L'anatomia di una pagina (#28). Nessun valore inventato: tutto da token.css.
+   Righe a 1px e niente card, come ovunque nel sito (Regola del Foglio). */
+
+.pagina {
+  margin: 0 auto;
+  padding: var(--spazio-8) var(--spazio-6) var(--spazio-10);
+}
+
+/* Il peso decide larghezza e livello del titolo, e non decide altro. */
+.portale {
+  max-width: 1040px;
+  --titolo-corpo: var(--display-corpo);
+  --titolo-interlinea: var(--display-interlinea);
+  --titolo-peso: var(--display-peso);
+  --titolo-tracking: var(--display-tracking);
+  --titolo-misura: 24ch;
+}
+.documento {
+  max-width: 78ch;
+  --titolo-corpo: var(--headline-corpo);
+  --titolo-interlinea: var(--headline-interlinea);
+  --titolo-peso: var(--headline-peso);
+  --titolo-tracking: var(--headline-tracking);
+  --titolo-misura: var(--misura);
+}
+.scheda {
+  max-width: 100ch;
+  --titolo-corpo: var(--display-corpo);
+  --titolo-interlinea: var(--display-interlinea);
+  --titolo-peso: var(--display-peso);
+  --titolo-tracking: var(--display-tracking);
+  --titolo-misura: 20ch;
+}
+
+.apertura { max-width: var(--misura); }
+
+.occhiello {
+  color: var(--grafite);
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+}
+
+/* Regola del Nome Proprio: il titolo va a capo, non rimpicciolisce. */
+.titolo {
+  margin-top: var(--spazio-2);
+  max-width: var(--titolo-misura);
+  font-size: var(--titolo-corpo);
+  line-height: var(--titolo-interlinea);
+  letter-spacing: var(--titolo-tracking);
+  font-weight: var(--titolo-peso);
+}
+
+.sommario { margin-top: var(--spazio-5); }
+
+/* Regola della Cifra Tabulare: una riga di conteggi con cifre proporzionali balla. */
+.fatti {
+  margin-top: var(--spazio-4);
+  color: var(--grafite);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  font-variant-numeric: tabular-nums;
+}
+
+.azioni {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spazio-5);
+  margin-top: var(--spazio-7);
+}
+
+/* Una sola superficie piena per pagina, ed e' questa. */
+.azione {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--spazio-6);
+  background: var(--verde);
+  color: var(--carta-alta);
+  text-decoration: none;
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  font-weight: 500;
+}
+.azione:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+.sezione {
+  margin-top: var(--gruppo-sopra);
+  margin-bottom: var(--gruppo-sotto);
+  max-width: var(--misura);
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: 700;
+}
+
+.righe { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--riga); }
+.righe li {
+  max-width: var(--misura-max);
+  padding: var(--spazio-3) 0;
+  border-bottom: 1px solid var(--riga);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+.coda {
+  max-width: var(--misura);
+  margin-top: var(--spazio-9);
+  color: var(--grafite);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+@media (max-width: 640px) {
+  .pagina { padding: var(--spazio-7) var(--spazio-4) var(--spazio-9); }
+}

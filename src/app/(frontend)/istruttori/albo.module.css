@@ -1,0 +1,25 @@
+/* L'albo: righe a 1px, come ogni elenco del sito. Valori da token.css. */
+
+.albo { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--riga); }
+
+.voce { padding: var(--voce-padding) 0; border-bottom: 1px solid var(--riga); }
+
+/* Regola del Peso Prima del Corpo: dentro la voce cambia il peso, non il corpo. */
+.nome {
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: var(--title-peso);
+}
+
+.ruolo {
+  margin-top: var(--spazio-1);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+.dove, .senza {
+  margin-top: var(--spazio-1);
+  color: var(--grafite);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+}

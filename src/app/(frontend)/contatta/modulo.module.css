@@ -1,0 +1,74 @@
+/* Il modulo di richiesta. Controlli nativi, nessuna libreria: il tema unico
+   chiaro di token.css li tiene leggibili anche sotto un OS scuro. */
+
+.modulo { max-width: var(--misura); }
+
+.campo { display: grid; gap: var(--spazio-2); margin-bottom: var(--spazio-6); }
+
+.campo label {
+  color: var(--grafite);
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  min-height: 44px;
+  padding: var(--spazio-2) var(--spazio-3);
+  border: 1px solid var(--riga);
+  background: var(--carta-alta);
+  color: var(--inchiostro);
+  font: inherit;
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+.campo textarea { min-height: auto; resize: vertical; }
+
+.campo input:focus-visible,
+.campo select:focus-visible,
+.campo textarea:focus-visible { border-color: var(--verde); }
+
+.aiuto {
+  color: var(--grafite);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+}
+
+/* Il consenso non e' un campo come gli altri: la casella sta accanto al testo,
+   e il testo e' cliccabile per intero. */
+.consenso {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--spazio-3);
+  align-items: start;
+  margin-bottom: var(--spazio-7);
+  max-width: var(--misura);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+.consenso input { width: 20px; height: 20px; margin-top: var(--spazio-1); accent-color: var(--verde); }
+
+.azioni { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spazio-4); }
+
+.invia {
+  min-height: 48px;
+  padding: 0 var(--spazio-6);
+  border: 0;
+  background: var(--verde);
+  color: var(--carta-alta);
+  font: inherit;
+  font-size: var(--dato-corpo);
+  font-weight: 500;
+  cursor: pointer;
+}
+.invia:disabled { background: var(--riga); color: var(--grafite); cursor: not-allowed; }
+
+.bozza {
+  color: var(--rosso);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+}

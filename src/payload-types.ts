@@ -1366,7 +1366,7 @@ export interface Impostazioni {
            */
           etichetta?: string | null;
           pagina?: (number | null) | Pagine;
-          rotta?: ('home' | 'centri' | 'contatta') | null;
+          rotta?: ('home' | 'centri' | 'contatta' | 'istruttori' | 'privacy') | null;
           /**
            * Completo di https://.
            */
@@ -1382,7 +1382,7 @@ export interface Impostazioni {
            */
           etichetta?: string | null;
           pagina?: (number | null) | Pagine;
-          rotta?: ('home' | 'centri' | 'contatta') | null;
+          rotta?: ('home' | 'centri' | 'contatta' | 'istruttori' | 'privacy') | null;
           /**
            * Completo di https://.
            */
