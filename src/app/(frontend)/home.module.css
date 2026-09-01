@@ -1,0 +1,186 @@
+/* La home (#17). Righe a 1px e niente card, come l'elenco dei centri: la
+   gerarchia la fanno peso e spazio. Tutti i valori vengono da token.css. */
+
+.pagina {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: var(--spazio-8) var(--spazio-6) var(--spazio-10);
+}
+
+/* La grana di carta e' `fixed` e sta sotto tutto: se scorresse con il testo si
+   noterebbe proprio dove non deve. Senza il campo in Impostazioni, `--grana` e'
+   `initial` e il livello non disegna niente. */
+.pagina::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image: var(--grana);
+  background-size: 512px 512px;
+  opacity: 0.03;
+  pointer-events: none;
+}
+
+/* --- hero --- */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  max-width: var(--misura);
+  padding-bottom: var(--spazio-9);
+  margin-bottom: var(--spazio-9);
+  border-bottom: 1px solid var(--riga);
+}
+/* La trama vive su un livello suo: `opacity` sull'elemento si porterebbe dietro
+   anche il titolo. Al 5% il contrasto del testo resta 15:1, misurato. */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--trama);
+  background-size: cover;
+  background-position: right center;
+  opacity: 0.05;
+}
+
+.occhiello {
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  font-weight: var(--label-peso);
+  letter-spacing: var(--label-tracking);
+  font-variant-caps: all-small-caps;
+  color: var(--grafite);
+  margin-bottom: var(--spazio-3);
+}
+
+.titolo {
+  font-size: var(--display-corpo);
+  line-height: var(--display-interlinea);
+  font-weight: var(--display-peso);
+  letter-spacing: var(--display-tracking);
+}
+
+.testo {
+  margin-top: var(--spazio-5);
+  font-size: var(--body-corpo);
+  line-height: var(--body-interlinea);
+}
+
+.fatti {
+  margin-top: var(--spazio-4);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  color: var(--grafite);
+  font-variant-numeric: tabular-nums;
+}
+
+.azioni {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spazio-5);
+  margin-top: var(--spazio-7);
+}
+
+/* Una sola superficie piena in pagina, ed e' questa. */
+.azione {
+  display: inline-block;
+  padding: var(--spazio-3) var(--spazio-6);
+  min-height: 44px;
+  background: var(--verde);
+  color: var(--carta-alta);
+  text-decoration: none;
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  font-weight: 500;
+}
+.azione:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.secondaria {
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  color: var(--grafite);
+  text-underline-offset: 4px;
+}
+
+/* --- il bivio --- */
+
+/* Il Display e' uno solo per schermata e lo porta l'hero: qui si scende. */
+.domanda {
+  font-size: var(--headline-corpo);
+  line-height: var(--headline-interlinea);
+  font-weight: var(--headline-peso);
+  letter-spacing: var(--headline-tracking);
+  margin-bottom: var(--gruppo-sotto);
+}
+
+.bivio {
+  list-style: none;
+  margin: 0 0 var(--spazio-9);
+  padding: 0;
+  border-top: 1px solid var(--riga);
+}
+.bivio li {
+  border-bottom: 1px solid var(--riga);
+}
+
+.voce {
+  display: block;
+  padding: var(--spazio-7) 0;
+  text-decoration: none;
+}
+.voce:hover .suaDomanda {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.suaDomanda {
+  display: block;
+  max-width: var(--misura);
+  font-size: var(--headline-corpo);
+  line-height: var(--headline-interlinea);
+  font-weight: var(--headline-peso);
+  letter-spacing: var(--headline-tracking);
+}
+
+.riga {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--spazio-3);
+  margin-top: var(--blocco);
+}
+
+.programma,
+.assente {
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+  color: var(--grafite);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- coda --- */
+
+.presenza {
+  max-width: var(--misura);
+  font-size: var(--body-corpo);
+  line-height: var(--body-interlinea);
+}
+
+.prova {
+  max-width: var(--misura);
+  margin-top: var(--spazio-5);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  color: var(--grafite);
+}
+
+@media (max-width: 640px) {
+  .pagina {
+    padding: var(--spazio-7) var(--spazio-4) var(--spazio-9);
+  }
+}

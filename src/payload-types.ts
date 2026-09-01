@@ -1342,6 +1342,19 @@ export interface Impostazioni {
   ogImage?: (number | null) | Media;
   testoFooter?: string | null;
   /**
+   * Due sfondi decorativi, gia' compilati con quelli di partenza. Si possono sostituire o svuotare: senza, la home resta tipografica e non si rompe nulla.
+   */
+  aspetto?: {
+    /**
+     * Sta dietro il titolo, al 5%. Larga, non ripetuta.
+     */
+    tramaHero?: (number | null) | Media;
+    /**
+     * Ripetuta su tutta la pagina, al 3%. Deve essere senza giunte.
+     */
+    fondoCarta?: (number | null) | Media;
+  };
+  /**
    * Le voci si riordinano trascinandole. «Centri» e «Contatta» sono sempre in testata e non compaiono qui: reggono la conversione e non si possono togliere.
    */
   navigazione?: {
@@ -1429,6 +1442,12 @@ export interface ImpostazioniSelect<T extends boolean = true> {
   logo?: T;
   ogImage?: T;
   testoFooter?: T;
+  aspetto?:
+    | T
+    | {
+        tramaHero?: T;
+        fondoCarta?: T;
+      };
   navigazione?:
     | T
     | {

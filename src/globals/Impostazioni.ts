@@ -101,6 +101,31 @@ export const Impostazioni: GlobalConfig = {
     { name: 'ogImage', type: 'upload', relationTo: 'media', label: 'Immagine di condivisione' },
     { name: 'testoFooter', type: 'textarea', label: 'Testo del footer' },
     {
+      name: 'aspetto',
+      type: 'group',
+      label: 'Trame della home',
+      admin: {
+        description:
+          'Due sfondi decorativi, gia\' compilati con quelli di partenza. Si possono sostituire o svuotare: senza, la home resta tipografica e non si rompe nulla.',
+      },
+      fields: [
+        {
+          name: 'tramaHero',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Trama in testa alla home',
+          admin: { description: 'Sta dietro il titolo, al 5%. Larga, non ripetuta.' },
+        },
+        {
+          name: 'fondoCarta',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Grana di carta',
+          admin: { description: 'Ripetuta su tutta la pagina, al 3%. Deve essere senza giunte.' },
+        },
+      ],
+    },
+    {
       name: 'navigazione',
       type: 'group',
       label: 'Navigazione',
