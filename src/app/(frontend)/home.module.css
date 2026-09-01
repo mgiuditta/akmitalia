@@ -70,15 +70,13 @@
   stroke: currentColor;
   stroke-width: 1.5;
 }
+/* L'anello spesso e' il timbro: il rosso del marchio portato nella geometria,
+   a un'opacita' che lo tiene fondo e non figura. E' l'unico posto della pagina
+   dove il primario compare senza essere un'azione. */
 .anello .spesso {
   stroke-width: 14;
-  color: var(--campo);
-  opacity: 0.09;
-}
-/* L'anello piu' interno cade sopra la fotografia: stesso segno, fondo diverso. */
-.anello .sopraFoto {
-  color: oklch(1 0 0 / 0.55);
-  stroke-width: 2;
+  color: var(--rosso);
+  opacity: 0.16;
 }
 
 .foto {
@@ -162,7 +160,7 @@
   /* Il bordo tondo viene dall'anello, non dalla moda: e' l'unica forma che il
      marchio conosce. */
   border-radius: 999px;
-  background: var(--campo);
+  background: var(--rosso);
   color: var(--carta-alta);
   font-size: 17px;
   font-weight: 600;
@@ -170,7 +168,7 @@
   text-decoration: none;
 }
 .azione:hover {
-  background: var(--inchiostro);
+  background: var(--rosso-fondo);
 }
 
 .secondaria {
@@ -357,12 +355,16 @@
   .apertura {
     padding: var(--spazio-9) var(--spazio-4) var(--spazio-10);
   }
-  /* Su telefono il sigillo non ha dove stare accanto al titolo: scende in
-     flusso sotto le azioni, e resta un disco. */
+  /* Su telefono il sigillo non ha dove stare accanto al titolo: entra in flusso
+     e la colonna diventa una pila, disco sopra e testo sotto. `flex: none` non
+     e' cosmetico: senza, il disco e' un elemento flex che si comprime sull'asse
+     principale e `aspect-ratio` non lo salva, quindi il cerchio diventa un uovo
+     appena la colonna e' piu' alta del viewport. */
   .sigillo {
     position: static;
+    flex: none;
     width: min(72vw, 320px);
-    margin: var(--spazio-8) 0 0 auto;
+    margin: 0 auto var(--spazio-8);
   }
   .apertura > .occhiello,
   .apertura > .titolo,

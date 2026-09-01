@@ -11,29 +11,44 @@
      di Chrome su Android, che altrimenti inverte da solo la palette misurata. */
   color-scheme: light;
 
-  /* --- colore: i sei ruoli, piu' la superficie alta e il rosso di sistema --- */
+  /* --- colore: i sei ruoli, piu' la superficie alta --- */
   --carta: oklch(0.985 0.006 150);
   --carta-alta: oklch(0.998 0.002 150);
   --inchiostro: oklch(0.22 0.014 152);
   --grafite: oklch(0.505 0.012 152);
   --riga: oklch(0.785 0.01 150);
+
+  /* Rosso AKM: campionato dal marchio, non scelto. E' il rosso dell'arco dello
+     stemma, `#c81130`, ed e' il colore primario del sistema: azione piena,
+     focus, e il percorso antiaggressione. Un rosso solo, non tre (Regola del
+     Rosso Unico):
+       su Carta            5,62:1   testo e filetti
+       Carta alta sopra    5,84:1   testo chiaro su fondo pieno
+       su Inchiostro       2,93:1   riempimenti e fili, mai testo
+     Passa AA nei due versi, non AAA: e' il prezzo di tenere il valore del
+     marchio invece di scurirlo, ed e' un prezzo dichiarato. */
+  --rosso: oklch(0.531 0.207 21.7);
+  /* La variante che regge il testo chiaro dove il rosso pieno e' troppo vicino
+     alla soglia: hover dell'azione, e fondi che portano testo lungo.
+     Carta alta sopra 7,72:1, su Carta 7,42:1. */
+  --rosso-fondo: oklch(0.46 0.19 22);
+  /* Verde AKM: non e' piu' il primario, e' il colore del percorso «sicurezza
+     quotidiana». 7,20:1 su Carta, invariato. */
   --verde: oklch(0.44 0.075 152);
-  --rosso: oklch(0.46 0.105 36);
-  --errore: oklch(0.5 0.19 25);
 
   /* --- il campo pieno della home (#35) ---
-     Tre ruoli e non una palette a parte: la home riusa i sei ruoli di sopra e
-     aggiunge solo cio' che serve a una superficie scura, che prima non esisteva.
-     Il verde del campo e' piu' scuro del Verde AKM perche' ci va sopra del testo
-     chiaro, e i valori sono misurati, non stimati:
-       Carta alta su Campo      11,79:1
-       Campo grafite su Campo    7,80:1
-       Campo riga su Campo       2,61:1  (filo, non testo: la soglia in cui una
+     Il campo **e'** l'Inchiostro: non un secondo scuro da mantenere in parallelo,
+     lo stesso nero verdastro che la pagina usa come testo, portato a superficie.
+     Un token in meno, e il rosso del marchio ci suona sopra come un timbro su
+     uno stampato. I due ruoli che restano servono solo alla superficie scura:
+       Carta alta su Campo      17,11:1
+       Campo grafite su Campo    8,65:1
+       Campo riga su Campo       2,42:1  (filo, non testo: la soglia in cui una
                                           riga a 1px sparisce sta sotto, GOV.UK
                                           e' a circa 2,3:1) */
-  --campo: oklch(0.33 0.07 155);
-  --campo-riga: oklch(0.56 0.05 155);
-  --campo-grafite: oklch(0.86 0.02 155);
+  --campo: var(--inchiostro);
+  --campo-riga: oklch(0.46 0.012 152);
+  --campo-grafite: oklch(0.78 0.012 152);
 
   /* --- tipografia: una famiglia, quattro pesi, sette livelli --- */
   --famiglia: 'Fira Sans', system-ui, sans-serif;

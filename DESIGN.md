@@ -15,13 +15,16 @@ AKM Italia tiene già un albo istruttori. Il sito è la stessa cosa estesa a tut
 
 Da qui discende la densità. L'Albo non ha paura del dato: indirizzi, orari, sigle di riconoscimento, nomi propri stanno in pagina a corpo pieno, non nascosti dietro un accordion o riassunti in un'icona. Il vuoto c'è, ed è generoso, ma serve a separare voci di un elenco, non a fare atmosfera. Se una schermata potrebbe funzionare identica per una qualsiasi altra realtà, ha fallito: il contenuto specifico è il design.
 
-Il tricolore entra come sistema di classificazione, non come decorazione patriottica. Verde, bianco e rosso sono i tre percorsi, e questo è l'unico lavoro che fanno. Il sistema rifiuta esplicitamente le quattro trappole di PRODUCT.md: nero e rosso sangue da palestra MMA tattica, l'accatastamento illeggibile del sito federale anni 2000, l'hero con gradiente e le tre card identiche del SaaS template, il sorriso in stock photo del fitness patinato.
+Il colore primario è **il rosso del marchio**, campionato dallo stemma e non scelto a tavolino. Porta l'azione, il focus e il percorso antiaggressione, e sta su carta chiara o su un nero verdastro che è lo stesso inchiostro del testo portato a superficie. È un rosso e nero, e la cosa va detta: PRODUCT.md elenca «nero e rosso sangue da palestra MMA tattica» fra le trappole. La distanza da quella trappola non si tiene evitando i due colori, si tiene per disciplina. Il riferimento è **il timbro a inchiostro rosso su uno stampato**: un colore saturo solo, applicato come un sigillo su una pagina di carta e testo, senza camo, senza stencil, senza gradienti, senza controluce, senza pugni. Se una schermata sembra la locandina di una palestra da combattimento, è rotta esattamente come se sembrasse una bandiera.
+
+Il tricolore resta il sistema di classificazione dei percorsi, non una decorazione patriottica, e questo è l'unico lavoro che fa. Le altre tre trappole di PRODUCT.md restano rifiutate senza sfumature: l'accatastamento illeggibile del sito federale anni 2000, l'hero con gradiente e le tre card identiche del SaaS template, il sorriso in stock photo del fitness patinato.
 
 Il movimento è coreografato ma di servizio: scorrendo, la pagina si compone come si compila un registro, una voce dopo l'altra. Mai per stupire, sempre per scandire la lettura.
 
 **Key Characteristics:**
 
 - Documentale prima che promozionale: il dato è l'eroe, non l'aggettivo
+- Un rosso solo, quello del marchio, usato come un timbro e non come un allarme
 - Tricolore come tassonomia, mai come bandiera
 - Una sola grottesca, forte contrasto di peso, tono da manuale operativo
 - Superfici piatte, profondità solo come risposta a uno stato
@@ -30,29 +33,32 @@ Il movimento è coreografato ma di servizio: scorrendo, la pagina si compone com
 
 ## 2. Colors
 
-Palette a quattro ruoli: tre colori di percorso derivati dal tricolore, spostati fuori dai primari da bandiera, su un fondo neutro di carta e inchiostro. I valori sono in oklch, che è la forma in cui sono stati scelti: il vincolo «neutro tinto di chroma 0.005-0.01» è una coordinata oklch, e in hex non si può nemmeno verificare. L'hex è lì solo per chi deve incollarlo altrove.
+Palette a quattro ruoli su un fondo neutro di carta e inchiostro. I valori sono in oklch, che è la forma in cui sono stati scelti: il vincolo «neutro tinto di chroma 0.005-0.01» è una coordinata oklch, e in hex non si può nemmeno verificare. L'hex è lì solo per chi deve incollarlo altrove.
 
 Ogni rapporto qui sotto è calcolato, non stimato: il calcolatore sta sul branch `prototipo/palette`.
 
 ### Primary
 
-- **Verde AKM** `oklch(0.44 0.075 152)` `#2f5e3e`: verde bosco desaturato, non il verde bandiera. Porta il percorso «sicurezza quotidiana», l'adulto che è il pubblico primario. È il colore che compare più spesso e regge le CTA principali. Deve passare AA come testo su fondo chiaro: se non lo fa, va scurito, non alleggerito il testo. Passa nei due versi allo stesso rapporto, **7,19:1** come testo su Carta e **7,19:1** come fondo sotto testo Carta, ed è la ragione per cui è questo valore e non un verde più vivo.
+- **Rosso AKM** `oklch(0.531 0.207 21.7)` `#c81130`: il rosso dell'arco dello stemma, campionato dal file del cliente. È il colore primario: azione piena, focus, e il percorso antiaggressione. Passa AA nei due versi, **5,62:1** come testo su Carta e **5,84:1** come fondo sotto testo Carta alta, e non passa AAA. È una scelta dichiarata: scurirlo lo porterebbe a 7:1 e non sarebbe più il colore del marchio, e il valore del marchio vince perché è l'unica cosa del sistema che non è stata decisa qui.
+- **Rosso fondo** `oklch(0.46 0.19 22)` `#a90021`: la variante scura per l'hover dell'azione e per i fondi pieni che portano testo lungo, dove 5,84:1 sta troppo vicino alla soglia. **7,72:1** sotto testo Carta alta, **7,42:1** come testo su Carta. Non è un secondo rosso della palette: è lo stesso rosso, più in basso.
 
 ### Secondary
 
-- **Rosso Mattone** `oklch(0.46 0.105 36)` `#883f2c`: rosso terroso, mai il rosso sangue. Porta il percorso «antiaggressione». Raro per definizione. Non è il colore dell'errore e non è il colore dell'urgenza commerciale. **7,18:1** su Carta.
-- **Rosso di sistema** `oklch(0.5 0.19 25)` `#b71824`: errori di form, avvisi, stati distruttivi. Esiste perché il Rosso Mattone non può fare questo lavoro (Regola del Rosso Riservato), ed è più saturo e più freddo apposta: affiancati, i due rossi non si scambiano. **6,36:1** su Carta.
+- **Verde AKM** `oklch(0.44 0.075 152)` `#2f5e3e`: verde bosco desaturato, non il verde bandiera. **Non è più il primario**: porta il percorso «sicurezza quotidiana» e basta. Resta il valore misurato di prima, **7,20:1** su Carta nei due versi, perché come colore di percorso deve continuare a reggere il testo.
 
 ### Tertiary
 
 - **Carta** `oklch(0.985 0.006 150)` `#f7fbf8`: il «bianco» del tricolore non è `#fff`, è il fondo caldo del documento, tinto verso il verde di chroma minima (0.005-0.01). Porta il percorso «crescita dei ragazzi» attraverso il contrasto di bordo e di peso, mai attraverso un riempimento invisibile: il terzo percorso si scrive in Inchiostro come tutto il resto, e si distingue per segno, posizione e peso.
-- **Carta alta** `oklch(0.998 0.002 150)` `#fdfffe`: l'unico secondo fondo del sistema. Campi di form, superficie sollevata, testo sopra il Verde pieno. Non è `#fff` per un pelo, e quel pelo è la regola.
+- **Carta alta** `oklch(0.998 0.002 150)` `#fdfffe`: l'unico secondo fondo del sistema. Campi di form, superficie sollevata, testo sopra il rosso pieno e sopra il Campo. Non è `#fff` per un pelo, e quel pelo è la regola.
 
 ### Neutral
 
-- **Inchiostro** `oklch(0.22 0.014 152)` `#161d17`: quasi nero tinto verso il verde di marca. Mai `#000`. Testo corrente, titoli, bordi pieni. **16,55:1** su Carta.
+- **Inchiostro** `oklch(0.22 0.014 152)` `#161d17`: quasi nero tinto verso il verde. Mai `#000`. Testo corrente, titoli, bordi pieni. **16,55:1** su Carta. È anche il **Campo**, cioè la superficie scura a tutta larghezza della home: non c'è un secondo nero da mantenere in parallelo, il testo e la superficie sono lo stesso valore. Carta alta sopra il Campo sta a **17,11:1**.
 - **Grafite** `oklch(0.505 0.012 152)` `#606761`: testo secondario, etichette, metadati di sede. Deve restare AA sul fondo Carta: **5,60:1**, con margine sufficiente a sopravvivere a un corpo piccolo.
 - **Riga** `oklch(0.785 0.01 150)` `#b5bbb6`: divisori e bordi a 1px. L'elenco si struttura con righe, non con ombre. **1,88:1** su Carta, sotto la soglia del testo perché testo non è: il minimo utile è quello sotto cui una riga a 1px sparisce sul fondo, e GOV.UK sta a circa 2,3:1.
+- **Campo riga** `oklch(0.46 0.012 152)` `#535a55` e **Campo grafite** `oklch(0.78 0.012 152)` `#b2bab4`: gli stessi due mestieri, sul Campo invece che sulla Carta. **2,42:1** e **8,65:1** sul Campo.
+
+Il Rosso AKM sul Campo sta a **2,93:1**: sul nero il rosso fa riempimenti e fili, **mai testo**. Il testo sul Campo è Carta alta o Campo grafite, e non c'è una terza scelta.
 
 ### Named Rules
 
@@ -62,11 +68,15 @@ Ogni rapporto qui sotto è calcolato, non stimato: il calcolatore sta sul branch
 
 **La Regola dell'Etichetta Corta.** Dentro un elenco, l'etichetta di percorso porta il **target** del corso, «Adulti», «Bambini», «Donne», non il suo nome per esteso: i nomi veri sono lunghi il doppio della riga («Krav Maga – Antibullismo Self Defense System») e il nome completo ha già il suo posto, nella riga d'orario sotto. Il target è un campo che esiste già su `corsi` ed è corto per costruzione, quindi l'etichetta non può allungarsi mai.
 
-**La Regola del Tema Unico.** Il sistema ha una sola risoluzione dei sei ruoli, ed e' chiara. «Foglio chiaro» e' carta e inchiostro: il fondo quasi bianco non e' un default che aspetta il suo contrario, e' il riferimento documentale, e un albo civico non ha una versione notturna. Perche' questa sia una scelta e non un'omissione, `:root` dichiara `color-scheme: light`. La dichiarazione e' portante due volte: senza, i controlli nativi — e il sistema usa HTML nativo prima di Radix — prendono lo stile scuro dello UA dentro una pagina chiara; e Chrome su Android con Auto Dark Theme inverte da solo la palette misurata in #5. Un tema scuro vero non si ottiene invertendo: il Verde passa 7,19:1 su Carta e su fondo scuro va **rifatto**, insieme a Rosso Mattone, Grafite e Riga, e rivalidato coppia per coppia. Resta possibile — ogni componente parla solo di token di ruolo, quindi il diff sarebbe un blocco `@media (prefers-color-scheme: dark)` in `token.css` — ma non e' gratis, e finche' non e' misurato non esiste.
+**La Regola del Tema Unico.** Il sistema ha una sola risoluzione dei sei ruoli, ed e' chiara. «Foglio chiaro» e' carta e inchiostro: il fondo quasi bianco non e' un default che aspetta il suo contrario, e' il riferimento documentale, e un albo civico non ha una versione notturna. Perche' questa sia una scelta e non un'omissione, `:root` dichiara `color-scheme: light`. La dichiarazione e' portante due volte: senza, i controlli nativi — e il sistema usa HTML nativo prima di Radix — prendono lo stile scuro dello UA dentro una pagina chiara; e Chrome su Android con Auto Dark Theme inverte da solo la palette misurata in #5. Un tema scuro vero non si ottiene invertendo: il Rosso AKM passa 5,62:1 su Carta e sul Campo crolla a 2,93:1, quindi su fondo scuro va **rifatto**, insieme a Verde, Grafite e Riga, e rivalidato coppia per coppia. Il Campo della home non è un tema scuro: è una superficie sola, con i suoi due ruoli già misurati, dentro una pagina chiara. Resta possibile — ogni componente parla solo di token di ruolo, quindi il diff sarebbe un blocco `@media (prefers-color-scheme: dark)` in `token.css` — ma non e' gratis, e finche' non e' misurato non esiste.
 
-**La Regola del Colore Che Sparisce.** In `forced-colors: active` il browser scarta i colori scelti: i bordi sopravvivono, i riempimenti di fondo no. L'elenco si struttura gia' con righe a 1px e non con card riempite, quindi passa intatto; i due punti esposti sono l'etichetta di percorso a fondo pieno e il Rosso di sistema sugli errori, cioe' i posti dove il colore rischia di essere l'unico portatore d'informazione. Nessuna informazione vive solo nel colore: l'etichetta porta gia' il target scritto, e un errore di form porta testo, non solo bordo rosso. Non si scrive nessun blocco `@media (forced-colors: active)` finche' non c'e' un difetto vero da correggere: la modalita' si eredita, e la regola serve a rendere l'eredita' sicura.
+**La Regola del Colore Che Sparisce.** In `forced-colors: active` il browser scarta i colori scelti: i bordi sopravvivono, i riempimenti di fondo no. L'elenco si struttura gia' con righe a 1px e non con card riempite, quindi passa intatto; i due punti esposti sono l'etichetta di percorso a fondo pieno e l'azione piena in Rosso AKM, cioe' i posti dove il colore rischia di essere l'unico portatore d'informazione. Nessuna informazione vive solo nel colore: l'etichetta porta gia' il target scritto, e un errore di form porta testo, non solo bordo rosso. Non si scrive nessun blocco `@media (forced-colors: active)` finche' non c'e' un difetto vero da correggere: la modalita' si eredita, e la regola serve a rendere l'eredita' sicura.
 
-**La Regola del Rosso Riservato.** Il Rosso Mattone appartiene al percorso antiaggressione. Errori di form, avvisi e stati distruttivi usano un rosso di sistema distinto, oppure nessun rosso: parole e icona bastano.
+**La Regola del Rosso Unico.** C'è **un solo rosso**. Il sistema ne ha avuti tre (marchio, percorso, errore) e li ha fusi, perché tre rossi affiancati nessuno li distingue e la regola che li teneva separati era una regola che nessuno poteva verificare a occhio. Il Rosso AKM fa l'azione piena, il focus, il percorso antiaggressione e lo stato che va notato in una scheda. Non si introduce un secondo rosso «di sistema»: se serve distinguere, si distingue con la parola, con il peso o con la forma, che sono i mezzi che il resto del sistema usa già.
+
+Il corollario è che **il rosso non è più il colore dell'errore per contratto**. Un errore di form porta testo esplicito, non solo un bordo colorato, ed è esattamente ciò che la Regola dell'Etichetta chiede ovunque: se togliendo il colore l'informazione sparisce, è rotta.
+
+**La Regola del Nero Documentale.** Il nero del sistema è l'Inchiostro, tinto verso il verde, e non è mai `#000`. Regge una superficie a tutta larghezza e il rosso ci sta sopra, ma solo alle condizioni dello stampato: fondo pieno unico e piatto, nessun gradiente, nessun blur, nessuna foto in controluce sotto il testo, e il rosso che fa segno e non atmosfera. Il test è quello dell'Overview: se la schermata sembra la locandina di una palestra da combattimento, il nero è stato usato come effetto invece che come carta.
 
 ## 3. Typography
 
@@ -151,21 +161,21 @@ Le ombre esistono solo come risposta a uno stato: un elemento sollevato perché 
 - **Do** tingere ogni neutro verso il verde di marca con chroma 0.005-0.01. Mai `#000`, mai `#fff`.
 - **Do** mostrare indirizzo, orari e referente della sede come testo leggibile, senza richiedere un click.
 - **Do** nominare per esteso sedi e istruttori a livello Title in ogni sezione che li riguarda.
-- **Do** verificare il contrasto AA sul verde e sul rosso prima di usarli come testo: da saturi su fondo chiaro raramente passano.
+- **Do** verificare il contrasto AA sul rosso e sul verde prima di usarli come testo: da saturi su fondo chiaro raramente passano, e sul Campo il rosso non passa affatto.
 - **Do** costruire gli elenchi con righe a 1px e ritmo di spaziatura variabile, non con card.
 - **Do** rendere il controllo anti-bot accessibile: honeypot o time-trap, non un puzzle visivo.
 - **Do** far sparire l'intera coreografia sotto `prefers-reduced-motion`, lasciando il contenuto completo.
 
 ### Don't:
 
-- **Don't** costruire la **palestra MMA tattica**: nero e rosso sangue, camo, stencil, teschi, foto di pugni in controluce. È il riflesso di categoria e taglia fuori genitori, donne e adulti sopra i 40.
+- **Don't** costruire la **palestra MMA tattica**. Il sistema usa il rosso e il nero, quindi il divieto si sposta su ciò che li rende quella cosa: camo, stencil, teschi, gradienti sanguigni, foto di pugni in controluce, fondi neri usati come atmosfera. È il riflesso di categoria e taglia fuori genitori, donne e adulti sopra i 40.
 - **Don't** ricadere nel **sito federale anni 2000**: home a news, PDF come navigazione, tabelle di orari illeggibili, fila di loghi di enti in footer.
 - **Don't** consegnare un **SaaS template**: hero con gradiente, tre card identiche icona più titolo più testo, «Scopri di più».
 - **Don't** virare al **fitness/wellness patinato**: palette da centro benessere, linguaggio da percorso di benessere.
-- **Don't** usare foto stock. Meglio nessuna immagine che una comprata.
+- **Don't** usare foto stock, né una fotografia d'ambiente al posto di una di persone al lavoro: una sala vuota dice «palestra comunale» e non dice krav maga. Meglio nessuna immagine che una comprata o una muta.
 - **Don't** accostare verde, bianco e rosso in tre bande o tre colonne contigue.
 - **Don't** affidare al solo colore la distinzione tra i percorsi.
-- **Don't** usare il Rosso Mattone per errori di form o stati distruttivi.
+- **Don't** introdurre un secondo rosso, per gli errori o per qualunque altra cosa. Ce n'è uno, ed è quello del marchio.
 - **Don't** usare `border-left` o `border-right` oltre 1px come striscia colorata su schede, voci di elenco o avvisi.
 - **Don't** usare `background-clip: text` con un gradiente. Un colore pieno, enfasi con peso o dimensione.
 - **Don't** usare glassmorphism, blur decorativi o card di vetro.

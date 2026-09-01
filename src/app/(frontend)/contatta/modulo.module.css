@@ -30,7 +30,7 @@
 
 .campo input:focus-visible,
 .campo select:focus-visible,
-.campo textarea:focus-visible { border-color: var(--verde); }
+.campo textarea:focus-visible { border-color: var(--rosso); }
 
 .aiuto {
   color: var(--grafite);
@@ -50,7 +50,7 @@
   font-size: var(--dato-corpo);
   line-height: var(--dato-interlinea);
 }
-.consenso input { width: 20px; height: 20px; margin-top: var(--spazio-1); accent-color: var(--verde); }
+.consenso input { width: 20px; height: 20px; margin-top: var(--spazio-1); accent-color: var(--rosso); }
 
 .azioni { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spazio-4); }
 
@@ -58,7 +58,7 @@
   min-height: 48px;
   padding: 0 var(--spazio-6);
   border: 0;
-  background: var(--verde);
+  background: var(--rosso);
   color: var(--carta-alta);
   font: inherit;
   font-size: var(--dato-corpo);

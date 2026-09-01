@@ -41,8 +41,8 @@
   display: inline-block;
   margin-top: var(--spazio-3);
   padding: 2px var(--spazio-2);
-  border: 1px solid var(--errore);
-  color: var(--errore);
+  border: 1px solid var(--rosso);
+  color: var(--rosso);
   font-size: var(--label-corpo);
   line-height: var(--label-interlinea);
   letter-spacing: var(--label-tracking);

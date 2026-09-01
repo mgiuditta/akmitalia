@@ -107,11 +107,17 @@ export default async function Home() {
       style={{ '--grana': trama(aspetto?.fondoCarta) } as React.CSSProperties}
     >
       <header className={stile.apertura}>
-        {/* Il sigillo: gli anelli e, se c'e', la fotografia dentro di essi. Un
+        {/* Il sigillo: gli anelli e, se c'e', l'immagine dentro di essi. Un
             centro solo, dichiarato dal CSS. Senza immagine restano gli anelli e
-            l'apertura e' completa lo stesso. L'`alt` e' pieno e non vuoto,
-            perche' l'immagine porta informazione — com'e' fatta davvero la sala
-            dove si va — e non e' una trama. */}
+            l'apertura e' completa lo stesso.
+
+            Cosa ci va: il **ritaglio del docente in tecnica**, PNG con alfa,
+            quadrato, con il soggetto dentro il cerchio inscritto (le misure e i
+            prompt stanno in `docs/marchio/prompt-vittorio-sigillo.md`). Non una
+            fotografia d'ambiente: una sala vuota dice «palestra comunale» e non
+            dice krav maga, ed e' la ragione per cui la prima e' stata tolta.
+            L'`alt` e' pieno e non vuoto, perche' l'immagine porta informazione,
+            chi insegna e che cosa si fa, e non e' una trama. */}
         <div className={stile.sigillo}>
           {apertura?.url ? (
             <div className={stile.foto}>
@@ -130,12 +136,7 @@ export default async function Home() {
             <circle className={stile.spesso} cx="550" cy="550" r="470" />
             <circle cx="550" cy="550" r="540" />
             <circle cx="550" cy="550" r="392" />
-            <circle
-              className={apertura?.url ? stile.sopraFoto : undefined}
-              cx="550"
-              cy="550"
-              r="318"
-            />
+            <circle cx="550" cy="550" r="318" />
           </svg>
         </div>
 
