@@ -1,0 +1,284 @@
+/* PROTOTIPO USA E GETTA — issue #18. Un solo modulo per le tre varianti: e'
+   codice da buttare, e tre file identici al 60% costerebbero piu' di quanto
+   valgono. Le classi di struttura non sono condivise fra varianti.
+   Valori solo da token.css (#5, #7): qui non se ne inventa nessuno.
+   Mobile-first, come /centri. */
+
+/* ---------- foglie comuni ---------- */
+
+.indietro {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--grafite);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+}
+
+.occhiello,
+.gruppo,
+.chiave,
+.provincia {
+  color: var(--grafite);
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+}
+
+.gruppo {
+  margin-top: var(--gruppo-sopra);
+  margin-bottom: var(--gruppo-sotto);
+}
+
+.titolo {
+  margin-top: var(--spazio-2);
+  font-size: var(--headline-corpo);
+  line-height: var(--headline-interlinea);
+  letter-spacing: var(--headline-tracking);
+  font-weight: var(--headline-peso);
+}
+
+.titoloGrande {
+  margin-top: var(--spazio-2);
+  max-width: 20ch;
+  font-size: var(--display-corpo);
+  line-height: var(--display-interlinea);
+  letter-spacing: var(--display-tracking);
+  font-weight: var(--display-peso);
+}
+
+.sommario {
+  max-width: var(--misura);
+  margin-top: var(--spazio-5);
+}
+
+.aChi,
+.prova,
+.prosaLista,
+.senza {
+  max-width: var(--misura);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+.aChi { margin-top: var(--spazio-3); color: var(--grafite); }
+.senza { color: var(--grafite); }
+.senza em { color: var(--errore); font-style: normal; }
+
+/* Elenco di frasi: righe, non pallini, non card (Regola del Foglio). */
+.righe { margin: 0; padding: 0; list-style: none; }
+.righe li {
+  padding: var(--spazio-3) 0;
+  border-bottom: 1px solid var(--riga);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  max-width: var(--misura-max);
+}
+.righe li:last-child { border-bottom: 0; }
+
+.fatti { margin: 0; }
+.fatto {
+  display: grid;
+  gap: 0 var(--spazio-4);
+  padding: var(--spazio-3) 0;
+  border-bottom: 1px solid var(--riga);
+}
+.valore {
+  margin: 0;
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+.orari {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--spazio-1);
+}
+.turno {
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  font-variant-numeric: tabular-nums;
+}
+.docente { color: var(--grafite); font-size: var(--meta-corpo); }
+
+.sospese {
+  margin-top: var(--spazio-4);
+  color: var(--grafite);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+}
+
+.pulsante {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 var(--spazio-6);
+  background: var(--verde);
+  color: var(--carta-alta);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: var(--dato-corpo);
+}
+.pulsante:hover { background: oklch(0.38 0.075 152); }
+
+.notaAzione {
+  display: block;
+  margin-top: var(--spazio-3);
+  color: var(--grafite);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+}
+
+.soloScreenReader {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- A · Registro: una colonna, azione in fondo ---------- */
+
+.registro {
+  max-width: 78ch;
+  margin: 0 auto;
+  padding: var(--spazio-6) var(--spazio-6) var(--spazio-10);
+}
+
+.centri { margin: 0; padding: 0; list-style: none; }
+.centro {
+  padding: var(--voce-padding) 0;
+  border-bottom: 1px solid var(--riga);
+}
+.centro:last-child { border-bottom: 0; }
+.nomeCentro {
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: var(--title-peso);
+  text-decoration: none;
+}
+.provincia { margin-left: var(--spazio-2); }
+
+.azioneCoda { margin-top: var(--spazio-9); }
+
+/* ---------- B · Prima la sede: i centri sono la pagina ---------- */
+
+.sedeprima {
+  max-width: 84ch;
+  margin: 0 auto;
+  padding: var(--spazio-6) var(--spazio-6) var(--spazio-10);
+}
+
+.testa { padding-bottom: var(--spazio-6); border-bottom: 1px solid var(--inchiostro); }
+
+.riga1 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spazio-3);
+  margin-top: var(--spazio-4);
+}
+.aChiInline { color: var(--grafite); font-size: var(--meta-corpo); line-height: var(--meta-interlinea); }
+
+.gruppoForte {
+  margin-top: var(--spazio-7);
+  margin-bottom: var(--gruppo-sotto);
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: var(--title-peso);
+}
+
+.centriGrandi { margin: 0; padding: 0; list-style: none; }
+.centroGrande {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spazio-4);
+  padding: var(--voce-padding) 0;
+  border-bottom: 1px solid var(--riga);
+}
+.nomeCentroGrande {
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: var(--title-peso);
+  text-decoration: none;
+}
+.indirizzo {
+  color: var(--grafite);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Il pulsante di riga e' l'affordance primaria di questa variante: un centro,
+   un'azione. Su riga stretta va a capo sotto il dato, non lo comprime. */
+.pulsanteRiga {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 var(--spazio-5);
+  border: 1px solid var(--verde);
+  color: var(--verde);
+  text-decoration: none;
+  font-size: var(--meta-corpo);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.pulsanteRiga:hover { background: var(--verde); color: var(--carta-alta); }
+
+.coda { margin-top: var(--spazio-9); }
+
+@media (min-width: 720px) {
+  .centroGrande { flex-direction: row; align-items: center; justify-content: space-between; }
+}
+
+/* ---------- C · Domande, con spalla di dato pratico ---------- */
+
+.domande {
+  max-width: 100ch;
+  margin: 0 auto;
+  padding: var(--spazio-6) var(--spazio-6) var(--spazio-10);
+}
+
+.testaC { padding-bottom: var(--spazio-7); }
+
+.qa { margin-top: var(--spazio-7); }
+.domanda {
+  margin-bottom: var(--spazio-3);
+  max-width: var(--misura);
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: 700;
+}
+
+.due { display: grid; gap: var(--spazio-8); }
+
+.spalla { align-self: start; }
+.centriStretti { margin: 0; padding: 0; list-style: none; }
+.centriStretti li {
+  padding: var(--spazio-3) 0;
+  border-bottom: 1px solid var(--riga);
+}
+.tutti {
+  display: inline-block;
+  margin-top: var(--spazio-3);
+  font-size: var(--meta-corpo);
+}
+.spalla .pulsante { margin-top: var(--spazio-7); width: 100%; }
+
+@media (min-width: 900px) {
+  .due { grid-template-columns: minmax(0, 1fr) 30ch; gap: var(--spazio-10); }
+  /* La spalla e' il dato pratico che segue la lettura: resta a vista mentre le
+     domande scorrono. Nessuna ombra: e' separata da una riga a 1px. */
+  .spalla {
+    position: sticky;
+    top: var(--spazio-6);
+    padding-left: var(--spazio-6);
+    border-left: 1px solid var(--riga);
+  }
+  .spalla .gruppo:first-child { margin-top: 0; }
+}
