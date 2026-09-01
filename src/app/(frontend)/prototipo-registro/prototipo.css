@@ -1,0 +1,93 @@
+/* PROTOTIPO USA E GETTA — issue #35. Qui dentro c'e' solo cio' che sta **fuori**
+   dal giudizio: le famiglie in prova, la barra di commutazione e la nota in
+   testa. Palette, scala e movimento vivono nei tre moduli, uno per direzione,
+   perche' e' esattamente la roba che deve poter divergere. */
+
+/* Quattro file variabili. `font-optical-sizing: auto` sui due che hanno l'asse
+   opsz e' il default del browser, e va lasciato fare: e' meta' del motivo per
+   cui Newsreader regge sia il corpo sia un occhiello. */
+@font-face {
+  font-family: 'Archivo';
+  src: url('/font/Archivo.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/font/SpaceGrotesk.ttf') format('truetype-variations');
+  font-weight: 300 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/font/BricolageGrotesque.ttf') format('truetype-variations');
+  font-weight: 200 800;
+  font-stretch: 75% 100%;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Newsreader';
+  src: url('/font/Newsreader.ttf') format('truetype-variations');
+  font-weight: 200 800;
+  font-display: swap;
+}
+
+/* Le famiglie in prova non hanno tutte i maiuscoletti veri e i pesi che
+   dichiarano: `font-synthesis: none` di `styles.css` farebbe sparire in
+   silenzio meta' della gerarchia proprio nel momento in cui la si giudica.
+   Qui il browser puo' sintetizzare, e la Regola del Maiuscoletto Vero e' una
+   delle cose che il ticket #38 dovra' rimisurare sulla famiglia scelta. */
+.prototipo {
+  font-synthesis: weight style small-caps;
+  padding-bottom: 128px;
+}
+
+/* Dichiaratamente non di design: sta fuori dal giudizio. */
+.prototipo-testata {
+  max-width: 70ch;
+  margin: 0 auto;
+  padding: 24px 24px 0;
+  font-family: 'Fira Sans', system-ui, sans-serif;
+  color: var(--grafite);
+  font-size: 14px;
+  line-height: 20px;
+}
+.prototipo-testata strong {
+  color: var(--inchiostro);
+  font-weight: 500;
+}
+
+.switcher {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: oklch(0.22 0.014 152);
+  color: oklch(0.985 0.006 150);
+  box-shadow: 0 6px 24px oklch(0.22 0.014 152 / 0.35);
+  font-family: 'Fira Sans', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+.switcher button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 20px;
+  cursor: pointer;
+}
+.switcher button:hover {
+  background: oklch(1 0 0 / 0.14);
+}

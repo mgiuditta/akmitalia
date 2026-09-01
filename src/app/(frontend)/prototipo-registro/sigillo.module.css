@@ -1,0 +1,314 @@
+/* DIREZIONE A — «Il Sigillo». PROTOTIPO USA E GETTA, issue #35.
+ *
+ * Tesi: lo stemma non e' un logo da 40px, e' la geometria della pagina. Il
+ * sigillo e' un anello, quindi il segno che separa le voci non e' una riga
+ * dritta, e' un **arco**: la stessa curva dell'anello, a raggio di pagina.
+ *
+ * Ogni token qui e' locale alla direzione: famiglia, palette, scala e movimento
+ * devono poter divergere dalle altre due, e da `token.css`, che e' il registro
+ * che stiamo rimettendo in discussione. */
+
+.direzione {
+  --ground: oklch(0.975 0.004 165);
+  --ink: oklch(0.2 0.02 158);
+  --muto: oklch(0.48 0.015 158);
+  --filo: oklch(0.8 0.012 160);
+  /* Il verde del campo pieno e' piu' scuro del Verde AKM: qui sotto ci va del
+     testo chiaro, e 0.33 di lightness lo tiene a 10,7:1 contro la carta alta. */
+  --campo: oklch(0.33 0.07 155);
+  /* 2,61:1 sul campo: sotto la soglia del testo perche' testo non e', sopra
+     quella in cui una riga a 1px sparisce (GOV.UK sta a circa 2,3:1). */
+  --campo-filo: oklch(0.56 0.05 155);
+  --sopra: oklch(0.985 0.006 150);
+  --mattone: oklch(0.5 0.12 38);
+
+  /* Archivo espansa. La larghezza viene dall'artefatto: il microtesto
+     dell'anello e' impaginato largo attorno alla circonferenza, e una
+     grottesca stretta e' anche il riflesso di categoria che PRODUCT.md vieta
+     (palestra MMA tattica). Larga e' calma, stretta e' minacciosa. */
+  --famiglia: 'Archivo', system-ui, sans-serif;
+
+  font-family: var(--famiglia);
+  background: var(--ground);
+  color: var(--ink);
+  overflow-x: clip;
+}
+
+/* --- apertura --- */
+
+.apertura {
+  position: relative;
+  isolation: isolate;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 96px 32px 112px;
+}
+
+/* Il segno: un quarto d'anello a raggio di pagina, ancorato fuori dall'angolo,
+   come un sigillo premuto sul foglio e uscito dal bordo. E' l'unico posto dove
+   questa direzione spende audacia. */
+.anello {
+  position: absolute;
+  z-index: -1;
+  top: -180px;
+  right: -420px;
+  width: 1100px;
+  height: 1100px;
+  color: var(--filo);
+  pointer-events: none;
+}
+.anello circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.anello .spesso {
+  stroke-width: 14;
+  color: var(--campo);
+  opacity: 0.09;
+}
+
+.occhiello {
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+  font-stretch: 125%;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muto);
+}
+
+.titolo {
+  max-width: 15ch;
+  margin-top: 28px;
+  font-size: clamp(44px, 7.4vw, 104px);
+  line-height: 0.94;
+  font-weight: 600;
+  font-stretch: 118%;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+
+.sommario {
+  max-width: 54ch;
+  margin-top: 32px;
+  font-size: 19px;
+  line-height: 32px;
+  font-weight: 400;
+  font-stretch: 100%;
+  color: var(--ink);
+}
+
+.azioni {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.azione {
+  display: inline-flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 32px;
+  /* Il bordo tondo viene dall'anello, non dalla moda: e' l'unica forma che il
+     marchio conosce. */
+  border-radius: 999px;
+  background: var(--campo);
+  color: var(--sopra);
+  font-size: 17px;
+  font-weight: 600;
+  font-stretch: 108%;
+  text-decoration: none;
+}
+.azione:hover {
+  background: var(--ink);
+}
+
+.secondaria {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--muto);
+  text-underline-offset: 5px;
+}
+.secondaria:hover {
+  color: var(--ink);
+}
+
+/* --- il bivio, su campo pieno --- */
+
+.campo {
+  background: var(--campo);
+  color: var(--sopra);
+  padding: 88px 0 64px;
+}
+
+.dentro {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.domanda {
+  font-size: clamp(28px, 3.4vw, 44px);
+  line-height: 1.05;
+  font-weight: 600;
+  font-stretch: 118%;
+  letter-spacing: -0.015em;
+}
+
+.bivio {
+  list-style: none;
+  margin: 40px 0 0;
+  padding: 0;
+}
+
+.voce {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 20px 48px;
+  padding: 36px 0 44px;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* La riga che separa le voci e' un arco, non un filo dritto: e' la curva
+   dell'anello a raggio di pagina. Il raggio cresce voce dopo voce, quindi i tre
+   archi sono concentrici come i tre cerchi dello stemma. */
+.arco {
+  display: block;
+  width: 100%;
+  height: 26px;
+  overflow: visible;
+  color: var(--campo-filo);
+}
+.arco path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  transition: stroke-width 220ms ease-out, color 220ms ease-out;
+}
+.voce:hover .arco path,
+.voce:focus-visible .arco path {
+  color: var(--sopra);
+  stroke-width: 3;
+}
+
+.suaDomanda {
+  display: block;
+  max-width: 22ch;
+  font-size: clamp(26px, 3.2vw, 40px);
+  line-height: 1.12;
+  font-weight: 500;
+  font-stretch: 112%;
+  letter-spacing: -0.012em;
+}
+.voce:hover .suaDomanda {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+}
+
+.riga {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+/* Regola dell'Etichetta: il percorso porta sempre il target scritto, e cambia
+   anche per forma. Qui la forma e' la pillola, che nessun altro elemento usa. */
+.target {
+  padding: 4px 14px;
+  border: 1px solid var(--campo-filo);
+  border-radius: 999px;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+  font-stretch: 118%;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.target[data-colore='rosso'] {
+  border-color: var(--sopra);
+  background: var(--sopra);
+  color: var(--mattone);
+}
+
+.prova,
+.assente {
+  font-size: 17px;
+  line-height: 27px;
+  font-weight: 400;
+  color: oklch(0.86 0.02 155);
+  font-variant-numeric: tabular-nums;
+}
+.assente {
+  font-style: italic;
+}
+
+/* --- coda --- */
+
+.coda {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 88px 32px 112px;
+}
+
+.presenza {
+  max-width: 44ch;
+  font-size: clamp(24px, 2.6vw, 34px);
+  line-height: 1.24;
+  font-weight: 400;
+  font-stretch: 108%;
+  letter-spacing: -0.01em;
+}
+.presenza a {
+  text-underline-offset: 6px;
+}
+
+.credenziali {
+  max-width: 60ch;
+  margin-top: 32px;
+  font-size: 17px;
+  line-height: 30px;
+  color: var(--muto);
+}
+
+/* --- movimento: l'anello si chiude, e le voci salgono dietro di lui --- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .anello circle {
+    stroke-dasharray: 3400;
+    stroke-dashoffset: 3400;
+    animation: chiudi 1100ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .apertura > * {
+    animation: sali 700ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  .apertura > .occhiello { animation-delay: 60ms; }
+  .apertura > .titolo { animation-delay: 140ms; }
+  .apertura > .sommario { animation-delay: 260ms; }
+  .apertura > .azioni { animation-delay: 360ms; }
+}
+
+@keyframes chiudi {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes sali {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 720px) {
+  .apertura { padding: 56px 20px 72px; }
+  .anello { top: -120px; right: -520px; width: 780px; height: 780px; }
+  .campo { padding: 56px 0 64px; }
+  .dentro { padding: 0 20px; }
+  .coda { padding: 56px 20px 80px; }
+  .titolo { max-width: none; }
+  .voce { grid-template-columns: 1fr; gap: 16px; padding: 28px 0 32px; }
+}

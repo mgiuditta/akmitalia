@@ -1,0 +1,324 @@
+/* DIREZIONE C — «La Prima Volta». PROTOTIPO USA E GETTA, issue #35.
+ *
+ * Tesi: l'emozione bersaglio di PRODUCT.md e' «sollievo competente», e il
+ * Principio 5 dice di togliere paura, non aggiungerla. Quindi la home non e' un
+ * indice ne' un tabellone: e' una conversazione calma che risponde alla domanda
+ * che il visitatore ha vergogna di fare, prima di chiedergli qualunque cosa.
+ *
+ * Il peso visivo non viene da un'immagine (non ce ne sono, e le foto vere
+ * arriveranno fra settimane) ma da **campi di colore a tutta larghezza**, uno
+ * alla volta: la Regola della Bandiera Smontata resta intatta perche' due
+ * percorsi non sono mai tinti insieme. */
+
+.direzione {
+  --ground: oklch(0.966 0.009 128);
+  --foglio: oklch(0.995 0.004 128);
+  --ink: oklch(0.25 0.03 130);
+  --muto: oklch(0.47 0.02 130);
+  --filo: oklch(0.85 0.014 128);
+  --verde: oklch(0.4 0.08 152);
+  --sopra: oklch(0.985 0.006 150);
+
+  /* I tre lavaggi di percorso. Chiari apposta: il testo ci resta sopra a corpo
+     pieno senza rifare il contrasto, e un campo pallido non urla. */
+  --lavaggio-verde: oklch(0.925 0.045 150);
+  --lavaggio-carta: oklch(0.935 0.035 88);
+  --lavaggio-rosso: oklch(0.925 0.04 42);
+
+  /* Due voci, e sono due persone diverse. Bricolage Grotesque parla per AKM:
+     larga, contemporanea, senza la neutralita' che fa sembrare il sito un
+     template. Newsreader porta il testo lungo, e dice «questo si legge con
+     calma», che e' esattamente il tono che il tema richiede. */
+  --display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --testo: 'Newsreader', Georgia, serif;
+
+  font-family: var(--testo);
+  background: var(--ground);
+  color: var(--ink);
+}
+
+.dentro {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* --- apertura --- */
+
+.apertura {
+  padding: 104px 0 72px;
+}
+
+.occhiello {
+  font-family: var(--display);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+  font-variation-settings: 'wdth' 88;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--verde);
+}
+
+.titolo {
+  margin-top: 24px;
+  font-family: var(--display);
+  max-width: 15ch;
+  font-size: clamp(38px, 5.6vw, 74px);
+  line-height: 1.04;
+  font-weight: 600;
+  font-variation-settings: 'wdth' 98;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+.sommario {
+  max-width: 34ch;
+  margin-top: 28px;
+  font-size: 21px;
+  line-height: 34px;
+  font-weight: 380;
+}
+
+/* --- il bivio, tre campi a tutta larghezza --- */
+
+.domanda {
+  margin-bottom: 28px;
+  font-family: var(--display);
+  font-size: clamp(24px, 2.8vw, 34px);
+  line-height: 1.12;
+  font-weight: 600;
+  font-variation-settings: 'wdth' 96;
+  letter-spacing: -0.014em;
+}
+
+.bivio {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--filo);
+}
+.bivio li {
+  border-bottom: 1px solid var(--filo);
+}
+
+.voce {
+  display: block;
+  position: relative;
+  isolation: isolate;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Il lavaggio entra da sinistra, come una mano che passa sul foglio. E' l'unico
+   movimento della direzione, ed e' anche il suo unico effetto: tutto il resto
+   sta fermo. */
+.voce::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: var(--lavaggio, transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 480ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.voce:hover::before,
+.voce:focus-visible::before {
+  transform: none;
+}
+.voce[data-colore='verde'] { --lavaggio: var(--lavaggio-verde); }
+.voce[data-colore='carta'] { --lavaggio: var(--lavaggio-carta); }
+.voce[data-colore='rosso'] { --lavaggio: var(--lavaggio-rosso); }
+
+.corpoVoce {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 24px 56px;
+  align-items: start;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 56px 32px 60px;
+}
+
+.suaDomanda {
+  font-family: var(--display);
+  font-size: clamp(26px, 3.4vw, 42px);
+  line-height: 1.1;
+  font-weight: 500;
+  font-variation-settings: 'wdth' 96;
+  letter-spacing: -0.014em;
+  text-wrap: balance;
+}
+.voce:hover .suaDomanda {
+  text-decoration: underline;
+  text-underline-offset: 7px;
+  text-decoration-thickness: 2px;
+}
+
+.risposta {
+  font-size: 19px;
+  line-height: 32px;
+  font-weight: 380;
+}
+
+/* Regola dell'Etichetta: il target sta scritto, e cambia anche per forma, che
+   qui e' la riga sopra il nome invece del riempimento. */
+.target {
+  display: block;
+  margin-bottom: 12px;
+  padding-top: 10px;
+  border-top: 2px solid currentColor;
+  font-family: var(--display);
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 700;
+  font-variation-settings: 'wdth' 86;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.dettaglio {
+  display: block;
+  margin-top: 10px;
+  font-family: var(--display);
+  font-size: 15px;
+  line-height: 24px;
+  font-weight: 450;
+  font-variation-settings: 'wdth' 92;
+  color: var(--muto);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- la prima volta: la sezione che le altre due direzioni non hanno --- */
+
+.primaVolta {
+  background: var(--foglio);
+  border-bottom: 1px solid var(--filo);
+  padding: 80px 0 88px;
+}
+
+.titoloSezione {
+  font-family: var(--display);
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.1;
+  font-weight: 600;
+  font-variation-settings: 'wdth' 96;
+  letter-spacing: -0.014em;
+  max-width: 18ch;
+}
+
+.punti {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 40px 56px;
+  margin: 48px 0 0;
+  padding: 0;
+  max-width: 1000px;
+}
+.punti li {
+  border-top: 2px solid var(--verde);
+  padding-top: 16px;
+}
+.punti strong {
+  display: block;
+  font-family: var(--display);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  font-variation-settings: 'wdth' 94;
+}
+.punti span {
+  display: block;
+  margin-top: 8px;
+  font-size: 18px;
+  line-height: 30px;
+  font-weight: 380;
+  color: var(--muto);
+}
+
+/* --- coda --- */
+
+.coda {
+  padding: 80px 0 104px;
+}
+
+.presenza {
+  max-width: 34ch;
+  font-family: var(--display);
+  font-size: clamp(24px, 2.8vw, 36px);
+  line-height: 1.2;
+  font-weight: 500;
+  font-variation-settings: 'wdth' 96;
+  letter-spacing: -0.012em;
+}
+
+.elenco {
+  max-width: 62ch;
+  margin-top: 24px;
+  font-size: 19px;
+  line-height: 32px;
+  font-weight: 380;
+}
+
+.azioni {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  margin-top: 40px;
+}
+.azione {
+  display: inline-flex;
+  align-items: center;
+  min-height: 54px;
+  padding: 0 30px;
+  background: var(--verde);
+  color: var(--sopra);
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 600;
+  font-variation-settings: 'wdth' 94;
+  text-decoration: none;
+}
+.azione:hover { background: var(--ink); }
+
+.credenziali {
+  max-width: 64ch;
+  margin-top: 40px;
+  font-size: 17px;
+  line-height: 30px;
+  font-weight: 380;
+  color: var(--muto);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .apertura > * {
+    animation: emergi 640ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  .apertura > .titolo { animation-delay: 90ms; }
+  .apertura > .sommario { animation-delay: 200ms; }
+}
+@keyframes emergi {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Senza movimento il lavaggio non scompare: si accende, che e' l'informazione
+   che portava. */
+@media (prefers-reduced-motion: reduce) {
+  .voce::before { transition: none; }
+}
+
+@media (max-width: 860px) {
+  .corpoVoce { grid-template-columns: 1fr; gap: 20px; }
+}
+@media (max-width: 720px) {
+  .dentro { padding: 0 20px; }
+  .apertura { padding: 64px 0 48px; }
+  .corpoVoce { padding: 36px 20px 40px; }
+  .primaVolta { padding: 56px 0 60px; }
+  .punti { gap: 32px; margin-top: 32px; }
+  .coda { padding: 56px 0 80px; }
+}
