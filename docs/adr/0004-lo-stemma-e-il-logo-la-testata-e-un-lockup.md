@@ -37,18 +37,22 @@ staticamente e servito da `next/image`.
   glifo centrale con gli archi tricolore, su fondo Carta, in `icon.png`.
 - In `forced-colors: active` lo stemma resta com'e: un raster non si inverte. Nessuna
   informazione ci vive dentro, quindi degrada senza perdite.
-- Resta **debito**, e va chiesto al cliente: il vettoriale (SVG, o AI/EPS/PDF da cui ricavarlo),
-  perche' oggi il marchio del sito e un raster ricavato da un JPEG con artefatti di
-  compressione; e il marchio ridotto ufficiale, se esiste, invece del ritaglio fatto qui.
+- Il **vettoriale non esiste e non arrivera**: il cliente ha consegnato tutto quello che ha, due
+  JPEG. Non e un debito in attesa, e un vincolo. Il marchio del sito resta un raster ricavato da
+  un JPEG, e va bene cosi: gli usi veri sono la testata a 40px, la favicon a 32 e un giorno
+  l'`og:image` a poche centinaia di pixel, e i 1600px della fonte li coprono tutti con margine.
+  Il vettoriale servirebbe alla stampa grande, che non e lavoro di questo sito.
+- Gli **originali del cliente stanno nel repository**, in `docs/marchio/`. Sono l'unica fonte che
+  esiste: nessun archivio da cui riscaricarli, e nessuno a cui richiederli una seconda volta.
 - L'`og:image` per la condivisione non e fatto. Quando si fara, lo stemma e l'asset giusto, ed e
   li che la versione grande serve davvero.
 
 ## Come e stato ricavato
 
-Dal file del cliente `Logo_AKM_ITALIA_SFONDO_NERO.jpeg` (JPEG 1600x1600, fondo nero opaco):
+Dall'originale in `docs/marchio/stemma-fondo-nero.jpeg` (JPEG 1600x1600, fondo nero opaco):
 
 ```sh
-magick Logo_AKM_ITALIA_SFONDO_NERO.jpeg -alpha set -fuzz 15% -fill none \
+magick docs/marchio/stemma-fondo-nero.jpeg -alpha set -fuzz 15% -fill none \
   -draw 'color 2,2 floodfill' -draw 'color 1597,2 floodfill' \
   -draw 'color 2,1597 floodfill' -draw 'color 1597,1597 floodfill' \
   -trim +repage -resize 256x256 -strip 'src/app/(frontend)/stemma.png'
@@ -56,4 +60,4 @@ magick Logo_AKM_ITALIA_SFONDO_NERO.jpeg -alpha set -fuzz 15% -fill none \
 
 La favicon e il ritaglio circolare del solo glifo: `-gravity center -crop 1000x1000+0+0`, una
 maschera a cerchio in `CopyOpacity`, fondo Carta `#f7fbf8`, 180x180, in
-`src/app/(frontend)/icon.png`. Con il vettoriale, entrambi si rifanno da capo e meglio.
+`src/app/(frontend)/icon.png`. Entrambi si rigenerano da questi comandi: la fonte e nel repository, quindi non serve nessuno.
