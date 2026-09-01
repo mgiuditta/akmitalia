@@ -6,8 +6,16 @@
     "daConfermare": [
       "Cognomi dei trainer: la pagina li nomina solo di nome.",
       "«Trainer Luca» (Abbiategrasso, Pontesesto) e «Trainer Luca M.» (Cinisello): tenuti distinti, potrebbero essere la stessa persona.",
-      "Open day 2026 in luoghi diversi dal centro: Saronno presenta a Varese, Milano Bisceglie a Via Pantigliate e a Palestra Parri. Sono luoghi evento, non nuovi indirizzi: la pagina Centri vince."
-    ]
+      "Open day 2026 in luoghi diversi dal centro: Saronno presenta a Varese, Milano Bisceglie a Via Pantigliate e a Palestra Parri. Sono luoghi evento, non nuovi indirizzi: la pagina Centri vince.",
+      "Corsi: si può iniziare durante l'anno o solo a inizio stagione? Il sito vecchio non lo dice (campo «ingresso» vuoto).",
+      "Corsi: come si inizia davvero? Esiste una lezione di prova gratuita? Il sito vecchio non lo dice (campo «come si inizia» vuoto). Da questo dipende il testo del pulsante, oggi «Chiedi informazioni» e non «Chiedi una prova».",
+      "Antibullismo: il sito vecchio ha una riga sola («Corsi Krav Maga Antibullismo per Scuole»). Su cosa si lavora, cosa si ottiene e a chi è adatto restano vuoti perché la fonte non li dice.",
+      "Antibullismo: età minima. Solo Binasco dichiara «dai 9 anni», gli altri tre orari dicono «Bambini». Vale 9 anni ovunque?",
+      "Antibullismo: le due testate del 2014 e 2015 (BuoneNotizie, NoiBrugherio) raccontano il corso di Brugherio, che oggi non ha un orario antibullismo. Si citano ancora?",
+      "Antiaggressione femminile: il corso non ha nessun centro attivo (unico orario a Muggiò, non attivo) e il sito vecchio ha 12 caratteri su di esso. Riapre, si sposta, o esce dal bivio?",
+      "Krav Maga regolare: la pagina 424 attribuisce alle statistiche CONI il minor numero di infortuni fra le discipline da combattimento. Non riportato: è una citazione non verificabile alla fonte."
+    ],
+    "corsi": "Contenuto dei tre corsi trascritto a mano dalle pagine WordPress 424 (Cos'è il Krav Maga), 505 (F.A.Q.), 437 (Storia), 1901 (Corsi Regolari e Speciali), 353 (Codice Etico) e 213 (Team Management), come deciso in #16. È una BOZZA: nessuna riga è stata approvata dal cliente. Ciò che le pagine non dicono è rimasto vuoto, non inventato: vedi daConfermare."
   },
   "corsi": [
     {
@@ -18,7 +26,57 @@
       "inBivio": true,
       "domanda": "Voglio sapermi difendere ogni giorno",
       "ordine": 1,
-      "sommario": "Il corso regolare AKM: difesa personale a lezioni settimanali, aperto ad adulti e ragazzi."
+      "sommario": "Difesa personale a lezioni settimanali, tutto l'anno. È il corso che si tiene in tutti i centri tecnici attivi, aperto ad adulti e ragazzi.",
+      "occhiello": "Corso regolare",
+      "aChiSiRivolge": "Adulti e ragazzi, anche senza esperienza.",
+      "durata": "Lezioni settimanali, tutto l'anno. Non ci sono pacchetti da 10 o 20 ore.",
+      "focus": [
+        {
+          "voce": "Prevenzione"
+        },
+        {
+          "voce": "Evitare lo scontro"
+        },
+        {
+          "voce": "Difesa in strada, in auto, sui mezzi"
+        },
+        {
+          "voce": "Gestione dello stress"
+        },
+        {
+          "voce": "Preparazione fisica"
+        }
+      ],
+      "risultati": [
+        {
+          "voce": "Riconosci una situazione prima che diventi un problema."
+        },
+        {
+          "voce": "Sai come evitare lo scontro fisico."
+        },
+        {
+          "voce": "Reagisci d'istinto, al chiuso come all'aperto, a piedi come su un mezzo."
+        },
+        {
+          "voce": "Resti lucido quando il corpo va in allarme."
+        }
+      ],
+      "adattoA": [
+        {
+          "voce": "Chi non ha mai praticato arti marziali o sport da combattimento."
+        },
+        {
+          "voce": "Chi non è allenato: non servono doti fisiche o atletiche particolari."
+        },
+        {
+          "voce": "Uomini e donne di qualsiasi età, corporatura e peso."
+        },
+        {
+          "voce": "Chi teme di farsi male: si lavora con le protezioni."
+        }
+      ],
+      "prova": "Si tiene in tutti i centri tecnici attivi. I docenti sono diplomati dopo almeno quattro anni di percorso e un esame di abilitazione all'insegnamento, e sono tesserati e assicurati CSEN.",
+      "azione": "Chiedi informazioni"
     },
     {
       "slug": "krav-maga-antibullismo",
@@ -28,7 +86,12 @@
       "inBivio": true,
       "domanda": "Cerco qualcosa per mio figlio",
       "ordine": 2,
-      "sommario": "Percorso antibullismo per bambini e ragazzi, dai 9 anni, nei centri che lo tengono."
+      "sommario": "Corso per bambini e ragazzi, un'ora alla settimana, nei centri tecnici che lo tengono.",
+      "occhiello": "Percorso per ragazzi",
+      "aChiSiRivolge": "Bambini e ragazzi.",
+      "durata": "Un'ora alla settimana.",
+      "prova": "Lo tengono Vittorio Porreca e Omar Borghini, presidente e vicepresidente di AKM Italia, entrambi maestri. I docenti AKM sono diplomati dopo almeno quattro anni di percorso e un esame di abilitazione all'insegnamento.",
+      "azione": "Chiedi informazioni"
     },
     {
       "slug": "krav-maga-antiaggressione-femminile",
@@ -38,7 +101,10 @@
       "inBivio": true,
       "domanda": "Voglio un corso per sole donne",
       "ordine": 3,
-      "sommario": "Corso antiaggressione per sole donne, tenuto al Centro Tecnico Muggio."
+      "sommario": "Corso di antiaggressione riservato alle donne.",
+      "occhiello": "Corso per sole donne",
+      "aChiSiRivolge": "Donne, anche senza esperienza.",
+      "azione": "Chiedi informazioni"
     }
   ],
   "istruttori": [
