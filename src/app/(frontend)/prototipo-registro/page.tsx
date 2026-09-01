@@ -20,7 +20,7 @@
 import React from 'react'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
-import type { Corsi as Corso, Sedi as Sede } from '@/payload-types'
+import type { Corsi as Corso, Impostazioni, Media, Sedi as Sede } from '@/payload-types'
 
 import { dati as componi } from './dati'
 import { Switcher } from './Switcher'
@@ -44,7 +44,7 @@ export default async function PrototipoRegistro(props: {
   const chiave = VARIANTI.some(([k]) => k === variant) ? variant! : 'a'
 
   const payload = await getPayload({ config: await config })
-  const [corsi, sedi, istruttori] = await Promise.all([
+  const [corsi, sedi, istruttori, impostazioni] = await Promise.all([
     payload.find({ collection: 'corsi', where: { inBivio: { equals: true } }, limit: 20, depth: 0 }),
     payload.find({
       collection: 'sedi',
@@ -54,9 +54,15 @@ export default async function PrototipoRegistro(props: {
       sort: 'indirizzo.citta',
     }),
     payload.count({ collection: 'istruttori' }),
+    payload.findGlobal({ slug: 'impostazioni', depth: 1 }),
   ])
 
   const d = componi(corsi.docs as Corso[], sedi.docs as Sede[], istruttori.totalDocs)
+  /* L'immagine e' un campo di `Impostazioni`, quindi il cliente la cambia o la
+     svuota dall'admin senza toccare il codice: e' il test vero del vincolo
+     «senza foto il sito resta in piedi». */
+  const aperturaHome = (impostazioni as Impostazioni).aspetto?.aperturaHome
+  const apertura = aperturaHome && typeof aperturaHome === 'object' ? (aperturaHome as Media) : null
 
   return (
     <div className="prototipo">
@@ -67,7 +73,7 @@ export default async function PrototipoRegistro(props: {
         {d.turni.length} turni.
       </p>
 
-      {chiave === 'a' && <Sigillo dati={d} />}
+      {chiave === 'a' && <Sigillo apertura={apertura} dati={d} />}
       {chiave === 'b' && <Orario dati={d} />}
       {chiave === 'c' && <PrimaVolta dati={d} />}
 

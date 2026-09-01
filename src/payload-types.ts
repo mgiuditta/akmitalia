@@ -1353,9 +1353,13 @@ export interface Impostazioni {
      * Ripetuta su tutta la pagina, al 3%. Deve essere senza giunte.
      */
     fondoCarta?: (number | null) | Media;
+    /**
+     * Ritagliata dal cerchio del sigillo, in apertura di home. Il soggetto deve stare nel 70% centrale, perche' il cerchio mangia gli angoli. Senza, restano gli anelli disegnati e la pagina e' completa lo stesso.
+     */
+    aperturaHome?: (number | null) | Media;
   };
   /**
-   * Le voci si riordinano trascinandole. «Centri» e «Contatta» sono sempre in testata e non compaiono qui: reggono la conversione e non si possono togliere.
+   * Le voci si riordinano trascinandole. Quattro non compaiono qui perche' non si possono togliere: «Centri» e «Contatta» sono sempre in testata e reggono la conversione, «Istruttori» e «Privacy» sono sempre nel footer.
    */
   navigazione?: {
     menu?:
@@ -1392,7 +1396,7 @@ export interface Impostazioni {
       | null;
   };
   /**
-   * Compaiono nel footer e nella pagina 5x1000.
+   * Compaiono nel footer.
    */
   datiFiscali?: {
     ragioneSociale?: string | null;
@@ -1447,6 +1451,7 @@ export interface ImpostazioniSelect<T extends boolean = true> {
     | {
         tramaHero?: T;
         fondoCarta?: T;
+        aperturaHome?: T;
       };
   navigazione?:
     | T

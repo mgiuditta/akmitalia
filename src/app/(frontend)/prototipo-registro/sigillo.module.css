@@ -36,36 +36,97 @@
 
 /* --- apertura --- */
 
+/*
+ * La fotografia entra **dentro il sigillo**: un disco concentrico con gli anelli
+ * disegnati, non un rettangolo accanto. E' additiva per costruzione — senza,
+ * restano gli anelli e l'apertura e' completa lo stesso (vincolo della mappa
+ * #34: se le foto non arrivano mai, il sito resta in piedi).
+ *
+ * Centro e raggio sono legati a quelli di `.anello`: il disco prende il terzo
+ * anello (r=392 su un viewBox da 1100), quindi diametro 784 e centro a 130px
+ * dal bordo destro. Cambiare l'uno senza l'altro scolla la foto dal segno.
+ */
+
 .apertura {
   position: relative;
   isolation: isolate;
+  display: flex;
+  flex-direction: column;
   max-width: 1180px;
   margin: 0 auto;
   padding: 96px 32px 112px;
 }
 
-/* Il segno: un quarto d'anello a raggio di pagina, ancorato fuori dall'angolo,
-   come un sigillo premuto sul foglio e uscito dal bordo. E' l'unico posto dove
-   questa direzione spende audacia. */
-.anello {
+/*
+ * Il segno: il sigillo premuto sul foglio e uscito dal bordo. E' l'unico posto
+ * dove questa direzione spende audacia.
+ *
+ * Anelli e fotografia hanno **un centro solo**, e sta qui: il blocco definisce
+ * il diametro della foto, e gli anelli si dimensionano su quello (1100/784 del
+ * viewBox = 140.3%), cosi' il terzo anello cade esatto sul bordo dell'immagine.
+ * Prima erano due elementi con due ancoraggi, e bastava cambiare l'uno perche'
+ * il cerchio si scollasse dal segno.
+ */
+.sigillo {
   position: absolute;
   z-index: -1;
-  top: -180px;
-  right: -420px;
-  width: 1100px;
-  height: 1100px;
-  color: var(--filo);
+  top: 56px;
+  left: 55%;
+  width: min(46vw, 600px);
+  aspect-ratio: 1;
   pointer-events: none;
+}
+
+.anello {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 140.3%;
+  height: 140.3%;
+  transform: translate(-50%, -50%);
+  color: var(--filo);
+  overflow: visible;
 }
 .anello circle {
   fill: none;
   stroke: currentColor;
   stroke-width: 1.5;
 }
+/* L'anello piu' interno cade **sopra** la fotografia, quindi si schiarisce: e'
+   lo stesso segno, ma su un fondo che non e' piu' carta. */
+.anello .sopraFoto {
+  color: oklch(1 0 0 / 0.55);
+  stroke-width: 2;
+}
 .anello .spesso {
   stroke-width: 14;
   color: var(--campo);
   opacity: 0.09;
+}
+
+.foto {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Il fondo della pagina e' carta calda: una fotografia a saturazione piena le
+     starebbe accanto come un adesivo. Un filo di desaturazione la fa sedere. */
+  filter: saturate(0.82) contrast(0.96);
+}
+
+/* La colonna del testo si ferma prima del sigillo. E' un vincolo di
+   composizione, non un `max-width` di misura: il titolo sopra il parquet non si
+   legge, e nessun valore di `ch` lo garantirebbe a tutte le larghezze. */
+.apertura > .occhiello,
+.apertura > .titolo,
+.apertura > .sommario,
+.apertura > .azioni {
+  max-width: 52%;
 }
 
 .occhiello {
@@ -79,9 +140,8 @@
 }
 
 .titolo {
-  max-width: 15ch;
   margin-top: 28px;
-  font-size: clamp(44px, 7.4vw, 104px);
+  font-size: clamp(44px, 6.4vw, 92px);
   line-height: 0.94;
   font-weight: 600;
   font-stretch: 118%;
@@ -90,7 +150,6 @@
 }
 
 .sommario {
-  max-width: 54ch;
   margin-top: 32px;
   font-size: 19px;
   line-height: 32px;
@@ -305,7 +364,19 @@
 
 @media (max-width: 720px) {
   .apertura { padding: 56px 20px 72px; }
-  .anello { top: -120px; right: -520px; width: 780px; height: 780px; }
+  /* Su telefono il sigillo non ha dove stare accanto al titolo: scende in
+     flusso sotto le azioni, e resta un disco. */
+  .sigillo {
+    position: static;
+    width: min(72vw, 320px);
+    margin: 44px 0 0 auto;
+  }
+  .apertura > .occhiello,
+  .apertura > .titolo,
+  .apertura > .sommario,
+  .apertura > .azioni {
+    max-width: none;
+  }
   .campo { padding: 56px 0 64px; }
   .dentro { padding: 0 20px; }
   .coda { padding: 56px 20px 80px; }

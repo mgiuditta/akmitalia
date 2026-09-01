@@ -12,7 +12,9 @@
  * larghezza**, scala **monumentale**, movimento **l'anello che si chiude**.
  */
 import React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
+import type { Media } from '@/payload-types'
 
 import type { Dati, Voce } from './dati'
 import stile from './sigillo.module.css'
@@ -55,18 +57,43 @@ function Prova({ voce }: { voce: Voce }) {
   )
 }
 
-export function Sigillo({ dati }: { dati: Dati }) {
+export function Sigillo({ dati, apertura }: { dati: Dati; apertura?: Media | null }) {
   const { voci, sedi, comuni, turni } = dati
 
   return (
     <div className={stile.direzione}>
       <header className={stile.apertura}>
-        <svg aria-hidden className={stile.anello} viewBox="0 0 1100 1100">
-          <circle className={stile.spesso} cx="550" cy="550" r="470" />
-          <circle cx="550" cy="550" r="540" />
-          <circle cx="550" cy="550" r="392" />
-          <circle cx="550" cy="550" r="318" />
-        </svg>
+        {/* La fotografia sta dentro il sigillo, non accanto: e' il disco che i
+            due anelli esterni circondano. Facoltativa per costruzione — senza,
+            restano gli anelli e l'apertura e' completa (mappa #34). L'`alt` e'
+            pieno e non vuoto, perche' questa immagine porta informazione: com'e'
+            fatta davvero la sala dove si va. */}
+        <div className={stile.sigillo}>
+          {apertura?.url ? (
+            <div className={stile.foto}>
+              <Image
+                alt={apertura.alt ?? ''}
+                height={apertura.height ?? 1200}
+                priority
+                sizes="(max-width: 720px) 72vw, min(46vw, 600px)"
+                src={apertura.url}
+                width={apertura.width ?? 1600}
+              />
+            </div>
+          ) : null}
+
+          <svg aria-hidden className={stile.anello} viewBox="0 0 1100 1100">
+            <circle className={stile.spesso} cx="550" cy="550" r="470" />
+            <circle cx="550" cy="550" r="540" />
+            <circle cx="550" cy="550" r="392" />
+            <circle
+              className={apertura?.url ? stile.sopraFoto : undefined}
+              cx="550"
+              cy="550"
+              r="318"
+            />
+          </svg>
+        </div>
 
         <p className={stile.occhiello}>Krav Maga · Lombardia</p>
         <h1 className={stile.titolo}>Si comincia da zero, e si comincia vicino a casa.</h1>
