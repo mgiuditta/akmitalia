@@ -47,3 +47,11 @@ Il corso visto dal primo bivio. **Non e' una seconda entita'**: un percorso e' u
 Il bivio e' la prima decisione che il sito chiede, e la domanda che risolve e' «qual e' il mio momento», non «quale disciplina». Per questo il percorso si sceglie per **chi domanda**, mai per eta': «crescita dei ragazzi» e' la voce del genitore e copre ogni corso che riguardi un minore; l'eta' sta nella scheda del corso e nella nota dell'orario, dove e' gia' scritta.
 
 Un corso nuovo **non** e' un percorso finche' qualcuno non lo marca. Il bivio resta corto per scelta editoriale, non per vincolo tecnico.
+
+## Richiesta
+
+Il messaggio che il visitatore manda dal form pubblico per essere ricontattato da un **centro tecnico**. E' l'esito che il sito misura, e l'unico modo di contattare AKM: non ci sono recapiti per centro.
+
+Una richiesta dice «voglio sapere», non «tenetemi il posto». Non e' un'**iscrizione**: l'iscrizione avviene fuori dal sito, con la documentazione che AKM manda dopo, e chiede dati che la richiesta non chiede. Per la stessa ragione non e' una **preiscrizione**: la parola promette un posto trattenuto, e nessun posto viene trattenuto.
+
+Una richiesta nomina sempre un centro tecnico, e puo' nominare un **corso**: chi non ha ancora risolto il primo bivio lo dice, e la richiesta resta valida.
