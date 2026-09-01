@@ -1,21 +1,25 @@
 #!/bin/sh
-# Scarica Fira Sans, la famiglia scelta in #6, in public/font/. Rieseguibile.
+# Scarica le due famiglie di DESIGN.md in public/font/. Rieseguibile.
 #
-# Quattro pesi e non sei: 400 Body, 500 Title e Label, 700 Headline, 900 Display.
-# Circa 133 KB in woff2 subset latin.
+# Anton (OFL 1.1) e' il display: un peso solo, che rende come il 700 di Kenyan
+# Coffee, la faccia commerciale dell'originale Fenriz che non e' licenziabile qui.
+# Roboto (Apache 2.0) e' il workhorse: il file variabile copre i pesi 300, 400 e
+# 700 in un solo download invece di tre statici.
 #
 # I .ttf integrali da google/fonts, non i woff2 dell'API di Google Fonts: quella
-# serve subset per unicode-range che buttano via i glifi small cap senza codepoint
-# proprio, e il livello Label vive sul maiuscoletto vero (docs/research/font-candidate.md).
+# serve subset per unicode-range, e il subset va deciso qui, non a valle.
 set -eu
 DEST=$(cd "$(dirname "$0")/.." && pwd)/public/font
-BASE=https://github.com/google/fonts/raw/main/ofl/firasans
+BASE=https://raw.githubusercontent.com/google/fonts/main/ofl
 mkdir -p "$DEST"
 
-for p in Regular:400 Medium:500 Bold:700 Black:900; do
-  out="$DEST/FiraSans-${p##*:}.ttf"
-  [ -s "$out" ] && continue
-  curl -sSL -f -o "$out" "$BASE/FiraSans-${p%%:*}.ttf" || { rm -f "$out"; echo "FAIL ${p%%:*}"; }
-done
+scarica() {
+  out="$DEST/$2"
+  [ -s "$out" ] && return 0
+  curl -sSL -f -o "$out" "$BASE/$1" || { rm -f "$out"; echo "FAIL $2"; }
+}
+
+scarica anton/Anton-Regular.ttf Anton-Regular.ttf
+scarica "roboto/Roboto%5Bwdth,wght%5D.ttf" Roboto-Variable.ttf
 
 ls -l "$DEST"

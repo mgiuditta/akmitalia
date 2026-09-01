@@ -34,11 +34,11 @@ Il docente e' il **referente** della sede per il visitatore: e' la persona nomin
 
 ## Corso
 
-Cio' che si pratica: la disciplina a cui punta la riga di un **orario**, e insieme la sua pagina pubblica. Un corso ha un nome proprio («Krav Maga - Antiaggressione femminile»), dei **destinatari** e un **ruolo di colore**.
+Cio' che si pratica: la disciplina a cui punta la riga di un **orario**, e insieme la sua pagina pubblica. Un corso ha un nome proprio («Krav Maga - Antiaggressione femminile»), dei **destinatari** e un **ruolo di superficie**.
 
 I **destinatari** dicono a chi si rivolge il corso (adulti, ragazzi, bambini, donne, istruttori, aziende e forze dell'ordine). Non sono un percorso: un corso solo puo' rivolgersi a piu' di un pubblico, e infatti quasi tutti gli orari del corso regolare dicono «Adulti e Ragazzi».
 
-Il **ruolo di colore** e' uno dei quattro di `DESIGN.md` (Verde AKM, Rosso Mattone, Carta, Inchiostro). E' un ruolo, non un colore: si assegna scegliendo fra i quattro, non si sceglie una tinta.
+Il **ruolo di superficie** e' uno dei quattro valori di fondo di `DESIGN.md` (Nero, Carbone, Bianco, Grigio). E' un ruolo, non una tinta: il sistema non ha accenti cromatici, quindi un corso si distingue dal valore del fondo su cui viene composto, e sempre insieme al nome scritto. Si assegna scegliendo fra i quattro, non si sceglie un colore.
 
 ## Percorso
 

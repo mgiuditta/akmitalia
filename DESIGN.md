@@ -1,6 +1,7 @@
 ---
 name: AKM Italia
 description: Il registro pubblico dei centri, degli istruttori e dei percorsi AKM Italia.
+source: Fenriz (fenriz-gym.com), importato integralmente il 2026-09-01. Vedi docs/adr/0004.
 ---
 
 <!-- SEED: rilancia /impeccable document quando c'è codice, per estrarre i token reali e generare il sidecar. -->
@@ -9,132 +10,180 @@ description: Il registro pubblico dei centri, degli istruttori e dei percorsi AK
 
 ## 1. Overview
 
-**Creative North Star: "L'Albo"**
+**Creative North Star: "Il Manifesto"**
 
-AKM Italia tiene già un albo istruttori. Il sito è la stessa cosa estesa a tutto: un registro pubblico di persone, luoghi, orari e qualifiche, tenuto bene. Non un catalogo che vende corsi, un documento che dichiara chi c'è e dove. Il riferimento è la cosa civica fatta con cura: la segnaletica pubblica, il tesserino federale, la modulistica progettata da qualcuno a cui importava. Autorevole per struttura, non per estetica.
+Il sito legge come legge la sala: spogliato, ad altissimo contrasto, senza ornamento. Due neri e un bianco reggono tutto. Nessun accento cromatico esiste nel sistema: la gerarchia si costruisce solo con la **scala** (un titolo da 120px contro una didascalia da 14px) e con il **valore di superficie** (nero puro contro carbone contro grigio chiaro), mai con la tinta.
 
-Da qui discende la densità. L'Albo non ha paura del dato: indirizzi, orari, sigle di riconoscimento, nomi propri stanno in pagina a corpo pieno, non nascosti dietro un accordion o riassunti in un'icona. Il vuoto c'è, ed è generoso, ma serve a separare voci di un elenco, non a fare atmosfera. Se una schermata potrebbe funzionare identica per una qualsiasi altra realtà, ha fallito: il contenuto specifico è il design.
+La densità è bassa e sicura di sé. Le sezioni respirano su 80-100px verticali, il testo corrente sta in una colonna stretta da 500-600px, e la geometria è squadrata ovunque: zero raggio di curvatura, su ogni bottone, ogni scheda, ogni immagine. L'aggressività del marchio viene dal carattere display sovradimensionato sbattuto direttamente sul nero piatto, non da effetti.
 
-Il tricolore entra come sistema di classificazione, non come decorazione patriottica. Verde, bianco e rosso sono i tre percorsi, e questo è l'unico lavoro che fanno. Il sistema rifiuta esplicitamente le quattro trappole di PRODUCT.md: nero e rosso sangue da palestra MMA tattica, l'accatastamento illeggibile del sito federale anni 2000, l'hero con gradiente e le tre card identiche del SaaS template, il sorriso in stock photo del fitness patinato.
-
-Il movimento è coreografato ma di servizio: scorrendo, la pagina si compone come si compila un registro, una voce dopo l'altra. Mai per stupire, sempre per scandire la lettura.
+Il sistema rifiuta le scorciatoie di profondità. Ombre, sfocature e vetro non sono strumenti di gerarchia: esistono per due soli componenti, il bottone primario e la scheda. Tutto il resto è piatto, come un manifesto stampato.
 
 **Key Characteristics:**
 
-- Documentale prima che promozionale: il dato è l'eroe, non l'aggettivo
-- Tricolore come tassonomia, mai come bandiera
-- Una sola grottesca, forte contrasto di peso, tono da manuale operativo
-- Superfici piatte, profondità solo come risposta a uno stato
-- Coreografia allo scroll ordinata e ritmica, disattivabile con `prefers-reduced-motion`
-- Nomi propri, indirizzi e orari visibili senza interazione
+- Due caratteri e basta: uno display condensato per le affermazioni, Roboto per tutto ciò che è funzionale.
+- Zero accento cromatico: nero, carbone, bianco, un grigio neutro.
+- Piatto per default: solo `button-primary` e `card` portano ombra.
+- Geometria a spigolo vivo: nessun token di raggio esiste nel sistema.
+- Ritmo di sezione che alterna blocchi neri e blocchi chiari, gerarchia senza colore.
+- Tre pesi e non di più: 300, 400, 700. Il 500 è deliberatamente assente.
+- Navbar fissa a 77px, nera, opaca, senza bordo e senza blur a ogni posizione di scroll.
+- Nomi propri, indirizzi e orari restano a corpo pieno: la densità del dato non è negoziata dall'estetica.
 
 ## 2. Colors
 
-Palette a quattro ruoli: tre colori di percorso derivati dal tricolore, spostati fuori dai primari da bandiera, su un fondo neutro di carta e inchiostro. `[valori esatti da risolvere in implementazione]`
+Nessun gradiente esiste come token riutilizzabile. La palette è ridotta per scelta a quasi-nero, nero puro, bianco e un neutro chiaro.
 
 ### Primary
 
-- **Verde AKM** `[hex/oklch da definire]`: verde bosco desaturato, non il verde bandiera. Porta il percorso «sicurezza quotidiana», l'adulto che è il pubblico primario. È il colore che compare più spesso e regge le CTA principali. Deve passare AA come testo su fondo chiaro: se non lo fa, va scurito, non alleggerito il testo.
+- **Carbone** `#1C1C1C`: il valore d'inchiostro di default del sistema. Fa anche da superficie per `button-secondary`.
 
 ### Secondary
 
-- **Rosso Mattone** `[hex/oklch da definire]`: rosso terroso, mai il rosso sangue. Porta il percorso «antiaggressione». Raro per definizione. Non è il colore dell'errore e non è il colore dell'urgenza commerciale.
+- **Inchiostro** `#1C1C1C`: stesso valore di Primary, usato semanticamente come colore del testo su superficie chiara.
+- **Inchiostro Secondario** `#333333`: carbone appena sollevato, per testo de-enfatizzato. Usato con parsimonia.
 
 ### Tertiary
 
-- **Carta** `[hex/oklch da definire]`: il «bianco» del tricolore non è `#fff`, è il fondo caldo del documento, tinto verso il verde di chroma minima (0.005-0.01). Porta il percorso «crescita dei ragazzi» attraverso il contrasto di bordo e di peso, mai attraverso un riempimento invisibile.
+- **Nero** `#000000`: fondo di navbar e hero. La superficie più autorevole del sistema.
+- **Carbone Superficie** `#1C1C1C`: fondo del footer e delle schede. Un gradino più chiaro del nero puro, separa i blocchi di contenuto dall'hero.
+- **Bianco** `#FFFFFF`: il fondo delle sezioni chiare alternate.
+- **Grigio Carta** `#E8E8E8`: riempimento delle sezioni chiare e superficie di `button-primary`.
 
 ### Neutral
 
-- **Inchiostro** `[hex/oklch da definire]`: quasi nero tinto verso il verde di marca. Mai `#000`. Testo corrente, titoli, bordi pieni.
-- **Grafite** `[hex/oklch da definire]`: testo secondario, etichette, metadati di sede. Deve restare AA sul fondo Carta.
-- **Riga** `[hex/oklch da definire]`: divisori e bordi a 1px. L'elenco si struttura con righe, non con ombre.
+- **Bianco testo** `#FFFFFF`: colore dominante di testo e icone sulle superfici scure. Regge circa due terzi del peso testuale.
+- **Riga** `#E8E8E8`: condivide l'esadecimale con Grigio Carta. Solo divisore strutturale a 1px, mai riempimento.
+
+Non esiste un blocco di token per la modalità scura: il sistema è progettato **dark-first** come tema unico e fisso, con le sezioni chiare usate come stacco di ritmo, non come modalità alternativa.
 
 ### Named Rules
 
-**La Regola della Bandiera Smontata.** I tre colori di percorso non compaiono mai adiacenti in tre bande, colonne o blocchi contigui. Il tricolore vive intero solo nel wordmark. Ovunque altro, un percorso alla volta, nel suo contesto. Test in una frase: se una schermata sembra una bandiera italiana, riprogettala.
+**La Regola del Valore.** La gerarchia si costruisce scambiando il valore di superficie (`#000000` → `#1C1C1C` → `#E8E8E8`/`#FFFFFF`), mai la tinta. Se stai per introdurre un colore per distinguere due cose, stai risolvendo il problema sbagliato: cambia superficie, scala o peso.
 
-**La Regola dell'Etichetta.** Nessun percorso è identificabile dal solo colore. Ogni occorrenza porta sempre il nome scritto, e cambia anche per forma, posizione o peso. Verde e rosso in coppia sono il caso peggiore per il daltonismo: se togliendo il colore la pagina diventa ambigua, è rotta.
+**La Regola dell'Etichetta.** Nessuna categoria è identificabile dal solo valore di superficie. Ogni occorrenza porta sempre il nome scritto. Il sistema è monocromo, quindi questa regola non è un ripiego per il daltonismo: è l'unico modo in cui un percorso si distingue da un altro.
 
-**La Regola del Rosso Riservato.** Il Rosso Mattone appartiene al percorso antiaggressione. Errori di form, avvisi e stati distruttivi usano un rosso di sistema distinto, oppure nessun rosso: parole e icona bastano.
+**La Regola del Rosso Assente.** Non esiste un rosso di marca. Errori di form, avvisi e stati distruttivi si dichiarano a parole e con l'icona, o con un rosso di sistema dichiarato fuori dal token set e usato solo lì.
 
 ## 3. Typography
 
-**Display Font:** una grottesca unica, **Fira Sans** (OFL 1.1, self-hostata, `pnpm font:scarica`)
-**Body Font:** la stessa famiglia, peso e dimensione diversi
-**Label/Mono Font:** la stessa famiglia in peso etichetta; una mono si introduce solo se un test dimostra che indirizzi e orari ne guadagnano
+**Display Font:** **Anton** (OFL 1.1, self-hostata, `pnpm font:scarica`). Sostituto libero di Kenyan Coffee, che è commerciale (Yellow Design Studio) e non licenziabile qui. Grottesca condensata pesantissima, un peso solo, che rende come il 700 dell'originale.
+**Body Font:** **Roboto** (Apache 2.0, self-hostata, file variabile). Pesi 300, 400, 700.
+**Label/Mono Font:** Roboto in peso 700 a corpo piccolo. Nessuna mono nel sistema.
 
-**Quattro pesi, non di più:** 400 Body, 500 Title e Label, 700 Headline, 900 Display. Fira Sans non ha un file variabile: ogni peso in più è un file in più, circa 33 KB.
-
-**Character:** una sola voce, sobria e adulta, che cambia registro con il peso. Nessun contrasto serif/sans, nessun font «di personalità»: il carattere del sistema viene dal contenuto, non dal font. Ha il tono di un manuale operativo scritto bene, non di una campagna.
+**Tre pesi, non di più:** 300 Light per testo corrente e link di navigazione, 400 Regular per una sola variante di didascalia, 700 Bold per ogni titolo Roboto, bottone e link di footer. Il peso 500 non esiste: non c'è registro «medium».
 
 ### Hierarchy
 
-- **Display** (peso pesante, scala grande, interlinea stretta): titolo di pagina e di percorso. Uno solo per schermata.
-- **Headline** (peso pesante, scala ridotta): apertura di sezione. Il salto rispetto al Display è almeno 1.25.
-- **Title** (peso medio): nome della sede, nome dell'istruttore, titolo del corso. È il livello dove vivono i nomi propri.
-- **Body** (peso regolare, interlinea comoda, massimo 65-75ch): testo corrente, descrizioni percorso.
-- **Label** (peso etichetta, corpo piccolo, spaziatura aperta, maiuscoletto): qualifiche, province, sigle di riconoscimento, etichette di campo.
-
-`[valori esatti di scala, peso e interlinea da definire in implementazione]`
-
-### Named Rules
-
-**La Regola del Dato Nudo.** Indirizzi, orari, telefoni e qualifiche non scendono mai sotto il corpo del testo secondario e non vengono mai compressi in un'icona con tooltip. Sono la prova del principio «Presenza»: se sono difficili da leggere, il principio è tradito.
-
-**La Regola del Nome Proprio.** Ogni sezione che parla di una sede o di una persona la nomina per esteso a livello Title. «Il nostro centro di zona» non esiste: esiste «Rozzano, Centro Aisha».
-
-**La Regola della Cifra Tabulare.** Fira Sans ha le cifre proporzionali di default: ogni elemento che porta un dato (orari, civici, CAP, telefoni) dichiara `font-variant-numeric: tabular-nums`. Dimenticarlo non produce un errore, produce una colonna di orari storta che nessuno nota. Le colonne si dimensionano sulla cifra tabulare, che è più larga della proporzionale media.
-
-**La Regola del Maiuscoletto Vero.** Il livello Label usa `font-variant-caps: all-small-caps`, mai `small-caps`. Le sigle sono già maiuscole, e `smcp` da solo non le tocca: serve `c2sc`, che Fira Sans ha. Con una famiglia priva di maiuscoletto il browser non fallisce, sintetizza maiuscole rimpicciolite dalle aste troppo sottili: è il motivo per cui la famiglia è stata scelta anche su questo.
-
-## 4. Elevation
-
-Il sistema è piatto per default. La profondità viene da righe a 1px, cambi di tono del fondo e spaziatura, non da ombre. È coerente con il riferimento documentale: un registro non ha ombre, ha righe.
-
-Le ombre esistono solo come risposta a uno stato: un elemento sollevato perché aperto, in hover o in focus. Mai come decorazione a riposo. Poiché il movimento è coreografato, la stratificazione è ammessa nelle transizioni (una scheda sede che si apre sopra l'elenco), ma torna piatta a fine animazione.
-
-`[vocabolario ombre da definire in implementazione]`
+| Token | Famiglia | Corpo | Peso | Interlinea | Uso |
+|---|---|---|---|---|---|
+| `hero-display` | Anton | 120px | 700 | 1 | Titolo di pagina |
+| `display-lg` | Anton | 90px | 700 | 1 | Titolo di sezione grande |
+| `display-md` | Anton | 55px | 700 | 1 | Titolo di sezione |
+| `display-sm` | Anton | 33px | 300 | 1.2 | Sotto-affermazione display |
+| `heading-lg` | Roboto | 22px | 700 | 1.2 | Titolo di scheda o sottosezione |
+| `nav-link` | Roboto | 16px | 300 | 1.4 | Link di navigazione |
+| `link-strong` | Roboto | 16px | 700 | 1.4 | Link inline enfatizzato, etichetta bottone |
+| `label-strong` | Roboto | 14px | 700 | 1 | Etichette strette |
+| `footer-link` | Roboto | 14px | 700 | 1.4 | Link di footer |
+| `caption-strong` | Roboto | 14px | 700 | 1.5 | Didascalie forti |
+| `caption` | Roboto | 14px | 300 | 1.4 | Testo corrente |
+| `caption-regular` | Roboto | 14px | 400 | 1.5 | Didascalie regolari |
 
 ### Named Rules
 
-**La Regola del Foglio.** Le superfici sono piatte a riposo. Se stai aggiungendo un'ombra a qualcosa che non sta rispondendo a un'azione dell'utente, cancellala e usa una riga o uno stacco di fondo.
+**La Regola dei Due Caratteri.** Anton per i token display, Roboto per tutto il resto. Mai una terza famiglia.
 
-**La Regola dell'Indice.** La coreografia allo scroll scandisce un elenco, non intrattiene. Le voci entrano in sequenza, con curve ease-out esponenziali, senza rimbalzo e senza elastico. Mai animare proprietà di layout. Con `prefers-reduced-motion` la sequenza sparisce del tutto e il contenuto è immediatamente completo: nessun contenuto esiste solo dentro un'animazione.
+**La Regola della Spaziatura Normale.** La crenatura è `normal` su ogni token. Il sistema non ha una strategia di tracking: la compattezza viene dalle lettere condensate di Anton, non da un `letter-spacing` negativo aggiunto a mano per simulare l'estetica atletica.
 
-## 5. Components
+**La Regola dello Stacco Netto.** Le scale display e le scale funzionali non si sovrappongono mai: Anton parte da 33px in su, Roboto si ferma a 22px. Il salto è il confine fra testo «affermazione» e testo «funzione».
 
-`[nessun componente ancora: il frontend è vuoto. Rilancia /impeccable document dopo la prima implementazione per estrarre i primitivi reali e generare .impeccable/design.json.]`
+**La Regola dell'Interlinea Collassata.** Ogni token display ha interlinea 1, per tenere il corpo grande visivamente denso e a blocco. Il testo funzionale Roboto si rilassa a 1.2-1.5 per leggibilità.
 
-## 6. Do's and Don'ts
+**La Regola della Cifra Tabulare.** Roboto ha le cifre proporzionali di default: ogni elemento che porta un dato (orari, civici, CAP, telefoni) dichiara `font-variant-numeric: tabular-nums`. Dimenticarlo non produce un errore, produce una colonna di orari storta che nessuno nota.
+
+**La Regola del Dato Nudo.** Indirizzi, orari e qualifiche non scendono sotto `caption` (14px) e non vengono mai compressi in un'icona con tooltip. Il carattere display è per le affermazioni, il dato resta leggibile.
+
+**La Regola del Maiuscolo.** Anton si compone in maiuscolo. Con accenti maiuscoli e interlinea 1 va verificato il taglio degli accenti in cima alla riga: è l'unico punto in cui l'interlinea collassata può rompere.
+
+## 4. Layout
+
+### Spacing System
+
+La scala è tarata a mano, non strettamente geometrica: base ~8px con passi irregolari per il ritmo.
+
+`xs` 8px, `sm` 10px, `sm-alt` 14px, `md` 16px, `gutter` 20px, `lg` 24px, `lg-alt` 30px, `xl` 32px, `header-height` 77px, `xxl` 40px, `section-sm` 48px, `section` 80px, `section-lg` 100px.
+
+Il padding di componente resta piccolo e costante: bottone e scheda atterrano entrambi su 24px. Il ritmo fra sezioni salta alla fascia 48-100px. Il vuoto fra le due fasce è deliberato: l'interno resta stretto e disciplinato, lo spazio fra sezioni resta generoso e cinematografico.
+
+### Grid & Container
+
+Desktop usa una griglia a 3 colonne per le tessere di categoria, con gutter da 20px. Il testo corrente sta in una colonna centrata da 500-600px sotto i titoli sovradimensionati. Mobile collassa la griglia a colonna singola, immagini a tutta larghezza e didascalie sovrapposte in fondo alla foto. La navbar fissa tiene 77px costanti su entrambi i breakpoint.
+
+### Whitespace Philosophy
+
+Il vuoto è uno status symbol, non un incidente. Blocchi larghi (80/100px) separano le zone nere da quelle chiare, lasciando respirare il display sovradimensionato e la fotografia monocroma senza cromo di interfaccia in competizione. Niente è largo dentro un componente: tutta la generosità si spende sul ritmo macro, non sul padding micro.
+
+## 5. Elevation
+
+| Livello | Trattamento | Uso |
+|---|---|---|
+| 0 — Piatto | Nessuna ombra, nessun bordo | Navbar, footer, tutti i fondi di sezione |
+| 1 — Sollevamento morbido | `rgba(69,69,69,0.2) 0 8px 8px 0, rgba(69,69,69,0.23) 0 2px 5px 0` | Solo `button-primary` |
+| 2 — Sollevamento profondo | `rgba(0,0,0,0.1) 0 8px 18px 0, rgba(0,0,0,0.09) 0 33px 33px 0` | Solo `card` |
+
+### Named Rules
+
+**La Regola del Manifesto.** Il cromo strutturale (navbar, footer, fondi di sezione) non proietta mai ombra. La profondità si fa scambiando il valore di superficie. Se stai aggiungendo un'ombra a qualcosa che non è il bottone primario o una scheda, cancellala.
+
+**La Regola dello Spigolo.** Il raggio è 0px ovunque. Bottoni, schede, immagini e tessere sono rettangoli netti. Non esiste pillola né cerchio in questo sistema. È un confine duro, non una svista.
+
+**La Regola dell'Indice.** La coreografia allo scroll scandisce un elenco, non intrattiene. Curve ease-out esponenziali, nessun rimbalzo, nessun elastico, mai animare proprietà di layout. Con `prefers-reduced-motion` la sequenza sparisce del tutto e il contenuto è immediatamente completo.
+
+## 6. Components
+
+- **`navbar`** — barra fissa, 77px, fondo `#000000`, testo `#FFFFFF`. Nessun bordo, nessun blur, opaca a ogni posizione di scroll. Porta i link in `nav-link` (Roboto 16px peso 300) più un bottone CTA visibile. Layout identico fra desktop e mobile.
+- **`nav-link`** — testo bianco in `nav-link`. Il peso 300 tiene la navigazione visivamente silenziosa rispetto ai titoli e ai bottoni.
+- **`button-primary`** — fondo `#E8E8E8`, testo `#1C1C1C`, padding 16px 24px, etichetta in `link-strong`. È l'unico bottone con ombra (livello 1).
+- **`button-secondary`** — fondo `#1C1C1C`, testo `#FFFFFF`, stesso padding e stessa tipografia del primario, ma piatto. Per azioni a minore enfasi, dove uno scuro-su-scuro deve arretrare.
+- **`card`** — fondo `#1C1C1C`, padding 24px, ombra di livello 2. È l'unico contenitore a cui è permessa un'ombra pesante.
+- **`hero-heading`** — `hero-display` (Anton 120px) in bianco, allineato a sinistra sull'hero nero.
+- **`section-heading`** — `display-md` (Anton 55px) in bianco, titola ogni sezione alternata.
+- **`body-text`** — `caption` (Roboto 300, 14px) in bianco, il paragrafo di default nelle sezioni scure.
+- **`footer`** — statico, blocco alto, fondo `#1C1C1C`, testo bianco. Due colonne, directory densa di link, nessun bottone CTA.
+- **`footer-link`** — testo bianco in `footer-link` (Roboto 700, 14px). I link di footer sono in grassetto dove quelli di nav sono leggeri: il footer è una directory, la nav è aria.
+
+`[i primitivi reali si estraggono dopo la prima implementazione: rilancia /impeccable document per generare .impeccable/design.json.]`
+
+## 7. Do's and Don'ts
 
 ### Do:
 
-- **Do** trattare verde, bianco e rosso come tre ruoli di percorso, uno alla volta, sempre accompagnati dal nome scritto.
-- **Do** tenere il tricolore intero esclusivamente nel wordmark AKM ITALIA.
-- **Do** tingere ogni neutro verso il verde di marca con chroma 0.005-0.01. Mai `#000`, mai `#fff`.
+- **Do** costruire la gerarchia con scala e valore di superficie, mai con la tinta.
+- **Do** tenere lo stacco netto fra Anton (33px e su) e Roboto (22px e giù).
+- **Do** restringere i pesi a 300, 400 e 700. Non esiste il 500.
+- **Do** riservare le ombre a `button-primary` e `card`, e lasciare piatto tutto il resto.
+- **Do** tenere ogni angolo a 0px di raggio.
+- **Do** tenere la navbar fissa a 77px, nera, senza bordo e senza blur.
+- **Do** dichiarare `tabular-nums` su ogni colonna di orari, civici e CAP.
 - **Do** mostrare indirizzo, orari e referente della sede come testo leggibile, senza richiedere un click.
-- **Do** nominare per esteso sedi e istruttori a livello Title in ogni sezione che li riguarda.
-- **Do** verificare il contrasto AA sul verde e sul rosso prima di usarli come testo: da saturi su fondo chiaro raramente passano.
-- **Do** costruire gli elenchi con righe a 1px e ritmo di spaziatura variabile, non con card.
-- **Do** rendere il controllo anti-bot accessibile: honeypot o time-trap, non un puzzle visivo.
+- **Do** nominare per esteso sedi e istruttori: «Rozzano, Centro Aisha», mai «il nostro centro di zona».
+- **Do** verificare il contrasto AA: il sistema è monocromo ad altissimo contrasto, quindi passa facilmente, ma `#333333` su `#1C1C1C` no. Il testo de-enfatizzato vive su superficie chiara.
 - **Do** far sparire l'intera coreografia sotto `prefers-reduced-motion`, lasciando il contenuto completo.
 
 ### Don't:
 
-- **Don't** costruire la **palestra MMA tattica**: nero e rosso sangue, camo, stencil, teschi, foto di pugni in controluce. È il riflesso di categoria e taglia fuori genitori, donne e adulti sopra i 40.
+- **Don't** introdurre un accento cromatico. Niente verde, niente rosso, niente tricolore fuori dal wordmark.
+- **Don't** applicare le ombre di bottone o scheda al cromo strutturale (navbar, footer, wrapper di sezione).
+- **Don't** arrotondare nessun angolo.
+- **Don't** aggiungere `letter-spacing` ai titoli per fingere un look atletico.
+- **Don't** introdurre una terza famiglia di caratteri.
+- **Don't** usare un peso 500.
+- **Don't** usare foto stock. Meglio nessuna immagine che una comprata.
+- **Don't** usare gradienti come token. Il duotono dell'hero, se c'è, sta cotto nell'asset immagine, non ricostruito in CSS.
+- **Don't** usare `background-clip: text` con un gradiente.
+- **Don't** usare glassmorphism, blur decorativi o card di vetro.
 - **Don't** ricadere nel **sito federale anni 2000**: home a news, PDF come navigazione, tabelle di orari illeggibili, fila di loghi di enti in footer.
 - **Don't** consegnare un **SaaS template**: hero con gradiente, tre card identiche icona più titolo più testo, «Scopri di più».
 - **Don't** virare al **fitness/wellness patinato**: palette da centro benessere, linguaggio da percorso di benessere.
-- **Don't** usare foto stock. Meglio nessuna immagine che una comprata.
-- **Don't** accostare verde, bianco e rosso in tre bande o tre colonne contigue.
-- **Don't** affidare al solo colore la distinzione tra i percorsi.
-- **Don't** usare il Rosso Mattone per errori di form o stati distruttivi.
-- **Don't** usare `border-left` o `border-right` oltre 1px come striscia colorata su schede, voci di elenco o avvisi.
-- **Don't** usare `background-clip: text` con un gradiente. Un colore pieno, enfasi con peso o dimensione.
-- **Don't** usare glassmorphism, blur decorativi o card di vetro.
-- **Don't** costruire il template numero grande più etichetta piccola più statistiche di contorno.
-- **Don't** ripetere griglie di card identiche per elencare percorsi, sedi o istruttori.
 - **Don't** aprire una modale come prima soluzione. Inline o progressivo prima.
-- **Don't** usare trattini lunghi nel copy. Virgole, due punti, punto e virgola, parentesi.
 - **Don't** animare proprietà di layout, né usare curve con rimbalzo o elastiche.

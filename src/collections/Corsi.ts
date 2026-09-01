@@ -62,19 +62,21 @@ export const Corsi: CollectionConfig = {
       type: 'row',
       fields: [
         {
-          name: 'colore',
+          name: 'superficie',
           type: 'select',
           required: true,
-          label: 'Ruolo di colore',
-          // Enum chiuso sui quattro ruoli di DESIGN.md: si sceglie quale ruolo, mai quale
-          // colore. Un color picker qui e la fine della Regola della Bandiera Smontata.
+          label: 'Ruolo di superficie',
+          // Enum chiuso sui quattro valori di superficie di DESIGN.md: si sceglie quale
+          // ruolo, mai quale tinta. Il sistema non ha accenti cromatici, quindi la
+          // distinzione fra corsi passa per il valore del fondo, e sempre insieme al nome
+          // scritto: la Regola dell'Etichetta non ammette un fondo senza etichetta.
           options: [
-            { label: 'Verde AKM - sicurezza quotidiana', value: 'verde' },
-            { label: 'Rosso Mattone - antiaggressione', value: 'rosso' },
-            { label: 'Carta - crescita dei ragazzi', value: 'carta' },
-            { label: 'Inchiostro - formazione tecnica', value: 'inchiostro' },
+            { label: 'Nero - sicurezza quotidiana', value: 'nero' },
+            { label: 'Carbone - antiaggressione', value: 'carbone' },
+            { label: 'Bianco - crescita dei ragazzi', value: 'bianco' },
+            { label: 'Grigio - formazione tecnica', value: 'grigio' },
           ] as const,
-          defaultValue: 'inchiostro',
+          defaultValue: 'grigio',
         },
         {
           name: 'inBivio',

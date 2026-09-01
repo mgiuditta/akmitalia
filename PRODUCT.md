@@ -33,22 +33,23 @@ Il contenuto è gestito interamente da Payload CMS (Sedi, Corsi, Istruttori, Eve
 **Concreto, competente, vicino.**
 
 - **Voce**: parla come un istruttore che spiega, non come un brand che vende. Frasi brevi, seconda persona, zero superlativi. Dice cosa succede alla prima lezione, non cosa diventerai.
-- **Tono**: calmo e adulto. Il tema è la paura, quindi il sito non la usa come leva: la disinnesca. Chi arriva è già a disagio all'idea di entrare in palestra.
+- **Tono**: calmo e adulto. Il tema è la paura, quindi il sito non la usa come leva: la disinnesca. Chi arriva è già a disagio all'idea di entrare in palestra. Il registro visivo è duro, il copy no: è il testo che tiene la soglia bassa mentre la tipografia alza la voce.
 - **Emozione target**: sollievo competente. «Questi sanno quello che fanno e non mi faranno sentire fuori posto.»
 - **Prova**: nomi, indirizzi, orari, volti di istruttori con qualifiche verificabili (CSEN-CONI, F.E.K.D.A., P.T.D.). La credibilità viene dai dati, non dagli aggettivi.
 
-Vincolo di marca dato dal cliente: il wordmark **AKM ITALIA in verde, bianco e rosso** (tricolore). È un dato di partenza, non una scelta aperta; il come tradurlo in sistema visivo si decide in DESIGN.md.
+Vincolo di marca dato dal cliente: il wordmark **AKM ITALIA in verde, bianco e rosso** (tricolore). È un dato di partenza, non una scelta aperta. `DESIGN.md` lo confina al solo wordmark: il sistema visivo è monocromo e non porta alcun accento cromatico, quindi il tricolore non si estende a percorsi, sezioni o componenti.
 
 ## Anti-references
 
-Quattro trappole, tutte da evitare:
+Tre trappole, tutte da evitare:
 
-1. **Palestra MMA tattica**: nero e rosso sangue, camo, font stencil, foto di pugni in controluce. È il riflesso di categoria: se il sito sembra questo, ha già escluso genitori, donne e adulti sopra i 40.
-2. **Sito federale anni 2000**: homepage a news, PDF, tabelle, loghi di enti accatastati in footer. Serio ma illeggibile, e su mobile inutilizzabile.
-3. **SaaS template**: hero con gradiente, tre card identiche icona + titolo + testo, bottone «Scopri di più». Poteva essere qualunque cosa: non dice niente su AKM.
-4. **Fitness/wellness patinato**: stock photo di gente che sorride, palette da centro benessere, linguaggio da percorso di benessere. Non credibile su un tema di sicurezza personale.
+1. **Sito federale anni 2000**: homepage a news, PDF, tabelle, loghi di enti accatastati in footer. Serio ma illeggibile, e su mobile inutilizzabile.
+2. **SaaS template**: hero con gradiente, tre card identiche icona + titolo + testo, bottone «Scopri di più». Poteva essere qualunque cosa: non dice niente su AKM.
+3. **Fitness/wellness patinato**: stock photo di gente che sorride, palette da centro benessere, linguaggio da percorso di benessere. Non credibile su un tema di sicurezza personale.
 
 Divieto trasversale: **niente foto stock**. Meglio nessuna immagine che una comprata.
+
+**Il registro visivo da palestra da combattimento è una scelta, non un incidente.** Era la prima anti-reference di questo documento fino al 2026-09-01: nero, altissimo contrasto, display condensato sovradimensionato. Il sistema di `DESIGN.md` adotta quel registro deliberatamente, ripulito dai suoi cliché: niente camo, niente teschi, niente rosso sangue, niente foto di pugni in controluce, nessun accento cromatico di alcun tipo. La durezza sta nella scala tipografica e nel contrasto di superficie, non nell'iconografia. Il costo è dichiarato in `docs/adr/0004`: questo registro parla forte all'adulto che cerca sicurezza quotidiana e chiede più lavoro di copy per non tagliare fuori genitori e prime praticanti.
 
 ## Design Principles
 
@@ -60,13 +61,13 @@ Divieto trasversale: **niente foto stock**. Meglio nessuna immagine che una comp
 
 4. **Le credenziali sono prove, non decorazioni.** Qualifiche, albo istruttori e riconoscimenti servono a rispondere a «funziona davvero?». Vanno dove quella domanda nasce, non ammassate in una pagina «chi siamo» o in una fila di loghi.
 
-5. **Togliere paura, non aggiungerla.** Nessuna leva sull'insicurezza, nessuna estetica minacciosa. Il sito abbassa la soglia d'ingresso: cosa portare, cosa succede la prima volta, che non serve essere allenati.
+5. **Togliere paura, non aggiungerla.** Nessuna leva sull'insicurezza. L'estetica è severa per scelta, il messaggio no: nessuna minaccia, nessuna promessa di violenza, nessuna iconografia da scontro. Il sito abbassa la soglia d'ingresso con le parole e con il dato, cosa portare, cosa succede la prima volta, che non serve essere allenati, mentre la forma resta asciutta e ad alto contrasto.
 
 ## Accessibility & Inclusion
 
 **WCAG 2.2 AA** come baseline non negoziabile:
 
-- Contrasto AA su tutto il testo e sui componenti interattivi. Il tricolore va gestito con attenzione: il rosso e il verde saturi su bianco raramente passano AA per il testo, e la coppia rosso/verde è il caso peggiore per il daltonismo. Nessuna informazione veicolata dal solo colore (i tre percorsi «verde / bianco / rosso» devono restare distinguibili per etichetta e forma).
+- Contrasto AA su tutto il testo e sui componenti interattivi. Il sistema è monocromo ad altissimo contrasto, quindi il daltonismo non è un rischio e il grosso del testo passa AAA. I due punti da guardare sono altri: il testo de-enfatizzato `#333333` non regge su superficie scura e vive solo su fondo chiaro, e il testo a 14px su nero puro va verificato per il tremolio da contrasto eccessivo. Nessuna informazione è veicolata dal solo valore di superficie: ogni categoria porta sempre il nome scritto.
 - Focus visibile e ordine di tabulazione coerente su tutta la navigazione e sul form richiesta.
 - Form etichettato in modo esplicito, errori descritti a parole e associati al campo, campi obbligatori dichiarati nel testo oltre che con l'asterisco.
 - `prefers-reduced-motion` rispettato.

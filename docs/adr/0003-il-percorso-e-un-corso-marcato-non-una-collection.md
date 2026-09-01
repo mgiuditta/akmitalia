@@ -1,5 +1,10 @@
 # Il percorso e un corso marcato, non una collection
 
+> **Aggiornata da `0004`.** La decisione regge: il percorso e ancora un corso marcato.
+> Cambia solo il campo del ruolo visivo, che da `colore` (quattro ruoli del tricolore)
+> diventa `superficie` (quattro valori di fondo, senza tinta). Dove sotto si legge
+> «colore», oggi si legge «superficie».
+
 «Percorso» significava tre cose diverse in tre posti: quattro voci in `PRODUCT.md`, tre colori
 del tricolore in `DESIGN.md`, sei destinatari nell'enum `Corsi.target`. I dati importati
 sciolgono meta del nodo: i corsi veri sono **tre** (20 slot di Krav Maga regolare, 5 di

@@ -531,7 +531,7 @@ export interface Corsi {
    * Numero piu basso = piu in alto nell elenco.
    */
   ordine?: number | null;
-  colore: 'verde' | 'rosso' | 'carta' | 'inchiostro';
+  superficie: 'nero' | 'carbone' | 'bianco' | 'grigio';
   /**
    * Spento di default: un corso nuovo nasce come pagina, non come voce di orientamento.
    */
@@ -999,7 +999,7 @@ export interface CorsiSelect<T extends boolean = true> {
   slug?: T;
   target?: T;
   ordine?: T;
-  colore?: T;
+  superficie?: T;
   inBivio?: T;
   domanda?: T;
   occhiello?: T;
