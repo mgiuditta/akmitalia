@@ -26,7 +26,7 @@ const QUALIFICA: Record<string, string> = {
   'direttore-tecnico': 'Direttore tecnico', presidente: 'Presidente',
 }
 
-const TARGET: Record<string, string> = {
+export const TARGET: Record<string, string> = {
   adulti: 'Adulti', ragazzi: 'Ragazzi', bambini: 'Bambini',
   donne: 'Donne', istruttori: 'Istruttori', 'aziende-ffoo': 'Aziende e FFOO',
 }

@@ -1,10 +1,16 @@
-/* La home (#17). Righe a 1px e niente card, come l'elenco dei centri: la
-   gerarchia la fanno peso e spazio. Tutti i valori vengono da token.css. */
+/* La home, «Il Sigillo» (#35).
+ *
+ * Tesi della direzione scelta: lo stemma non e' un logo da 40px, e' la
+ * geometria della pagina. L'anello a raggio di pagina regge l'apertura, gli
+ * archi sostituiscono i fili dritti fra le voci del bivio, e il peso visivo
+ * che al sito mancava lo portano quelli, piu' un campo verde pieno a tutta
+ * larghezza. Niente immagini obbligatorie: la fotografia e' additiva.
+ *
+ * Tutti i valori vengono da token.css. */
 
 .pagina {
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: var(--spazio-8) var(--spazio-6) var(--spazio-10);
+  font-family: var(--famiglia-display);
+  overflow-x: clip;
 }
 
 /* La grana di carta e' `fixed` e sta sotto tutto: se scorresse con il testo si
@@ -21,50 +27,115 @@
   pointer-events: none;
 }
 
-/* --- hero --- */
+/* --- apertura --- */
 
-.hero {
+.apertura {
   position: relative;
   isolation: isolate;
-  max-width: var(--misura);
-  padding-bottom: var(--spazio-9);
-  margin-bottom: var(--spazio-9);
-  border-bottom: 1px solid var(--riga);
-}
-/* La trama vive su un livello suo: `opacity` sull'elemento si porterebbe dietro
-   anche il titolo. Al 5% il contrasto del testo resta 15:1, misurato. */
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-image: var(--trama);
-  background-size: cover;
-  background-position: right center;
-  opacity: 0.05;
+  display: flex;
+  flex-direction: column;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--spazio-10) var(--spazio-7) 112px;
 }
 
+/*
+ * Il sigillo: anelli e fotografia hanno **un centro solo**, e sta qui. Il blocco
+ * definisce il diametro dell'immagine, e gli anelli si dimensionano su quello
+ * (1100/784 del viewBox = 140.3%), cosi' il terzo anello cade esatto sul bordo
+ * della foto. Due elementi con due ancoraggi si scollavano al primo ritocco.
+ */
+.sigillo {
+  position: absolute;
+  z-index: -1;
+  top: 56px;
+  left: 55%;
+  width: min(46vw, 600px);
+  aspect-ratio: 1;
+  pointer-events: none;
+}
+
+.anello {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 140.3%;
+  height: 140.3%;
+  transform: translate(-50%, -50%);
+  color: var(--riga);
+  overflow: visible;
+}
+.anello circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.anello .spesso {
+  stroke-width: 14;
+  color: var(--campo);
+  opacity: 0.09;
+}
+/* L'anello piu' interno cade sopra la fotografia: stesso segno, fondo diverso. */
+.anello .sopraFoto {
+  color: oklch(1 0 0 / 0.55);
+  stroke-width: 2;
+}
+
+.foto {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Il fondo e' carta calda: una fotografia a saturazione piena le starebbe
+     accanto come un adesivo. Un filo di desaturazione la fa sedere. */
+  filter: saturate(0.82) contrast(0.96);
+}
+
+/* La colonna del testo si ferma prima del sigillo. E' un vincolo di
+   composizione, non una misura tipografica: il titolo sopra il parquet non si
+   legge, e nessun valore in `ch` lo garantirebbe a tutte le larghezze. */
+.apertura > .occhiello,
+.apertura > .titolo,
+.apertura > .sommario,
+.apertura > .fatti,
+.apertura > .azioni {
+  max-width: 52%;
+}
+
+/* Livello Label. Maiuscolo vero con tracking, non `all-small-caps`: Archivo non
+   ha ne' `smcp` ne' `c2sc`, e con `font-synthesis: none` un maiuscoletto
+   dichiarato qui non fallirebbe, semplicemente non ci sarebbe. #38 ratifica. */
 .occhiello {
-  font-size: var(--label-corpo);
+  font-size: 13px;
   line-height: var(--label-interlinea);
-  font-weight: var(--label-peso);
-  letter-spacing: var(--label-tracking);
-  font-variant-caps: all-small-caps;
+  font-weight: 600;
+  font-stretch: 125%;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   color: var(--grafite);
-  margin-bottom: var(--spazio-3);
 }
 
 .titolo {
-  font-size: var(--display-corpo);
-  line-height: var(--display-interlinea);
-  font-weight: var(--display-peso);
-  letter-spacing: var(--display-tracking);
+  margin-top: 28px;
+  font-size: clamp(44px, 6.4vw, 92px);
+  line-height: 0.94;
+  font-weight: 600;
+  font-stretch: 118%;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
 }
 
-.testo {
-  margin-top: var(--spazio-5);
-  font-size: var(--body-corpo);
+.sommario {
+  margin-top: var(--spazio-7);
+  font-size: 19px;
   line-height: var(--body-interlinea);
+  font-weight: 400;
+  font-stretch: 100%;
 }
 
 .fatti {
@@ -79,108 +150,233 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--spazio-5);
-  margin-top: var(--spazio-7);
+  gap: var(--spazio-6);
+  margin-top: var(--spazio-8);
 }
 
-/* Una sola superficie piena in pagina, ed e' questa. */
 .azione {
-  display: inline-block;
-  padding: var(--spazio-3) var(--spazio-6);
-  min-height: 44px;
-  background: var(--verde);
+  display: inline-flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 var(--spazio-7);
+  /* Il bordo tondo viene dall'anello, non dalla moda: e' l'unica forma che il
+     marchio conosce. */
+  border-radius: 999px;
+  background: var(--campo);
   color: var(--carta-alta);
+  font-size: 17px;
+  font-weight: 600;
+  font-stretch: 108%;
   text-decoration: none;
-  font-size: var(--dato-corpo);
-  line-height: var(--dato-interlinea);
-  font-weight: 500;
 }
 .azione:hover {
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  background: var(--inchiostro);
 }
 
 .secondaria {
-  font-size: var(--dato-corpo);
-  line-height: var(--dato-interlinea);
+  font-size: 17px;
+  font-weight: 500;
   color: var(--grafite);
-  text-underline-offset: 4px;
+  text-underline-offset: 5px;
+}
+.secondaria:hover {
+  color: var(--inchiostro);
 }
 
-/* --- il bivio --- */
+/* --- il bivio, su campo pieno --- */
 
-/* Il Display e' uno solo per schermata e lo porta l'hero: qui si scende. */
+.campo {
+  background: var(--campo);
+  color: var(--carta-alta);
+  padding: 88px 0 var(--spazio-10);
+}
+
+.dentro {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 var(--spazio-7);
+}
+
 .domanda {
-  font-size: var(--headline-corpo);
-  line-height: var(--headline-interlinea);
-  font-weight: var(--headline-peso);
-  letter-spacing: var(--headline-tracking);
-  margin-bottom: var(--gruppo-sotto);
+  font-size: clamp(28px, 3.4vw, 44px);
+  line-height: 1.05;
+  font-weight: 600;
+  font-stretch: 118%;
+  letter-spacing: -0.015em;
 }
 
 .bivio {
   list-style: none;
-  margin: 0 0 var(--spazio-9);
+  margin: var(--spazio-8) 0 0;
   padding: 0;
-  border-top: 1px solid var(--riga);
-}
-.bivio li {
-  border-bottom: 1px solid var(--riga);
 }
 
 .voce {
-  display: block;
-  padding: var(--spazio-7) 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--spazio-5) var(--spazio-9);
+  padding: var(--spazio-7) 0 var(--spazio-8);
+  color: inherit;
   text-decoration: none;
 }
-.voce:hover .suaDomanda {
-  text-decoration: underline;
-  text-underline-offset: 4px;
+
+/* La riga che separa le voci e' un arco, non un filo dritto: e' la curva
+   dell'anello a raggio di pagina. Il raggio cresce voce dopo voce, quindi i tre
+   archi sono concentrici come i tre cerchi dello stemma. */
+.arco {
+  display: block;
+  width: 100%;
+  height: 26px;
+  overflow: visible;
+  color: var(--campo-riga);
+}
+.arco path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  transition: stroke-width 220ms ease-out, color 220ms ease-out;
+}
+.voce:hover .arco path,
+.voce:focus-visible .arco path {
+  color: var(--carta-alta);
+  stroke-width: 3;
 }
 
 .suaDomanda {
   display: block;
-  max-width: var(--misura);
-  font-size: var(--headline-corpo);
-  line-height: var(--headline-interlinea);
-  font-weight: var(--headline-peso);
-  letter-spacing: var(--headline-tracking);
+  max-width: 22ch;
+  font-size: clamp(26px, 3.2vw, 40px);
+  line-height: 1.12;
+  font-weight: 500;
+  font-stretch: 112%;
+  letter-spacing: -0.012em;
+}
+.voce:hover .suaDomanda {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
 }
 
 .riga {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
+  flex-direction: column;
+  align-items: flex-start;
   gap: var(--spazio-3);
-  margin-top: var(--blocco);
+}
+
+/* Regola dell'Etichetta: il percorso porta sempre il target scritto, e cambia
+   anche per forma. Qui la forma e' la pastiglia, che nessun altro elemento usa. */
+.target {
+  padding: 4px 14px;
+  border: 1px solid var(--campo-riga);
+  border-radius: 999px;
+  font-size: 13px;
+  line-height: var(--label-interlinea);
+  font-weight: 600;
+  font-stretch: 118%;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.target[data-colore='rosso'] {
+  border-color: var(--carta-alta);
+  background: var(--carta-alta);
+  color: var(--rosso);
 }
 
 .programma,
 .assente {
-  font-size: var(--meta-corpo);
-  line-height: var(--meta-interlinea);
-  color: var(--grafite);
+  font-size: 17px;
+  line-height: 27px;
+  color: var(--campo-grafite);
   font-variant-numeric: tabular-nums;
+}
+.assente {
+  font-style: italic;
 }
 
 /* --- coda --- */
 
+.coda {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 88px var(--spazio-7) 112px;
+}
+
 .presenza {
-  max-width: var(--misura);
-  font-size: var(--body-corpo);
-  line-height: var(--body-interlinea);
+  max-width: 44ch;
+  font-size: clamp(24px, 2.6vw, 34px);
+  line-height: 1.24;
+  font-weight: 400;
+  font-stretch: 108%;
+  letter-spacing: -0.01em;
+}
+.presenza a {
+  text-underline-offset: 6px;
 }
 
 .prova {
-  max-width: var(--misura);
-  margin-top: var(--spazio-5);
-  font-size: var(--dato-corpo);
-  line-height: var(--dato-interlinea);
+  max-width: 60ch;
+  margin-top: var(--spazio-7);
+  font-size: 17px;
+  line-height: 30px;
   color: var(--grafite);
 }
 
-@media (max-width: 640px) {
-  .pagina {
-    padding: var(--spazio-7) var(--spazio-4) var(--spazio-9);
+/* --- movimento: l'anello si chiude, e l'apertura sale dietro di lui ---
+   Regola dell'Indice: nessun contenuto vive dentro un'animazione. Sotto
+   `prefers-reduced-motion` non c'e' nessuna regola da annullare, perche' le
+   animazioni esistono solo dentro `no-preference`. */
+
+@media (prefers-reduced-motion: no-preference) {
+  .anello circle {
+    stroke-dasharray: 3400;
+    stroke-dashoffset: 3400;
+    animation: chiudi 1100ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .apertura > * {
+    animation: sali 700ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  .apertura > .occhiello { animation-delay: 60ms; }
+  .apertura > .titolo { animation-delay: 140ms; }
+  .apertura > .sommario { animation-delay: 260ms; }
+  .apertura > .fatti { animation-delay: 320ms; }
+  .apertura > .azioni { animation-delay: 380ms; }
+}
+
+@keyframes chiudi {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes sali {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 720px) {
+  .apertura {
+    padding: var(--spazio-9) var(--spazio-4) var(--spazio-10);
+  }
+  /* Su telefono il sigillo non ha dove stare accanto al titolo: scende in
+     flusso sotto le azioni, e resta un disco. */
+  .sigillo {
+    position: static;
+    width: min(72vw, 320px);
+    margin: var(--spazio-8) 0 0 auto;
+  }
+  .apertura > .occhiello,
+  .apertura > .titolo,
+  .apertura > .sommario,
+  .apertura > .fatti,
+  .apertura > .azioni {
+    max-width: none;
+  }
+  .campo { padding: var(--spazio-9) 0 var(--spazio-8); }
+  .dentro { padding: 0 var(--spazio-4); }
+  .coda { padding: var(--spazio-9) var(--spazio-4) var(--spazio-10); }
+  .voce {
+    grid-template-columns: 1fr;
+    gap: var(--spazio-4);
+    padding: var(--spazio-6) 0 var(--spazio-7);
   }
 }

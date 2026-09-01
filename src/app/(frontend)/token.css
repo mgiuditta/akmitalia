@@ -21,8 +21,26 @@
   --rosso: oklch(0.46 0.105 36);
   --errore: oklch(0.5 0.19 25);
 
+  /* --- il campo pieno della home (#35) ---
+     Tre ruoli e non una palette a parte: la home riusa i sei ruoli di sopra e
+     aggiunge solo cio' che serve a una superficie scura, che prima non esisteva.
+     Il verde del campo e' piu' scuro del Verde AKM perche' ci va sopra del testo
+     chiaro, e i valori sono misurati, non stimati:
+       Carta alta su Campo      11,79:1
+       Campo grafite su Campo    7,80:1
+       Campo riga su Campo       2,61:1  (filo, non testo: la soglia in cui una
+                                          riga a 1px sparisce sta sotto, GOV.UK
+                                          e' a circa 2,3:1) */
+  --campo: oklch(0.33 0.07 155);
+  --campo-riga: oklch(0.56 0.05 155);
+  --campo-grafite: oklch(0.86 0.02 155);
+
   /* --- tipografia: una famiglia, quattro pesi, sette livelli --- */
   --famiglia: 'Fira Sans', system-ui, sans-serif;
+  /* La famiglia della home (#35). Non e' ancora la famiglia del sito: #38
+     rimisura i sette livelli e decide se il resto la segue. Fino ad allora
+     convivono, e la home e' l'unica che la dichiara. */
+  --famiglia-display: 'Archivo', 'Fira Sans', system-ui, sans-serif;
 
   --display-corpo: 56px;
   --display-interlinea: 60px;

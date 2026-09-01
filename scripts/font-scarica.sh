@@ -1,5 +1,5 @@
 #!/bin/sh
-# Scarica Fira Sans, la famiglia scelta in #6, in public/font/. Rieseguibile.
+# Scarica le famiglie del sito in public/font/. Rieseguibile.
 #
 # Quattro pesi e non sei: 400 Body, 500 Title e Label, 700 Headline, 900 Display.
 # Circa 133 KB in woff2 subset latin.
@@ -17,5 +17,18 @@ for p in Regular:400 Medium:500 Bold:700 Black:900; do
   [ -s "$out" ] && continue
   curl -sSL -f -o "$out" "$BASE/FiraSans-${p%%:*}.ttf" || { rm -f "$out"; echo "FAIL ${p%%:*}"; }
 done
+
+# Archivo, la famiglia della home (#35). Un file variabile e non quattro statici:
+# la home usa l'asse `wdth` oltre a `wght`, e la larghezza non e' un vezzo, viene
+# dal microtesto dell'anello dello stemma.
+#
+# Archivo **non ha** `smcp` ne' `c2sc`, verificato sulle feature GSUB del file.
+# Percio' il livello Label della home e' maiuscolo vero con tracking, non
+# maiuscoletto: la Regola del Maiuscoletto Vero non e' violata, e' ritirata per
+# questa famiglia, e #38 la deve ratificare quando rimisura i sette livelli.
+ARCHIVO="$DEST/Archivo.ttf"
+[ -s "$ARCHIVO" ] || curl -sSL -f -o "$ARCHIVO" \
+  'https://github.com/google/fonts/raw/main/ofl/archivo/Archivo%5Bwdth,wght%5D.ttf' \
+  || { rm -f "$ARCHIVO"; echo "FAIL Archivo"; }
 
 ls -l "$DEST"

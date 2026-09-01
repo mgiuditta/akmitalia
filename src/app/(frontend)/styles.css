@@ -6,6 +6,16 @@
 @font-face { font-family: 'Fira Sans'; src: url('/font/FiraSans-700.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 @font-face { font-family: 'Fira Sans'; src: url('/font/FiraSans-900.ttf') format('truetype'); font-weight: 900; font-display: swap; }
 
+/* Archivo, la famiglia della home (#35). Un solo file variabile, due assi: la
+   home si serve di `wdth` quanto di `wght`. */
+@font-face {
+  font-family: 'Archivo';
+  src: url('/font/Archivo.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 
 body {
@@ -17,7 +27,9 @@ body {
   line-height: var(--body-interlinea);
   /* Regola del Maiuscoletto Vero: senza `font-synthesis: none` il browser
      inventa in silenzio i pesi e i maiuscoletti che mancano. Fira Sans li ha
-     tutti veri, e questa riga fa fallire rumorosamente il giorno che non li avra'. */
+     tutti veri, e questa riga fa fallire rumorosamente il giorno che non li avra'.
+     Archivo non ha i maiuscoletti, ed e' esattamente perche' questa riga c'e'
+     che la home usa maiuscolo vero e tracking invece di fingerli. */
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
 }

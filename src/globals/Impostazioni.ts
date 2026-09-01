@@ -125,6 +125,16 @@ export const Impostazioni: GlobalConfig = {
           label: 'Grana di carta',
           admin: { description: 'Ripetuta su tutta la pagina, al 3%. Deve essere senza giunte.' },
         },
+        {
+          name: 'aperturaHome',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Immagine in apertura',
+          admin: {
+            description:
+              "Ritagliata dal cerchio del sigillo, in apertura di home. Il soggetto deve stare nel 70% centrale, perche' il cerchio mangia gli angoli. Senza, restano gli anelli disegnati e la pagina e' completa lo stesso.",
+          },
+        },
       ],
     },
     {

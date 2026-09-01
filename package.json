@@ -19,7 +19,8 @@
     "media:scarica": "sh scripts/scarica-media.sh",
     "importa:centri": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/importa-centri.ts",
     "asset:home": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/carica-asset-home.ts",
-    "font:scarica": "sh scripts/font-scarica.sh"
+    "font:scarica": "sh scripts/font-scarica.sh",
+    "asset:registro": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/carica-asset-registro.ts -- docs/marchio/asset-registro"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.88.0",
