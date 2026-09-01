@@ -48,10 +48,12 @@ Il bivio e' la prima decisione che il sito chiede, e la domanda che risolve e' �
 
 Un corso nuovo **non** e' un percorso finche' qualcuno non lo marca. Il bivio resta corto per scelta editoriale, non per vincolo tecnico.
 
+Un percorso puo' non avere nessun **centro tecnico** attivo che lo tenga: il bivio dichiara che quel corso esiste, non che parte lunedi'. La marcatura e' editoriale e non si spegne da sola quando gli **orari** finiscono.
+
 ## Richiesta
 
 Il messaggio che il visitatore manda dal form pubblico per essere ricontattato da un **centro tecnico**. E' l'esito che il sito misura, e l'unico modo di contattare AKM: non ci sono recapiti per centro.
 
 Una richiesta dice «voglio sapere», non «tenetemi il posto». Non e' un'**iscrizione**: l'iscrizione avviene fuori dal sito, con la documentazione che AKM manda dopo, e chiede dati che la richiesta non chiede. Per la stessa ragione non e' una **preiscrizione**: la parola promette un posto trattenuto, e nessun posto viene trattenuto.
 
-Una richiesta nomina sempre un centro tecnico, e puo' nominare un **corso**: chi non ha ancora risolto il primo bivio lo dice, e la richiesta resta valida.
+Una richiesta nomina un **centro tecnico** e puo' nominare un **corso**, e nessuno dei due e' garantito: chi non ha ancora risolto il primo bivio non sa il corso, e chi arriva da un corso che nessun centro attivo tiene non ha un centro da nominare. In entrambi i casi la non-scelta e' una risposta dichiarata, non un campo lasciato vuoto, e la richiesta resta valida.

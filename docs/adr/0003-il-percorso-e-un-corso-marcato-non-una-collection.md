@@ -36,3 +36,7 @@ avrebbe reso non modificabili anche i nomi e le descrizioni, non solo il numero 
   genitore e non taglia la fascia 14-17, che il corso regolare copre gia con «Adulti e Ragazzi».
 - `target` sopravvive accanto a `colore` e dice un'altra cosa: a chi si rivolge il corso, non
   che ruolo visivo porta.
+- Un percorso senza centri attivi resta nel bivio (#24). `inBivio` non si combina mai con il
+  conteggio degli orari: un interruttore acceso che non produce una voce sarebbe l'admin che
+  mente al cliente. La pagina corso porta il peso della verita', dicendo a parole che il corso
+  non e' in calendario e nominando l'ultimo centro che lo teneva.
