@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { risolvi } from '@/app/(frontend)/guscio'
+import { corrente } from '@/app/(frontend)/menu'
 
 /**
  * Il resolver e' l'unica logica del guscio: tre tipi di voce, e il caso che
@@ -31,5 +32,25 @@ describe('risolvi', () => {
     expect(risolvi({ tipo: 'esterna' })).toBeNull()
     // Relazione non popolata (depth 0) o pagina cancellata: non c e un path.
     expect(risolvi({ tipo: 'interna', pagina: 42 } as never)).toBeNull()
+  })
+})
+
+/**
+ * La voce corrente. Il caso che rompe e' la home: `/` e' prefisso di ogni
+ * altro percorso, e senza l'eccezione «Home» resterebbe marcata ovunque.
+ */
+describe('corrente', () => {
+  it('la scheda di un centro marca la sezione che la contiene', () => {
+    expect(corrente('/centri', '/centri')).toBe(true)
+    expect(corrente('/centri', '/centri/abbiategrasso-dynamic-dance-school')).toBe(true)
+  })
+
+  it('la home si marca solo su se stessa', () => {
+    expect(corrente('/', '/')).toBe(true)
+    expect(corrente('/', '/centri')).toBe(false)
+  })
+
+  it('un prefisso di stringa non e un prefisso di percorso', () => {
+    expect(corrente('/centri', '/centri-tecnici')).toBe(false)
   })
 })

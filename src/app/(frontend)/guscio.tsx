@@ -2,9 +2,9 @@
  * Testata e footer, gli unici due pezzi presenti su ogni pagina (#22).
  *
  * La navigazione e' editoriale — vive in `Impostazioni`, si riordina
- * trascinando — ma con un **nucleo fisso**: cio' che regge la conversione non
- * si espone a un errore di distrazione nell'admin, come `Richieste` non si
- * espone a una modifica a mano.
+ * trascinando — ma con un **nucleo fisso** sopra e sotto: cio' che regge la
+ * conversione e cio' che la legge impone non si espongono a un errore di
+ * distrazione nell'admin, come `Richieste` non si espone a una modifica a mano.
  */
 import React from 'react'
 import Image from 'next/image'
@@ -13,6 +13,7 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import type { Impostazioni, Contatti, Pagine } from '@/payload-types'
 
+import { Menu, type Destinazione } from './menu'
 import stemma from './stemma.png'
 import stile from './guscio.module.css'
 
@@ -27,11 +28,24 @@ const ROTTE = {
   privacy: { href: '/privacy', etichetta: 'Privacy' },
 } as const
 
-/** Il nucleo che non si toglie dall'admin: cio' che regge la conversione. */
-const NUCLEO: (keyof typeof ROTTE)[] = ['centri', 'contatta']
+type Rotta = keyof typeof ROTTE
+
+/**
+ * Due nuclei, e sono due domande diverse (#29).
+ *
+ * Sopra sta la conversione, e nient'altro: la testata non e' una mappa del
+ * sito, e' la barra che porta al dove e all'esito misurato. Due voci piu' il
+ * lockup stanno su una riga anche a 320px, ed e' la ragione per cui il menu a
+ * panino non serve.
+ *
+ * Sotto sta cio' che deve esistere sempre: l'albo, che e' prova e non
+ * orientamento, e l'informativa, che il cliente non puo' togliere per sbaglio.
+ */
+const NUCLEO: Rotta[] = ['centri', 'contatta']
+const NUCLEO_PIEDE: Rotta[] = ['istruttori', 'privacy']
 
 /** Torna `null` per una voce non risolvibile: una pagina cancellata sparisce, non rompe. */
-export const risolvi = (v: Voce): { href: string; etichetta: string } | null => {
+export const risolvi = (v: Voce): Destinazione | null => {
   if (v.tipo === 'rotta' && v.rotta) {
     return { href: ROTTE[v.rotta].href, etichetta: v.etichetta || ROTTE[v.rotta].etichetta }
   }
@@ -43,6 +57,12 @@ export const risolvi = (v: Voce): { href: string; etichetta: string } | null => 
   return null
 }
 
+/** Il nucleo davanti, l'editoriale dietro: l'ordine dell'admin non sposta la conversione. */
+const voci = (nucleo: Rotta[], editoriali: Voce[] = []): Destinazione[] => [
+  ...nucleo.map((r) => ROTTE[r]),
+  ...editoriali.map(risolvi).filter((d): d is Destinazione => d !== null),
+]
+
 /** Il separatore lo mette il join, non la riga: un dato mancante non lascia un «·» orfano. */
 const dati = (d: Impostazioni['datiFiscali']) =>
   [
@@ -53,25 +73,18 @@ const dati = (d: Impostazioni['datiFiscali']) =>
     .filter(Boolean)
     .join(' · ')
 
-const Voci = ({ voci }: { voci: Voce[] }) =>
-  voci.map(risolvi).flatMap((r, i) =>
-    r ? (
-      <li key={i}>
-        <Link href={r.href}>{r.etichetta}</Link>
-      </li>
-    ) : (
-      []
-    ),
-  )
-
-const impostazioni = async () => {
+/**
+ * `cache` perche' testata e piede vivono su ogni pagina e chiedono le stesse
+ * due cose: senza, sono quattro `findGlobal` per pagina invece di due.
+ */
+const impostazioni = React.cache(async () => {
   const payload = await getPayload({ config: await config })
   const [imp, con] = await Promise.all([
     payload.findGlobal({ slug: 'impostazioni', depth: 1 }),
     payload.findGlobal({ slug: 'contatti', depth: 0 }),
   ])
   return { imp: imp as Impostazioni, con: con as Contatti }
-}
+})
 
 export const Testata = async () => {
   const { imp } = await impostazioni()
@@ -87,16 +100,7 @@ export const Testata = async () => {
         <Image alt="" className={stile.stemma} priority sizes="40px" src={stemma} />
         {imp.siteName}
       </Link>
-      <nav aria-label="Principale">
-        <ul className={stile.menu}>
-          {NUCLEO.map((r) => (
-            <li key={r}>
-              <Link href={ROTTE[r].href}>{ROTTE[r].etichetta}</Link>
-            </li>
-          ))}
-          <Voci voci={imp.navigazione?.menu ?? []} />
-        </ul>
-      </nav>
+      <Menu etichetta="Principale" voci={voci(NUCLEO, imp.navigazione?.menu ?? [])} />
     </header>
   )
 }
@@ -109,19 +113,13 @@ export const Piede = async () => {
     <footer className={stile.piede}>
       {imp.testoFooter ? <p className={stile.testo}>{imp.testoFooter}</p> : null}
 
-      {imp.navigazione?.piede?.length ? (
-        <nav aria-label="Footer">
-          <ul className={stile.menu}>
-            <Voci voci={imp.navigazione.piede} />
-          </ul>
-        </nav>
-      ) : null}
+      <Menu etichetta="Secondaria" voci={voci(NUCLEO_PIEDE, imp.navigazione?.piede ?? [])} />
 
       {social.length ? (
         <ul className={stile.menu}>
           {social.map((s, i) => (
             <li key={i}>
-              <a href={s.url} rel="me noopener">
+              <a className={stile.voce} href={s.url} rel="me noopener">
                 {s.rete}
               </a>
             </li>

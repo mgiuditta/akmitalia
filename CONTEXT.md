@@ -57,3 +57,19 @@ Il messaggio che il visitatore manda dal form pubblico per essere ricontattato d
 Una richiesta dice «voglio sapere», non «tenetemi il posto». Non e' un'**iscrizione**: l'iscrizione avviene fuori dal sito, con la documentazione che AKM manda dopo, e chiede dati che la richiesta non chiede. Per la stessa ragione non e' una **preiscrizione**: la parola promette un posto trattenuto, e nessun posto viene trattenuto.
 
 Una richiesta nomina un **centro tecnico** e puo' nominare un **corso**, e nessuno dei due e' garantito: chi non ha ancora risolto il primo bivio non sa il corso, e chi arriva da un corso che nessun centro attivo tiene non ha un centro da nominare. In entrambi i casi la non-scelta e' una risposta dichiarata, non un campo lasciato vuoto, e la richiesta resta valida.
+
+## Sezione
+
+Una parte fissa del sito: esiste perche' qualcuno l'ha scritta nel codice, e il cliente non la puo' creare ne' togliere. Sono sezioni la home, l'elenco dei **centri tecnici**, la scheda di un centro, la pagina di un **corso**, l'albo degli istruttori, la **richiesta** e l'informativa privacy.
+
+Il test e' la cancellazione: se togliendola si rompe un collegamento scritto nel codice, e' una sezione. Il cliente ne governa il contenuto (i centri, i corsi, gli orari), mai l'esistenza.
+
+Non e' una voce di menu: la testata ne nomina due, e le sezioni sono di piu'. Una sezione puo' non stare in nessun menu e restare raggiungibile.
+
+## Pagina
+
+Un documento di testo scritto dal cliente, che una **sezione** dedicata rende. Sono pagine le legali: l'informativa privacy e le poche che le somiglieranno.
+
+La differenza con la sezione e' chi la puo' creare: una pagina nasce nell'admin, una sezione nasce in un commit. Il cliente scrive le parole di una pagina, non la sua composizione: la disposizione la decide il codice, sempre.
+
+Il sito vecchio ne aveva trentanove, quasi tutte convertite in campi di un **corso** o di un **centro tecnico**. Una pagina e' cio' che resta quando nessun campo la puo' ospitare.

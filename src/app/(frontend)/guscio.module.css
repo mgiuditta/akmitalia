@@ -49,9 +49,20 @@
 
 /* Niente menu a panino: con due o tre voci il pulsante costa piu' dello spazio
    che libera, e nasconde la conversione dietro un click. */
-.menu a {
+.voce {
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
+  /* Il padding su un elemento inline allarga l'area toccabile senza toccare la
+     riga: il visitatore primario arriva da mobile, di sera, e una voce alta
+     quanto il suo testo si sbaglia. */
+  padding-block: var(--spazio-2);
+}
+
+/* La voce corrente si marca con il peso e con lo spessore della riga, mai con
+   il colore soltanto: e' la Regola dell'Etichetta applicata alla navigazione. */
+.voce[aria-current='page'] {
+  font-weight: var(--label-peso);
+  text-decoration-thickness: 2px;
 }
 
 .piede {

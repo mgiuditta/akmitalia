@@ -133,7 +133,7 @@ export const Impostazioni: GlobalConfig = {
       label: 'Navigazione',
       admin: {
         description:
-          'Le voci si riordinano trascinandole. «Centri» e «Contatta» sono sempre in testata e non compaiono qui: reggono la conversione e non si possono togliere.',
+          'Le voci si riordinano trascinandole. Quattro non compaiono qui perche\' non si possono togliere: «Centri» e «Contatta» sono sempre in testata e reggono la conversione, «Istruttori» e «Privacy» sono sempre nel footer.',
       },
       fields: [voci('menu', 'Voci in testata'), voci('piede', 'Voci nel footer')],
     },
@@ -141,7 +141,7 @@ export const Impostazioni: GlobalConfig = {
       name: 'datiFiscali',
       type: 'group',
       label: 'Dati fiscali',
-      admin: { description: 'Compaiono nel footer e nella pagina 5x1000.' },
+      admin: { description: 'Compaiono nel footer.' },
       fields: [
         { name: 'ragioneSociale', type: 'text', label: 'Denominazione' },
         {
