@@ -34,9 +34,10 @@ type Rotta = keyof typeof ROTTE
  * Due nuclei, e sono due domande diverse (#29).
  *
  * Sopra sta la conversione, e nient'altro: la testata non e' una mappa del
- * sito, e' la barra che porta al dove e all'esito misurato. Due voci piu' il
- * lockup stanno su una riga anche a 320px, ed e' la ragione per cui il menu a
- * panino non serve.
+ * sito, e' la barra che porta al dove e all'esito misurato. Il nucleo sta su
+ * una riga anche a 320px, ma il nucleo non e' tutta la testata: `voci()` gli
+ * accoda le voci editoriali, e quelle non hanno tetto. Sotto i 640px il menu
+ * va quindi dietro un pulsante, che regge due voci come nove.
  *
  * Sotto sta cio' che deve esistere sempre: l'albo, che e' prova e non
  * orientamento, e l'informativa, che il cliente non puo' togliere per sbaglio.
@@ -100,7 +101,7 @@ export const Testata = async () => {
         <Image alt="" className={stile.stemma} priority sizes="40px" src={stemma} />
         {imp.siteName}
       </Link>
-      <Menu etichetta="Principale" voci={voci(NUCLEO, imp.navigazione?.menu ?? [])} />
+      <Menu etichetta="Principale" panino voci={voci(NUCLEO, imp.navigazione?.menu ?? [])} />
     </header>
   )
 }

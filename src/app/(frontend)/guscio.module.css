@@ -47,8 +47,15 @@
   line-height: var(--dato-interlinea);
 }
 
-/* Niente menu a panino: con due o tre voci il pulsante costa piu' dello spazio
-   che libera, e nasconde la conversione dietro un click. */
+/* Il panino esiste solo sotto i 640px, e non perche' il nucleo sia largo: il
+   nucleo e' due voci, ma `voci()` gli accoda `navigazione.menu`, che e' un
+   array Payload senza tetto. Il cliente ne aggiunge nove e la riga non c'e'
+   piu'. Sopra i 640px il pulsante non compare: li' lo spazio c'e', e nascondere
+   la conversione dietro un click costerebbe piu' di quanto libera. */
+.panino {
+  display: none;
+}
+
 .voce {
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
@@ -85,4 +92,76 @@
   font-size: var(--meta-corpo);
   line-height: var(--meta-interlinea);
   font-variant-numeric: tabular-nums;
+}
+
+/* Sotto i 640px la testata si spezza su due righe: il lockup e il pulsante
+   sopra, le voci sotto e in colonna. In colonna reggono qualunque numero, che
+   e' il requisito vero: la navigazione e' editoriale.
+
+   Il pannello sta nel flusso e non sopra la pagina. Cosi' non serve ne' uno
+   z-index ne' un velo, la Regola del Foglio resta intatta, e il contenuto
+   scende invece di sparire sotto qualcosa. */
+@media (max-width: 640px) {
+  .testata {
+    gap: var(--spazio-4);
+  }
+
+  /* Il nome e' editoriale come le voci: puo' essere lungo, quindi il lockup
+     deve poter stringersi. Lo stemma no: e' un segno a misura fissa. */
+  .wordmark {
+    min-width: 0;
+  }
+
+  .stemma {
+    flex-shrink: 0;
+  }
+
+  /* 44px netti, la soglia di tocco. Il bordo e non un riempimento: in
+     `forced-colors: active` i fondi spariscono e i bordi restano, quindi il
+     pulsante resta un pulsante anche li'. */
+  .panino {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--riga);
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .panino:focus-visible {
+    outline: 2px solid var(--inchiostro);
+    outline-offset: 2px;
+  }
+
+  /* Chiuso e' `display: none`, non opacita': le voci nascoste escono anche
+     dall'ordine di tabulazione, che e' l'unica chiusura che vale per chi
+     naviga da tastiera o con uno screen reader. */
+  .nav {
+    flex-basis: 100%;
+    display: none;
+  }
+
+  .nav[data-aperto] {
+    display: block;
+    margin-top: var(--spazio-2);
+    padding-top: var(--spazio-4);
+    border-top: 1px solid var(--riga);
+  }
+
+  .nav[data-aperto] .menu {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* In colonna la voce prende la riga intera: l'area toccabile e' la riga, non
+     la parola, e a 12px di padding su 28px di interlinea supera i 44px. */
+  .nav[data-aperto] .voce {
+    display: block;
+    padding-block: var(--spazio-3);
+  }
 }
