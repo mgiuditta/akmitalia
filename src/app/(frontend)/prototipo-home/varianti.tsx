@@ -33,6 +33,8 @@ export type Props = {
   comuni: string[]
   slot: number
   istruttori: number
+  /** Gli asset generati, per nome di file: vengono da `Media`, non dal codice. */
+  asset: Record<string, string>
 }
 
 /** La prova attaccata a una voce del bivio: dove quel corso e' davvero in programma. */
@@ -55,12 +57,20 @@ function Programma({ v }: { v: Voce }) {
 /* ------------------------------------------------------------------ A ----- */
 
 /** Il bivio: la parte di A che non e' in discussione, condivisa dalle quattro A. */
-function BivioSecco({ voci }: { voci: Voce[] }) {
+function BivioSecco({ voci, asset }: { voci: Voce[]; asset?: Record<string, string> }) {
   return (
     <ul className={stile.aBivio} id="bivio">
-      {voci.map((v) => (
+      {voci.map((v, i) => {
+        const segno = asset?.[`akm-percorso-${i + 1}.png`]
+        return (
         <li key={v.corso.id}>
           <Link className={stile.aVoce} href={`/corsi/${v.corso.slug}`}>
+            {/* Decorativo: il percorso e' gia' scritto accanto (Regola dell'Etichetta),
+                quindi il segno non porta informazione e va con `alt` vuoto. */}
+            {segno ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img alt="" className={stile.aSegno} height={32} src={segno} width={32} />
+            ) : null}
             <span className={stile.aDomanda}>{v.corso.domanda}</span>
             <span className={stile.aRiga}>
               <Percorso corso={v.corso} />
@@ -68,7 +78,8 @@ function BivioSecco({ voci }: { voci: Voce[] }) {
             </span>
           </Link>
         </li>
-      ))}
+        )
+      })}
     </ul>
   )
 }
@@ -111,10 +122,18 @@ export function VarianteA({ voci, comuni, slot }: Props) {
  * il Principio 2 vieta la richiesta di contatto prima che il bivio sia risolto,
  * quindi porta ai centri, che e' la seconda domanda del visitatore.
  */
-export function VarianteA1({ voci, sedi, comuni, slot }: Props) {
+export function VarianteA1({ voci, sedi, comuni, slot, asset }: Props) {
+  const trama = asset['akm-trama-hero.webp']
+  const carta = asset['akm-fondo-carta.webp']
   return (
-    <div className={stile.a}>
-      <header className={stile.h1Hero}>
+    <div
+      className={`${stile.a} ${carta ? stile.conCarta : ''}`}
+      style={carta ? ({ '--carta-grana': `url(${carta})` } as React.CSSProperties) : undefined}
+    >
+      <header
+        className={stile.h1Hero}
+        style={trama ? ({ '--trama': `url(${trama})` } as React.CSSProperties) : undefined}
+      >
         <p className={stile.h1Occhiello}>Krav Maga in Lombardia</p>
         <h1 className={stile.h1Titolo}>Difendersi si impara. Vicino a casa.</h1>
         <p className={stile.h1Testo}>
@@ -135,7 +154,7 @@ export function VarianteA1({ voci, sedi, comuni, slot }: Props) {
       </header>
 
       <h2 className={stile.aTitoloSecondo}>Qual è il tuo momento?</h2>
-      <BivioSecco voci={voci} />
+      <BivioSecco asset={asset} voci={voci} />
       <CodaA comuni={comuni} slot={slot} />
     </div>
   )

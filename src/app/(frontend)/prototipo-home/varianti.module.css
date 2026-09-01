@@ -478,3 +478,42 @@
     gap: var(--spazio-7);
   }
 }
+
+/* --- gli asset generati (#17): trama, carta, segni di percorso --- */
+
+/* La trama sta su un livello suo, al 5%: l'opacita' non si puo' mettere su un
+   background-image senza portarsi dietro anche il testo. */
+.h1Hero {
+  position: relative;
+  isolation: isolate;
+}
+.h1Hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--trama);
+  background-size: cover;
+  background-position: right center;
+  opacity: 0.05;
+}
+
+.aSegno {
+  display: block;
+  width: 32px;
+  height: 32px;
+  margin-bottom: var(--spazio-2);
+}
+
+/* La grana di carta al 3%, ferma sotto tutto: `fixed` cosi' non scorre con il
+   testo, che la renderebbe visibile proprio dove non deve esserlo. */
+.conCarta::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image: var(--carta-grana);
+  background-size: 512px 512px;
+  opacity: 0.03;
+  pointer-events: none;
+}

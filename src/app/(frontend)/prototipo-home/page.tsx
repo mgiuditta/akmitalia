@@ -52,7 +52,7 @@ export default async function PrototipoHome(props: {
   const chiave = VARIANTI.some(([k]) => k === variant) ? variant! : 'a1'
 
   const payload = await getPayload({ config: await config })
-  const [corsi, sedi, istruttori] = await Promise.all([
+  const [corsi, sedi, istruttori, media] = await Promise.all([
     payload.find({
       collection: 'corsi',
       where: { inBivio: { equals: true } },
@@ -67,6 +67,8 @@ export default async function PrototipoHome(props: {
       sort: 'indirizzo.citta',
     }),
     payload.count({ collection: 'istruttori' }),
+    // Gli asset generati (#17): stanno in `Media` perche' il cliente li cambia.
+    payload.find({ collection: 'media', limit: 50, depth: 0 }),
   ])
 
   const attive = sedi.docs as Sede[]
@@ -77,6 +79,9 @@ export default async function PrototipoHome(props: {
     comuni: [...new Set(attive.map(comune))].sort((a, b) => a.localeCompare(b, 'it')),
     slot: attive.reduce((n, s) => n + turni(s).length, 0),
     istruttori: istruttori.totalDocs,
+    asset: Object.fromEntries(
+      media.docs.flatMap((m) => (m.filename && m.url ? [[m.filename, m.url]] : [])),
+    ) as Record<string, string>,
   }
 
   return (
