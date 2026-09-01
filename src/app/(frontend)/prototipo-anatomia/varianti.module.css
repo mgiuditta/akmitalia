@@ -1,0 +1,249 @@
+/* PROTOTIPO USA E GETTA — issue #28. Tre anatomie in un file solo: sono
+   throwaway e vanno lette a confronto. Valori solo da token.css. */
+
+.provino { border-top: 1px solid var(--riga); padding-bottom: var(--spazio-10); }
+
+.etichetta {
+  max-width: 70ch;
+  margin: 0 auto;
+  padding: var(--spazio-4) var(--spazio-6) 0;
+  color: var(--rosso);
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+}
+
+/* ------------------------------------------------------------------ A ----- */
+
+.aPagina {
+  max-width: 78ch;
+  margin: 0 auto;
+  padding: var(--spazio-7) var(--spazio-6) 0;
+}
+
+/* Il Display non esiste in A: il titolo di pagina e' Headline e basta. */
+.aTitolo {
+  font-size: var(--headline-corpo);
+  line-height: var(--headline-interlinea);
+  letter-spacing: var(--headline-tracking);
+  font-weight: var(--headline-peso);
+}
+
+.aSommario { max-width: var(--misura); margin-top: var(--spazio-3); }
+
+.aSezione {
+  margin-top: var(--gruppo-sopra);
+  margin-bottom: var(--gruppo-sotto);
+  max-width: var(--misura);
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: 700;
+}
+
+.aRighe { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--riga); }
+.aRighe li {
+  max-width: var(--misura-max);
+  padding: var(--spazio-3) 0;
+  border-bottom: 1px solid var(--riga);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+/* Cio' che l'anatomia minima si rifiuta di coprire, dichiarato invece che nascosto. */
+.aFuori {
+  margin-top: var(--spazio-4);
+  color: var(--rosso);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+}
+
+/* ------------------------------------------------------------------ B ----- */
+
+.bPagina {
+  max-width: 100ch;
+  margin: 0 auto;
+  padding: var(--spazio-7) var(--spazio-6) 0;
+}
+
+.bApertura {
+  max-width: var(--misura);
+  padding-bottom: var(--spazio-8);
+  margin-bottom: var(--spazio-8);
+  border-bottom: 1px solid var(--riga);
+}
+
+.bOcchiello, .bGruppo, .bChiave {
+  color: var(--grafite);
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+}
+
+.bTitolo {
+  margin-top: var(--spazio-2);
+  max-width: 20ch;
+  font-size: var(--display-corpo);
+  line-height: var(--display-interlinea);
+  letter-spacing: var(--display-tracking);
+  font-weight: var(--display-peso);
+}
+
+.bSommario { margin-top: var(--spazio-5); }
+
+.bFatti {
+  margin-top: var(--spazio-4);
+  color: var(--grafite);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  font-variant-numeric: tabular-nums;
+}
+
+.bAzioni { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spazio-5); margin-top: var(--spazio-7); }
+
+.bAzione {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--spazio-6);
+  background: var(--verde);
+  color: var(--carta-alta);
+  font-size: var(--dato-corpo);
+  font-weight: 500;
+}
+
+.bSecondaria { color: var(--grafite); font-size: var(--dato-corpo); text-decoration: underline; text-underline-offset: 4px; }
+
+.bDue { display: grid; gap: var(--spazio-8); }
+
+.bSezione {
+  margin-top: var(--gruppo-sopra);
+  margin-bottom: var(--gruppo-sotto);
+  max-width: var(--misura);
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: 700;
+}
+.bSezione:first-child { margin-top: 0; }
+
+.bRighe { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--riga); }
+.bRighe li {
+  max-width: var(--misura-max);
+  padding: var(--spazio-3) 0;
+  border-bottom: 1px solid var(--riga);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+.bFatto { padding: var(--spazio-3) 0; border-bottom: 1px solid var(--riga); }
+.bValore { font-size: var(--dato-corpo); line-height: var(--dato-interlinea); }
+
+.bCoda {
+  max-width: var(--misura);
+  margin-top: var(--spazio-9);
+  color: var(--grafite);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+@media (min-width: 900px) {
+  .bDue { grid-template-columns: minmax(0, 1fr) 30ch; gap: var(--spazio-10); }
+  .bSpalla { position: sticky; top: var(--spazio-6); align-self: start; padding-left: var(--spazio-6); border-left: 1px solid var(--riga); }
+}
+
+/* ------------------------------------------------------------------ C ----- */
+
+/* Un attributo solo, il peso, e da li' scendono larghezza e livello del titolo. */
+.cPagina { margin: 0 auto; padding: var(--spazio-7) var(--spazio-6) 0; }
+
+.portale { max-width: 1040px; --titolo-corpo: var(--display-corpo); --titolo-interlinea: var(--display-interlinea); --titolo-peso: var(--display-peso); --titolo-tracking: var(--display-tracking); --titolo-misura: 24ch; }
+.documento { max-width: 78ch; --titolo-corpo: var(--headline-corpo); --titolo-interlinea: var(--headline-interlinea); --titolo-peso: var(--headline-peso); --titolo-tracking: var(--headline-tracking); --titolo-misura: var(--misura); }
+.scheda { max-width: 100ch; --titolo-corpo: var(--display-corpo); --titolo-interlinea: var(--display-interlinea); --titolo-peso: var(--display-peso); --titolo-tracking: var(--display-tracking); --titolo-misura: 20ch; }
+
+.cPeso {
+  margin-bottom: var(--spazio-4);
+  color: var(--rosso);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--label-tracking);
+}
+
+.cOcchiello, .cChiave {
+  color: var(--grafite);
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+}
+
+.cTitolo {
+  margin-top: var(--spazio-2);
+  max-width: var(--titolo-misura);
+  font-size: var(--titolo-corpo);
+  line-height: var(--titolo-interlinea);
+  letter-spacing: var(--titolo-tracking);
+  font-weight: var(--titolo-peso);
+}
+
+.cSommario { max-width: var(--misura); margin-top: var(--spazio-5); }
+
+.cFatti {
+  margin-top: var(--spazio-4);
+  color: var(--grafite);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  font-variant-numeric: tabular-nums;
+}
+
+.cAzione {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: var(--spazio-7);
+  padding: 0 var(--spazio-6);
+  background: var(--verde);
+  color: var(--carta-alta);
+  font-size: var(--dato-corpo);
+  font-weight: 500;
+}
+
+.cDue { display: grid; gap: var(--spazio-8); margin-top: var(--spazio-8); }
+
+.cSezione {
+  margin-top: var(--gruppo-sopra);
+  margin-bottom: var(--gruppo-sotto);
+  max-width: var(--misura);
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: 700;
+}
+
+.cRighe { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--riga); }
+.cRighe li {
+  max-width: var(--misura-max);
+  padding: var(--spazio-3) 0;
+  border-bottom: 1px solid var(--riga);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+.cFatto { padding: var(--spazio-3) 0; border-bottom: 1px solid var(--riga); }
+.cValore { font-size: var(--dato-corpo); line-height: var(--dato-interlinea); }
+
+.cCoda {
+  max-width: var(--misura);
+  margin-top: var(--spazio-9);
+  color: var(--grafite);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+@media (min-width: 900px) {
+  .cDue { grid-template-columns: minmax(0, 1fr) 30ch; gap: var(--spazio-10); }
+  .cSpalla { position: sticky; top: var(--spazio-6); align-self: start; padding-left: var(--spazio-6); border-left: 1px solid var(--riga); }
+}
