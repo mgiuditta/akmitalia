@@ -56,7 +56,7 @@ Ogni rapporto qui sotto è calcolato, non stimato: il calcolatore sta sul branch
 
 ### Named Rules
 
-**La Regola della Bandiera Smontata.** I tre colori di percorso non compaiono mai adiacenti in tre bande, colonne o blocchi contigui. Il tricolore vive intero solo nel wordmark. Ovunque altro, un percorso alla volta, nel suo contesto. Test in una frase: se una schermata sembra una bandiera italiana, riprogettala.
+**La Regola della Bandiera Smontata.** I tre colori di percorso non compaiono mai adiacenti in tre bande, colonne o blocchi contigui. Il tricolore vive intero solo nel **marchio**: lo stemma del cliente e il wordmark che gli sta accanto, insieme, in testata (ADR 0004). Ovunque altro, un percorso alla volta, nel suo contesto. Test in una frase: se una schermata sembra una bandiera italiana, riprogettala.
 
 **La Regola dell'Etichetta.** Nessun percorso è identificabile dal solo colore. Ogni occorrenza porta sempre il nome scritto, e cambia anche per forma, posizione o peso. Verde e rosso in coppia sono il caso peggiore per il daltonismo: se togliendo il colore la pagina diventa ambigua, è rotta.
 
@@ -146,7 +146,8 @@ Le ombre esistono solo come risposta a uno stato: un elemento sollevato perché 
 ### Do:
 
 - **Do** trattare verde, bianco e rosso come tre ruoli di percorso, uno alla volta, sempre accompagnati dal nome scritto.
-- **Do** tenere il tricolore intero esclusivamente nel wordmark AKM ITALIA.
+- **Do** tenere il tricolore intero esclusivamente nel marchio: lo stemma AKM Italia con il wordmark accanto, in testata e in nessun altro punto della pagina.
+- **Do** tenere lo stemma a 40px nel lockup, e lasciare al testo il compito di portare il nome: il microtesto dell'anello non si legge sotto i 128px, e non deve provarci.
 - **Do** tingere ogni neutro verso il verde di marca con chroma 0.005-0.01. Mai `#000`, mai `#fff`.
 - **Do** mostrare indirizzo, orari e referente della sede come testo leggibile, senza richiedere un click.
 - **Do** nominare per esteso sedi e istruttori a livello Title in ogni sezione che li riguarda.

@@ -2,7 +2,9 @@
 
 .testata {
   display: flex;
-  align-items: baseline;
+  /* Con lo stemma nel lockup la linea di base non serve piu': allinea il
+     centro del sigillo, non la riga del testo che gli sta accanto. */
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: var(--spazio-4);
@@ -10,15 +12,28 @@
   border-bottom: 1px solid var(--riga);
 }
 
-/* Il wordmark e' tipografia, non un'immagine: Display al peso 900, che #6 ha
-   scelto proprio perche' ha presenza da solo. */
+/* Il lockup: stemma e wordmark, e il nome resta tipografia. Lo stemma e' un
+   sigillo con microtesto sull'anello, illeggibile sotto i 128px: mettere il
+   nome li' dentro sarebbe metterlo dove nessuno lo legge. Il testo e' Display
+   al peso 900, che #6 ha scelto proprio perche' ha presenza da solo. */
 .wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spazio-3);
   font-size: var(--title-corpo);
   line-height: var(--title-interlinea);
   font-weight: var(--display-peso);
   letter-spacing: var(--label-tracking);
   text-transform: uppercase;
   text-decoration: none;
+}
+
+/* 40px: sotto, lo stemma diventa un disco colorato; sopra, ruba il peso al
+   nome. L'altezza e' fissata qui e non nell'attributo, cosi' il rapporto non
+   dipende dai pixel del file. */
+.stemma {
+  width: auto;
+  height: 40px;
 }
 
 .menu {

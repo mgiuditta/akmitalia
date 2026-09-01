@@ -37,7 +37,9 @@ Il contenuto è gestito interamente da Payload CMS (Sedi, Corsi, Istruttori, Eve
 - **Emozione target**: sollievo competente. «Questi sanno quello che fanno e non mi faranno sentire fuori posto.»
 - **Prova**: nomi, indirizzi, orari, volti di istruttori con qualifiche verificabili (CSEN-CONI, F.E.K.D.A., P.T.D.). La credibilità viene dai dati, non dagli aggettivi.
 
-Vincolo di marca dato dal cliente: il wordmark **AKM ITALIA in verde, bianco e rosso** (tricolore). È un dato di partenza, non una scelta aperta; il come tradurlo in sistema visivo si decide in DESIGN.md.
+Vincolo di marca dato dal cliente: il marchio **AKM ITALIA in verde, bianco e rosso** (tricolore). È un dato di partenza, non una scelta aperta; il come tradurlo in sistema visivo si decide in DESIGN.md.
+
+Il cliente ha poi consegnato l'asset, e non è un wordmark: è uno **stemma** circolare, un sigillo con microtesto sull'anello e il tricolore come archi interni. Il logo è quello e deve essere quello. In testata sta in un lockup con il nome scritto accanto, perché sotto i 128px l'anello non si legge (ADR 0004).
 
 ## Anti-references
 

@@ -7,11 +7,13 @@
  * espone a una modifica a mano.
  */
 import React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import type { Impostazioni, Contatti, Pagine } from '@/payload-types'
 
+import stemma from './stemma.png'
 import stile from './guscio.module.css'
 
 type Voce = NonNullable<NonNullable<Impostazioni['navigazione']>['menu']>[number]
@@ -78,10 +80,13 @@ export const Testata = async () => {
 
   return (
     <header className={stile.testata}>
-      {/* ponytail: wordmark testuale. L'asset tricolore e' una dipendenza dal
-          cliente (#23), e un PNG di logo su una pagina che ha scelto la
-          tipografia come peso sarebbe una resa. */}
+      {/* Lockup stemma + wordmark (#23, ADR 0004). Lo stemma da' il
+          riconoscimento, il testo porta il nome: a 40px il microtesto
+          dell'anello non si legge, e non deve, perche' non e' li' che il nome
+          e' scritto. `alt` vuoto apposta: il nome e' gia' nel testo accanto,
+          e ripeterlo lo farebbe leggere due volte a uno screen reader. */}
       <Link className={stile.wordmark} href="/">
+        <Image alt="" className={stile.stemma} priority sizes="40px" src={stemma} />
         {imp.siteName}
       </Link>
       <nav aria-label="Principale">
