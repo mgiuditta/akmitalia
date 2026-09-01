@@ -1,0 +1,54 @@
+/* PROTOTIPO USA E GETTA — issue #17. Solo la barra del prototipo e la nota in
+   testa: il resto del guscio (font, fondo, testata, footer) e' gia' quello vero
+   di `styles.css` e di `guscio.tsx`, ed e' il motivo per cui le varianti si
+   giudicano qui dentro e non in una pagina vuota. */
+
+.prototipo {
+  padding-bottom: 120px;
+}
+
+/* Dichiaratamente non di design: sta fuori dal giudizio. */
+.prototipo-testata {
+  max-width: 70ch;
+  margin: 0 auto;
+  padding: var(--spazio-7) var(--spazio-6) 0;
+  color: var(--grafite);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+}
+.prototipo-testata strong {
+  color: var(--inchiostro);
+  font-weight: 500;
+}
+
+.switcher {
+  position: fixed;
+  left: 50%;
+  bottom: var(--spazio-6);
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: var(--spazio-3);
+  padding: var(--spazio-2) var(--spazio-3);
+  border-radius: 999px;
+  background: var(--inchiostro);
+  color: var(--carta);
+  box-shadow: 0 6px 24px oklch(0.22 0.014 152 / 0.35);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+}
+.switcher button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 20px;
+  cursor: pointer;
+}
+.switcher button:hover {
+  background: oklch(1 0 0 / 0.14);
+}

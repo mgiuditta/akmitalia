@@ -1,0 +1,308 @@
+/* PROTOTIPO USA E GETTA — issue #17. Un modulo solo, tre blocchi che non
+   condividono nulla oltre ai token: ogni variante deve poter buttare via il
+   layout dell'altra. Nessun valore inventato: tutto da token.css. Righe a 1px,
+   niente card, niente ombre (Regola del Foglio). */
+
+/* ---------------------------------------------------------------- comune -- */
+
+.a,
+.b,
+.c {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: var(--spazio-8) var(--spazio-6) var(--spazio-10);
+}
+
+/* ------------------------------------------------------- A · bivio secco -- */
+
+.aTitolo {
+  max-width: var(--misura);
+  font-size: var(--display-corpo);
+  line-height: var(--display-interlinea);
+  font-weight: var(--display-peso);
+  letter-spacing: var(--display-tracking);
+  margin-bottom: var(--spazio-8);
+}
+
+.aBivio {
+  list-style: none;
+  margin: 0 0 var(--spazio-9);
+  padding: 0;
+  border-top: 1px solid var(--riga);
+}
+.aBivio li {
+  border-bottom: 1px solid var(--riga);
+}
+
+/* La voce del bivio e' una riga di elenco alta, non una card: il peso lo porta
+   la domanda, il dato sta sotto in Meta. */
+.aVoce {
+  display: block;
+  padding: var(--spazio-7) 0;
+  text-decoration: none;
+}
+.aVoce:hover .aDomanda {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.aDomanda {
+  display: block;
+  font-size: var(--headline-corpo);
+  line-height: var(--headline-interlinea);
+  font-weight: var(--headline-peso);
+  letter-spacing: var(--headline-tracking);
+  max-width: var(--misura);
+}
+.aRiga {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--spazio-3);
+  margin-top: var(--blocco);
+}
+
+.programma,
+.assente {
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+  color: var(--grafite);
+  font-variant-numeric: tabular-nums;
+}
+
+.aPresenza {
+  max-width: var(--misura);
+  font-size: var(--body-corpo);
+  line-height: var(--body-interlinea);
+}
+.aProva {
+  max-width: var(--misura);
+  margin-top: var(--spazio-5);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  color: var(--grafite);
+}
+
+/* ------------------------------------------------------- B · albo aperto -- */
+
+.bTesta {
+  max-width: var(--misura);
+  margin-bottom: var(--spazio-8);
+}
+.bTitolo {
+  font-size: var(--display-corpo);
+  line-height: var(--display-interlinea);
+  font-weight: var(--display-peso);
+  letter-spacing: var(--display-tracking);
+}
+.bIntro {
+  margin-top: var(--spazio-4);
+  font-size: var(--body-corpo);
+  line-height: var(--body-interlinea);
+  font-variant-numeric: tabular-nums;
+}
+
+.bSettimana {
+  border-top: 1px solid var(--riga);
+}
+.bGiorno {
+  padding-top: var(--gruppo-sopra);
+}
+.bNomeGiorno {
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  font-weight: var(--label-peso);
+  letter-spacing: var(--label-tracking);
+  font-variant-caps: all-small-caps;
+  color: var(--grafite);
+  margin-bottom: var(--gruppo-sotto);
+}
+.bTurni {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.bTurni li {
+  border-top: 1px solid var(--riga);
+}
+.bTurno {
+  display: grid;
+  grid-template-columns: 12ch 1fr;
+  gap: 0 var(--spazio-5);
+  padding: var(--voce-padding) 0;
+  text-decoration: none;
+}
+.bOre {
+  grid-row: span 2;
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  font-variant-numeric: tabular-nums;
+}
+.bDove {
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: var(--title-peso);
+}
+.bCosa {
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+  color: var(--grafite);
+}
+.bTurno:hover .bDove {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.bBivio {
+  margin-top: var(--spazio-10);
+  padding-top: var(--spazio-8);
+  border-top: 3px solid var(--inchiostro);
+}
+.bBivio ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.bBivio li + li {
+  border-top: 1px solid var(--riga);
+}
+.bDomandaGruppo {
+  font-size: var(--headline-corpo);
+  line-height: var(--headline-interlinea);
+  font-weight: var(--headline-peso);
+  letter-spacing: var(--headline-tracking);
+  margin-bottom: var(--gruppo-sotto);
+}
+.bVoce {
+  display: block;
+  padding: var(--voce-padding) 0;
+  text-decoration: none;
+  max-width: var(--misura-max);
+}
+.bDomanda {
+  display: block;
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: var(--title-peso);
+}
+.bSommario {
+  display: block;
+  margin: var(--spazio-1) 0 var(--spazio-2);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  color: var(--grafite);
+}
+.bVoce:hover .bDomanda {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* --------------------------------------- C · il posto prima del percorso -- */
+
+.cTitolo {
+  font-size: var(--display-corpo);
+  line-height: var(--display-interlinea);
+  font-weight: var(--display-peso);
+  letter-spacing: var(--display-tracking);
+}
+.cIntro {
+  max-width: var(--misura);
+  margin: var(--spazio-4) 0 var(--spazio-8);
+  font-size: var(--body-corpo);
+  line-height: var(--body-interlinea);
+}
+
+/* L'indice dei comuni sta su piu' colonne, come un indice analitico: e' un
+   elenco da scorrere con l'occhio, non voci da leggere una per una. */
+.cComuni {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 2;
+  column-gap: var(--spazio-9);
+  border-top: 1px solid var(--riga);
+}
+.cComuni li {
+  break-inside: avoid;
+  border-bottom: 1px solid var(--riga);
+}
+.cComune {
+  display: block;
+  padding: var(--spazio-4) 0;
+  text-decoration: none;
+}
+.cNome {
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: var(--title-peso);
+}
+.cPalestra,
+.cQuando {
+  display: block;
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+  color: var(--grafite);
+  font-variant-numeric: tabular-nums;
+}
+.cComune:hover .cNome {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.cTutti {
+  margin-top: var(--spazio-5);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+.cBivio {
+  margin-top: var(--spazio-10);
+}
+.cGruppo {
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  font-weight: var(--label-peso);
+  letter-spacing: var(--label-tracking);
+  font-variant-caps: all-small-caps;
+  color: var(--grafite);
+  margin-bottom: var(--gruppo-sotto);
+}
+.cBivio ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--riga);
+}
+.cBivio li {
+  border-bottom: 1px solid var(--riga);
+}
+.cVoce {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--spazio-3);
+  padding: var(--voce-padding) 0;
+  text-decoration: none;
+}
+.cDomanda {
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: var(--title-peso);
+}
+.cVoce:hover .cDomanda {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 640px) {
+  .a,
+  .b,
+  .c {
+    padding: var(--spazio-7) var(--spazio-4) var(--spazio-9);
+  }
+  .bTurno {
+    grid-template-columns: 11ch 1fr;
+    gap: 0 var(--spazio-4);
+  }
+  .cComuni {
+    columns: 1;
+  }
+}
