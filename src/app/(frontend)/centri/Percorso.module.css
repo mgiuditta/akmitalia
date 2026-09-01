@@ -1,0 +1,18 @@
+.percorso {
+  display: inline-block;
+  padding: 2px var(--spazio-2);
+  border: 1px solid currentColor;
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+  white-space: nowrap;
+}
+
+/* I quattro ruoli di colore dell'enum di `corsi` (#12), risolti nei valori di #5.
+   Verde e Rosso passano AA nei due versi come testo Carta su fondo pieno. */
+.percorso[data-colore='verde'] { color: var(--carta-alta); background: var(--verde); border-color: var(--verde); }
+.percorso[data-colore='rosso'] { color: var(--carta-alta); background: var(--rosso); border-color: var(--rosso); }
+.percorso[data-colore='inchiostro'] { color: var(--carta-alta); background: var(--inchiostro); border-color: var(--inchiostro); }
+.percorso[data-colore='carta'] { color: var(--inchiostro); background: transparent; border-color: var(--inchiostro); }

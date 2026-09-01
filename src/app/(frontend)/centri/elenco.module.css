@@ -1,0 +1,159 @@
+/* Elenco dei centri tecnici. Struttura A del prototipo di #8: l'elenco *e* il
+   documento, gli orari stanno nella voce e non dietro un click.
+
+   Mobile-first: la base e' il telefono, il `min-width` aggiunge le colonne. */
+
+.pagina {
+  max-width: 78ch;
+  margin: 0 auto;
+  padding: var(--spazio-8) var(--spazio-6) var(--spazio-10);
+}
+
+.titolo {
+  font-size: var(--headline-corpo);
+  line-height: var(--headline-interlinea);
+  letter-spacing: var(--headline-tracking);
+  font-weight: var(--headline-peso);
+}
+
+.intro {
+  max-width: var(--misura);
+  margin-top: var(--spazio-3);
+}
+
+.conteggio {
+  margin-top: var(--spazio-4);
+  color: var(--grafite);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Filtro provincia: link veri, non bottoni. Cambiano la URL, quindi sono
+   condivisibili e reggono il tasto indietro. */
+.filtri {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spazio-2);
+  margin: var(--spazio-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.filtro {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--spazio-3);
+  border: 1px solid var(--riga);
+  text-decoration: none;
+  font-size: var(--label-corpo);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+  font-variant-numeric: tabular-nums;
+}
+
+.filtro[aria-current='true'] {
+  background: var(--inchiostro);
+  color: var(--carta);
+  border-color: var(--inchiostro);
+}
+
+/* Regola del Foglio: l'elenco si struttura con righe a 1px, mai con card. */
+.elenco {
+  margin-top: var(--spazio-7);
+  border-top: 1px solid var(--riga);
+}
+
+.voce {
+  display: block;
+  padding: var(--voce-padding) 0;
+  border-bottom: 1px solid var(--riga);
+  text-decoration: none;
+}
+
+.voce:hover .palestra,
+.voce:focus-visible .palestra { text-decoration: underline; }
+
+.testa {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--spazio-3);
+}
+
+.dove {
+  color: var(--grafite);
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+}
+
+/* Regola del Peso Prima del Corpo: dentro la voce la gerarchia si fa cambiando
+   peso, non corpo. Nome a 500, dati a 400, docente in Grafite. */
+.palestra {
+  margin-top: var(--spazio-1);
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: var(--title-peso);
+}
+
+/* Regola del Dato Nudo: indirizzi e orari non scendono sotto il testo secondario. */
+.via {
+  margin-top: var(--spazio-1);
+  color: var(--grafite);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+.turni {
+  display: grid;
+  gap: var(--spazio-2);
+  margin-top: var(--blocco);
+}
+
+.turno {
+  display: grid;
+  gap: 0 var(--spazio-4);
+  grid-template-columns: max-content 1fr;
+}
+
+/* Regola della Cifra Tabulare: una colonna di orari con cifre proporzionali e'
+   storta e nessuno se ne accorge. */
+.quando {
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.cosa {
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+.chi {
+  grid-column: 1 / -1;
+  color: var(--grafite);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+}
+
+/* #10: una sede senza orari mostra una riga onesta, non una sezione che sparisce. */
+.senzaOrari {
+  margin-top: var(--blocco);
+  color: var(--grafite);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+.vuoto { margin-top: var(--spazio-7); }
+
+@media (min-width: 640px) {
+  .turno { grid-template-columns: 13ch 1fr 20ch; }
+  .cosa { padding-right: var(--spazio-4); }
+  .chi { grid-column: auto; }
+}

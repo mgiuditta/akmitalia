@@ -3,15 +3,13 @@ import './token.css'
 import './styles.css'
 
 export const metadata = {
-  description: 'A blank template using Payload in a Next.js app.',
-  title: 'Payload Blank Template',
+  title: 'AKM Italia',
+  description: 'Il registro pubblico dei centri, degli istruttori e dei percorsi AKM Italia.',
 }
 
-export default async function RootLayout(props: { children: React.ReactNode }) {
-  const { children } = props
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="it">
       <body>
         <main>{children}</main>
       </body>

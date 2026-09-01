@@ -1,0 +1,145 @@
+/* Scheda di un centro tecnico. Struttura B del prototipo di #8: qui il peso e'
+   sul documento, e l'incolonnamento e' il lavoro principale.
+
+   Mobile-first: la base e' il telefono. */
+
+.pagina {
+  max-width: 78ch;
+  margin: 0 auto;
+  padding: var(--spazio-6) var(--spazio-6) var(--spazio-10);
+}
+
+.indietro {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+  color: var(--grafite);
+}
+
+.dove {
+  margin-top: var(--spazio-4);
+  color: var(--grafite);
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+}
+
+/* Regola del Nome Proprio: il centro si nomina per esteso, comune compreso. */
+.titolo {
+  margin-top: var(--spazio-2);
+  font-size: var(--headline-corpo);
+  line-height: var(--headline-interlinea);
+  letter-spacing: var(--headline-tracking);
+  font-weight: var(--headline-peso);
+}
+
+.sospeso {
+  display: inline-block;
+  margin-top: var(--spazio-3);
+  padding: 2px var(--spazio-2);
+  border: 1px solid var(--errore);
+  color: var(--errore);
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+}
+
+.descrizione {
+  max-width: var(--misura);
+  margin-top: var(--spazio-5);
+}
+
+/* Il rapporto 2:1 attorno al titolo di gruppo e' un token (#2, #7). */
+.gruppo {
+  margin-top: var(--gruppo-sopra);
+  margin-bottom: var(--gruppo-sotto);
+  color: var(--grafite);
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+}
+
+/* Tre colonne di dato: sotto i 640 la tabella scorre dentro il suo contenitore,
+   il corpo della pagina non scorre mai in orizzontale. */
+.tabella { overflow-x: auto; }
+
+.settimana {
+  width: 100%;
+  min-width: 34ch;
+  border-collapse: collapse;
+}
+
+.settimana th,
+.settimana td {
+  padding: var(--spazio-3) var(--spazio-3) var(--spazio-3) 0;
+  text-align: left;
+  vertical-align: baseline;
+  border-bottom: 1px solid var(--riga);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  font-variant-numeric: tabular-nums;
+}
+
+.settimana th {
+  border-bottom-color: var(--inchiostro);
+  color: var(--grafite);
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+}
+
+.giorno { font-weight: 500; white-space: nowrap; }
+
+.docente {
+  color: var(--grafite);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+}
+
+.senzaOrari {
+  max-width: var(--misura);
+  color: var(--grafite);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+.fatto {
+  display: grid;
+  gap: 0 var(--spazio-4);
+  padding: var(--spazio-3) 0;
+  border-bottom: 1px solid var(--riga);
+}
+
+.fatto:first-of-type { border-top: 1px solid var(--riga); }
+
+.chiave {
+  color: var(--grafite);
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+}
+
+.valore {
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  font-variant-numeric: tabular-nums;
+}
+
+.disciplina { display: block; }
+.disciplina + .disciplina { margin-top: var(--spazio-2); }
+
+@media (min-width: 640px) {
+  .fatto { grid-template-columns: 18ch 1fr; }
+}
