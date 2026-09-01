@@ -1,0 +1,144 @@
+/* Pagina di un corso. Struttura C del prototipo di #18: la pagina risponde alle
+   due domande di PRODUCT.md («funziona davvero?», «sono fuori posto?») e tiene
+   il dato pratico in una spalla che resta a vista mentre le risposte scorrono.
+
+   Mobile-first: la base e' il telefono, dove la spalla e' semplicemente il
+   blocco finale. Valori solo da token.css. */
+
+.pagina {
+  max-width: 100ch;
+  margin: 0 auto;
+  padding: var(--spazio-6) var(--spazio-6) var(--spazio-10);
+}
+
+.occhiello,
+.gruppo,
+.chiave {
+  color: var(--grafite);
+  font-size: var(--label-corpo);
+  line-height: var(--label-interlinea);
+  letter-spacing: var(--label-tracking);
+  font-weight: var(--label-peso);
+  font-variant-caps: all-small-caps;
+}
+
+.gruppo {
+  margin-top: var(--gruppo-sopra);
+  margin-bottom: var(--gruppo-sotto);
+}
+
+/* Regola del Nome Proprio: il corso porta il suo nome per esteso, che e' lungo
+   («Krav Maga – Antibullismo Self Defense System») e per questo il Display sta
+   a misura corta e va a capo invece di rimpicciolirsi. */
+.titolo {
+  margin-top: var(--spazio-2);
+  max-width: 20ch;
+  font-size: var(--display-corpo);
+  line-height: var(--display-interlinea);
+  letter-spacing: var(--display-tracking);
+  font-weight: var(--display-peso);
+}
+
+.sommario {
+  max-width: var(--misura);
+  margin-top: var(--spazio-5);
+}
+
+.due { display: grid; gap: var(--spazio-8); }
+
+.domanda {
+  margin-top: var(--spazio-7);
+  margin-bottom: var(--spazio-3);
+  max-width: var(--misura);
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: 700;
+}
+
+/* Elenco di frasi: righe, non pallini e non card (Regola del Foglio). */
+.righe { margin: 0; padding: 0; list-style: none; }
+.righe li {
+  max-width: var(--misura-max);
+  padding: var(--spazio-3) 0;
+  border-bottom: 1px solid var(--riga);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+.righe li:last-child { border-bottom: 0; }
+
+.prova,
+.senza {
+  max-width: var(--misura);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+.senza { color: var(--grafite); }
+
+.fatto {
+  display: grid;
+  gap: 0 var(--spazio-4);
+  padding: var(--spazio-3) 0;
+  border-bottom: 1px solid var(--riga);
+}
+.valore {
+  margin: 0;
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+.centri { margin: 0; padding: 0; list-style: none; }
+.centri li {
+  padding: var(--spazio-3) 0;
+  border-bottom: 1px solid var(--riga);
+}
+.nomeCentro {
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: var(--title-peso);
+  text-decoration: none;
+}
+.orari { display: flex; flex-direction: column; margin-top: var(--spazio-1); }
+.turno {
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+  font-variant-numeric: tabular-nums;
+}
+
+.tutti { display: inline-block; margin-top: var(--spazio-3); font-size: var(--meta-corpo); }
+
+.sospese,
+.nota {
+  margin-top: var(--spazio-3);
+  color: var(--grafite);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+}
+
+.azione {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin-top: var(--spazio-7);
+  padding: 0 var(--spazio-6);
+  background: var(--verde);
+  color: var(--carta-alta);
+  text-decoration: none;
+  font-size: var(--dato-corpo);
+  font-weight: 500;
+}
+.azione:hover { background: oklch(0.38 0.075 152); }
+
+@media (min-width: 900px) {
+  .due { grid-template-columns: minmax(0, 1fr) 30ch; gap: var(--spazio-10); }
+  /* La spalla e' separata da una riga a 1px, non da un'ombra ne' da un fondo
+     pieno: e' la Regola del Foglio, e sopravvive a forced-colors. */
+  .spalla {
+    position: sticky;
+    top: var(--spazio-6);
+    align-self: start;
+    padding-left: var(--spazio-6);
+    border-left: 1px solid var(--riga);
+  }
+  .spalla .gruppo:first-child { margin-top: 0; }
+}
