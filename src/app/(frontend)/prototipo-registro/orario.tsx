@@ -112,8 +112,11 @@ export function Orario({ dati }: { dati: Dati }) {
               <div className={`${stile.riga} ${stile.assi}`}>
                 <div className={stile.angolo} />
                 <div className={stile.assiOre}>
-                  {ORE.slice(0, -1).map((h) => (
-                    <span className={stile.ora} key={h}>
+                  {/* Colonna esplicita: l'ultima etichetta e' piazzata a mano, e senza
+                      questa le altre le si auto-collocano attorno finendo in una
+                      colonna implicita di troppo. */}
+                  {ORE.slice(0, -1).map((h, i) => (
+                    <span className={stile.ora} key={h} style={{ gridColumn: i + 1 }}>
                       {String(h).padStart(2, '0')}:00
                     </span>
                   ))}
