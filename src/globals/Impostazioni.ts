@@ -1,6 +1,87 @@
-import type { GlobalConfig } from 'payload'
+import type { Field, GlobalConfig } from 'payload'
 
 import { authenticated, publicRead } from '../access'
+
+type Voce = { tipo?: 'interna' | 'rotta' | 'esterna' }
+
+/**
+ * Una voce di menu ha un tipo, mai un URL scritto a mano: enum chiuso dove il
+ * dato e' di codice, relazione dove e' di contenuto (stessa forma di ADR 0003).
+ * Un `url` libero produce `/centri-tecnici` il giorno che qualcuno ricorda la
+ * vecchia URL di WordPress.
+ *
+ * L'ordine e' l'ordine dell'array: Payload lo persiste e l'admin lo fa
+ * trascinare. Nessun campo `ordine` — quello serve alle collection, dove le
+ * righe non hanno un ordine proprio.
+ */
+const voci = (name: string, label: string): Field => ({
+  name,
+  type: 'array',
+  label,
+  labels: { singular: 'Voce', plural: 'Voci' },
+  fields: [
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'tipo',
+          type: 'select',
+          required: true,
+          defaultValue: 'interna',
+          label: 'Tipo',
+          options: [
+            { label: 'Pagina del sito', value: 'interna' },
+            { label: 'Sezione fissa', value: 'rotta' },
+            { label: 'Indirizzo esterno', value: 'esterna' },
+          ],
+        },
+        {
+          name: 'etichetta',
+          type: 'text',
+          label: 'Etichetta',
+          admin: { description: 'Vuoto = il titolo della pagina.' },
+          validate: (value: unknown, { siblingData }: { siblingData: Partial<Voce> }) =>
+            siblingData?.tipo === 'interna' || Boolean(value) || 'Serve un etichetta.',
+        },
+      ],
+    },
+    {
+      name: 'pagina',
+      type: 'relationship',
+      relationTo: 'pagine',
+      label: 'Pagina',
+      admin: { condition: (_, s: Partial<Voce>) => s?.tipo === 'interna' },
+      validate: (value: unknown, { siblingData }: { siblingData: Partial<Voce> }) =>
+        siblingData?.tipo !== 'interna' || Boolean(value) || 'Scegli una pagina.',
+    },
+    {
+      name: 'rotta',
+      type: 'select',
+      label: 'Sezione',
+      options: [
+        { label: 'Home', value: 'home' },
+        { label: 'Centri tecnici', value: 'centri' },
+        { label: 'Contatta', value: 'contatta' },
+      ],
+      admin: { condition: (_, s: Partial<Voce>) => s?.tipo === 'rotta' },
+      validate: (value: unknown, { siblingData }: { siblingData: Partial<Voce> }) =>
+        siblingData?.tipo !== 'rotta' || Boolean(value) || 'Scegli una sezione.',
+    },
+    {
+      name: 'url',
+      type: 'text',
+      label: 'Indirizzo',
+      admin: {
+        condition: (_, s: Partial<Voce>) => s?.tipo === 'esterna',
+        description: 'Completo di https://.',
+      },
+      validate: (value: unknown, { siblingData }: { siblingData: Partial<Voce> }) =>
+        siblingData?.tipo !== 'esterna' ||
+        (typeof value === 'string' && /^https?:\/\//.test(value)) ||
+        'Deve iniziare con http:// o https://.',
+    },
+  ],
+})
 
 export const Impostazioni: GlobalConfig = {
   slug: 'impostazioni',
@@ -19,6 +100,16 @@ export const Impostazioni: GlobalConfig = {
     { name: 'logo', type: 'upload', relationTo: 'media', label: 'Logo' },
     { name: 'ogImage', type: 'upload', relationTo: 'media', label: 'Immagine di condivisione' },
     { name: 'testoFooter', type: 'textarea', label: 'Testo del footer' },
+    {
+      name: 'navigazione',
+      type: 'group',
+      label: 'Navigazione',
+      admin: {
+        description:
+          'Le voci si riordinano trascinandole. «Centri» e «Contatta» sono sempre in testata e non compaiono qui: reggono la conversione e non si possono togliere.',
+      },
+      fields: [voci('menu', 'Voci in testata'), voci('piede', 'Voci nel footer')],
+    },
     {
       name: 'datiFiscali',
       type: 'group',

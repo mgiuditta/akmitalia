@@ -1,0 +1,62 @@
+/* Testata e footer. Tutti i valori vengono da token.css. */
+
+.testata {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spazio-4);
+  padding: var(--spazio-5) var(--spazio-5) var(--spazio-4);
+  border-bottom: 1px solid var(--riga);
+}
+
+/* Il wordmark e' tipografia, non un'immagine: Display al peso 900, che #6 ha
+   scelto proprio perche' ha presenza da solo. */
+.wordmark {
+  font-size: var(--title-corpo);
+  line-height: var(--title-interlinea);
+  font-weight: var(--display-peso);
+  letter-spacing: var(--label-tracking);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spazio-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+/* Niente menu a panino: con due o tre voci il pulsante costa piu' dello spazio
+   che libera, e nasconde la conversione dietro un click. */
+.menu a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.piede {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spazio-4);
+  margin-top: var(--spazio-10);
+  padding: var(--spazio-8) var(--spazio-5);
+  border-top: 1px solid var(--riga);
+}
+
+.testo {
+  max-width: var(--misura);
+  font-size: var(--dato-corpo);
+  line-height: var(--dato-interlinea);
+}
+
+.dati {
+  color: var(--grafite);
+  font-size: var(--meta-corpo);
+  line-height: var(--meta-interlinea);
+  font-variant-numeric: tabular-nums;
+}

@@ -1342,6 +1342,43 @@ export interface Impostazioni {
   ogImage?: (number | null) | Media;
   testoFooter?: string | null;
   /**
+   * Le voci si riordinano trascinandole. «Centri» e «Contatta» sono sempre in testata e non compaiono qui: reggono la conversione e non si possono togliere.
+   */
+  navigazione?: {
+    menu?:
+      | {
+          tipo: 'interna' | 'rotta' | 'esterna';
+          /**
+           * Vuoto = il titolo della pagina.
+           */
+          etichetta?: string | null;
+          pagina?: (number | null) | Pagine;
+          rotta?: ('home' | 'centri' | 'contatta') | null;
+          /**
+           * Completo di https://.
+           */
+          url?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    piede?:
+      | {
+          tipo: 'interna' | 'rotta' | 'esterna';
+          /**
+           * Vuoto = il titolo della pagina.
+           */
+          etichetta?: string | null;
+          pagina?: (number | null) | Pagine;
+          rotta?: ('home' | 'centri' | 'contatta') | null;
+          /**
+           * Completo di https://.
+           */
+          url?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
    * Compaiono nel footer e nella pagina 5x1000.
    */
   datiFiscali?: {
@@ -1392,6 +1429,30 @@ export interface ImpostazioniSelect<T extends boolean = true> {
   logo?: T;
   ogImage?: T;
   testoFooter?: T;
+  navigazione?:
+    | T
+    | {
+        menu?:
+          | T
+          | {
+              tipo?: T;
+              etichetta?: T;
+              pagina?: T;
+              rotta?: T;
+              url?: T;
+              id?: T;
+            };
+        piede?:
+          | T
+          | {
+              tipo?: T;
+              etichetta?: T;
+              pagina?: T;
+              rotta?: T;
+              url?: T;
+              id?: T;
+            };
+      };
   datiFiscali?:
     | T
     | {
