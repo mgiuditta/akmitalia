@@ -3,6 +3,7 @@
 import React, { useActionState, useEffect, useRef, useState } from 'react'
 
 import Link from 'next/link'
+import Script from 'next/script'
 
 import { inviaRichiesta } from '@/app/(frontend)/contatti/azioni'
 import {
@@ -31,9 +32,21 @@ import {
  * momento in cui il browser ha montato il modulo. Senza JavaScript `t` non
  * esiste e la richiesta viene scartata in silenzio: il sito si affida gia' al
  * JavaScript per la mappa, e' un costo dichiarato.
+ *
+ * Il «non sono un robot» visibile e' Cloudflare Turnstile, e c'e' solo se la
+ * chiave arriva dal server. Rendering esplicito e non implicito: lo script si
+ * carica una volta, il modulo si rimonta a ogni «Invia un'altra richiesta».
  */
 
-type Sede = { id: number; nome: string; citta: string }
+type Sede = {
+  id: number
+  nome: string
+  citta: string
+  /** Via, CAP, citta' e provincia in una riga: quello che si mostra scegliendo il centro. */
+  indirizzo: string
+  palestra: string | null
+  mapsUrl: string | null
+}
 type Corso = { id: number; nome: string }
 
 export type TestiModulo = {
@@ -50,6 +63,18 @@ type Props = {
   opzioni: OpzioniModulo
   /** Il percorso preselezionato quando si arriva da /contatti?corso=<slug>. */
   corsoIniziale?: number | null
+  /** La site key di Turnstile. Senza, il modulo ha solo il filtro invisibile. */
+  turnstileSiteKey?: string | null
+}
+
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (el: HTMLElement, opzioni: Record<string, string>) => string
+      reset: (id: string) => void
+      remove: (id: string) => void
+    }
+  }
 }
 
 export function FormRichiesta(props: Props) {
@@ -65,19 +90,49 @@ function Modulo({
   testi,
   opzioni,
   corsoIniziale,
+  turnstileSiteKey,
   altra,
 }: Props & { altra: () => void }) {
   const [stato, invia, inCorso] = useActionState(inviaRichiesta, STATO_INIZIALE)
   const [t, setT] = useState('')
+  const [idSede, setIdSede] = useState('')
   const avviso = useRef<HTMLDivElement>(null)
+  const turnstile = useRef<HTMLDivElement>(null)
+  const idTurnstile = useRef<string | null>(null)
 
   useEffect(() => {
     setT(String(Date.now()))
   }, [])
 
   useEffect(() => {
-    if (stato.messaggio && !stato.ok) avviso.current?.focus()
+    if (stato.messaggio && !stato.ok) {
+      avviso.current?.focus()
+      /* Un token Turnstile vale un invio solo: dopo un errore se ne chiede un altro. */
+      if (idTurnstile.current) window.turnstile?.reset(idTurnstile.current)
+    }
   }, [stato])
+
+  /* Il widget si monta a mano e si smonta con il modulo: `onReady` di
+     next/script scatta a ogni montaggio, anche se lo script era gia' in pagina. */
+  const montaTurnstile = () => {
+    if (!turnstileSiteKey || !turnstile.current || idTurnstile.current || !window.turnstile) return
+    idTurnstile.current = window.turnstile.render(turnstile.current, {
+      sitekey: turnstileSiteKey,
+      theme: 'light',
+      language: 'it',
+    })
+  }
+  useEffect(() => {
+    montaTurnstile()
+    return () => {
+      if (idTurnstile.current) window.turnstile?.remove(idTurnstile.current)
+      idTurnstile.current = null
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  /* Dopo un errore vince il centro che l'utente aveva scelto. */
+  const sedeScelta = sedi.find((s) => String(s.id) === (idSede || stato.valori.sede || ''))
 
   if (stato.ok) {
     return (
@@ -158,7 +213,15 @@ function Modulo({
         ) : null}
         <div className="campo">
           <label htmlFor="sede">Centro tecnico</label>
-          <select {...campo('sede')}>
+          <select
+            {...campo('sede')}
+            aria-describedby={
+              [stato.errori.sede ? 'errore-sede' : null, sedeScelta ? 'sede-dati' : null]
+                .filter(Boolean)
+                .join(' ') || undefined
+            }
+            onChange={(e) => setIdSede(e.target.value)}
+          >
             <option value="">Scegli un centro</option>
             {sedi.map((s) => (
               <option key={s.id} value={s.id}>
@@ -167,6 +230,27 @@ function Modulo({
             ))}
           </select>
           {errore('sede')}
+          {/* L'indirizzo del centro scelto, in chiaro: chi scrive sa gia' dove
+              andra' (PRODUCT.md, «Cliccare un centro deve dare tutto»). */}
+          {sedeScelta ? (
+            <p className="campo__nota dato" id="sede-dati">
+              {sedeScelta.palestra && sedeScelta.palestra !== sedeScelta.nome ? (
+                <>
+                  {sedeScelta.palestra}
+                  <br />
+                </>
+              ) : null}
+              {sedeScelta.indirizzo || sedeScelta.citta}
+              {sedeScelta.mapsUrl ? (
+                <>
+                  <br />
+                  <a className="briciola" href={sedeScelta.mapsUrl} target="_blank" rel="noopener">
+                    Apri in Maps
+                  </a>
+                </>
+              ) : null}
+            </p>
+          ) : null}
         </div>
       </div>
 
@@ -180,8 +264,11 @@ function Modulo({
                 {c.nome}
               </option>
             ))}
-            <option value="stage">Stage o evento</option>
-            <option value="altro">Altro</option>
+            {opzioni.altreVoci.map((voce) => (
+              <option key={voce} value={voce}>
+                {voce}
+              </option>
+            ))}
           </select>
           {errore('corso')}
         </div>
@@ -222,6 +309,17 @@ function Modulo({
         <input type="text" id="sito" name="sito" tabIndex={-1} autoComplete="off" />
       </div>
       <input type="hidden" name="t" value={t} readOnly />
+
+      {turnstileSiteKey ? (
+        <>
+          <Script
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+            strategy="afterInteractive"
+            onReady={montaTurnstile}
+          />
+          <div ref={turnstile} className="campo campo--turnstile" />
+        </>
+      ) : null}
 
       <p>
         <button type="submit" className="bottone bottone--primario" disabled={inCorso}>

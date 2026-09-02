@@ -5,8 +5,8 @@ import { getPayload } from 'payload'
 import { pubblicato, sitoUrl } from '@/componenti/dati'
 import config from '@/payload.config'
 import {
-  CORSO_EXTRA,
   TEMPO_MINIMO_MS,
+  altreVoci,
   leggi,
   valida,
   type OpzioniModulo,
@@ -47,6 +47,7 @@ export async function inviaRichiesta(
     dataNascita: contatti.modulo?.chiediDataNascita !== false,
     percorso: contatti.modulo?.chiediPercorso !== false,
     messaggio: contatti.modulo?.chiediMessaggio !== false,
+    altreVoci: altreVoci(contatti.modulo),
   }
   const grazie = contatti.modulo?.messaggioConferma || GRAZIE
 
@@ -55,6 +56,18 @@ export async function inviaRichiesta(
   if (sito || !Number.isFinite(t) || Date.now() - t < TEMPO_MINIMO_MS) {
     payload.logger.warn({ msg: 'Richiesta scartata dal filtro anti-bot', honeypot: Boolean(sito) })
     return { ok: true, errori: {}, messaggio: grazie, valori: {} }
+  }
+
+  /* Il «non sono un robot» visibile, solo se le chiavi ci sono. Chi fallisce
+     la verifica riceve il modulo indietro con i valori: e' una persona con un
+     token scaduto piu' spesso che un bot. */
+  if (process.env.TURNSTILE_SECRET_KEY && !(await turnstileOk(dati))) {
+    return {
+      ok: false,
+      errori: {},
+      valori,
+      messaggio: 'Conferma di non essere un robot e riprova.',
+    }
   }
 
   const errori = valida(valori, opzioni)
@@ -79,8 +92,8 @@ export async function inviaRichiesta(
   let corsoId: number | null = null
   let corsoIndicato: string | null = null
   if (opzioni.percorso && !errori.corso && valori.corso) {
-    if (Object.hasOwn(CORSO_EXTRA, valori.corso)) {
-      corsoIndicato = CORSO_EXTRA[valori.corso as keyof typeof CORSO_EXTRA]
+    if (opzioni.altreVoci.includes(valori.corso)) {
+      corsoIndicato = valori.corso
     } else {
       const corso = (
         await payload.find({
@@ -169,4 +182,22 @@ export async function inviaRichiesta(
   }
 
   return { ok: true, errori: {}, messaggio: grazie, valori: {} }
+}
+
+async function turnstileOk(dati: FormData) {
+  const risposta = dati.get('cf-turnstile-response')
+  if (typeof risposta !== 'string' || !risposta) return false
+  const corpo = new FormData()
+  corpo.set('secret', process.env.TURNSTILE_SECRET_KEY ?? '')
+  corpo.set('response', risposta)
+  try {
+    const r = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body: corpo,
+    })
+    const esito = (await r.json()) as { success?: boolean }
+    return esito.success === true
+  } catch {
+    return false
+  }
 }

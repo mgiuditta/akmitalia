@@ -45,6 +45,8 @@ function dati(c: ConteggiBarra): Record<string, Pick<VoceMenu, 'dato' | 'vivo'>>
   }
 }
 
+const TRICOLORE = ['verde', 'bianco', 'rosso'] as const
+
 export function Barra({
   nome,
   stemma,
@@ -82,7 +84,15 @@ export function Barra({
             />
           ) : null}
           <span className="barra__lockup">
-            <span className="barra__nome">{marchio}</span>
+            {/* Tricolore del cliente (PRODUCT.md): una lettera per colore, senza
+                spazi fra gli span, cosi' lo screen reader legge una parola sola. */}
+            <span className="barra__nome">
+              {[...marchio].map((lettera, i) => (
+                <span key={i} className={`barra__lettera barra__lettera--${TRICOLORE[i % 3]}`}>
+                  {lettera}
+                </span>
+              ))}
+            </span>
             {paese ? <span className="barra__paese">{paese}</span> : null}
           </span>
         </Link>

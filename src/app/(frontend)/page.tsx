@@ -3,7 +3,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { apriPayload } from '@/componenti/payload'
-import { idDisciplina, ordinale, provinciaEstesa, pubblicato } from '@/componenti/dati'
+import { idDisciplina, ordinale, provinciaEstesa, pubblicato, testiBivio } from '@/componenti/dati'
 import { Figura } from '@/componenti/Figura'
 
 /**
@@ -100,6 +100,14 @@ export default async function Home() {
     ? impostazioni.home.primaVolta
     : PRIMA_VOLTA_DI_SERIE
   const qualifiche = impostazioni?.home?.testoQualifiche || QUALIFICHE_DI_SERIE
+  const bivio = testiBivio(impostazioni)
+  const passo = {
+    titolo: impostazioni?.home?.passoTitolo || 'Prossimo passo',
+    testo:
+      impostazioni?.home?.passoTesto ||
+      'Vuoi capire se AKM fa per te? Scrivici: ti orientiamo sul corso e sulla sede più adatti al tuo obiettivo.',
+    bottone: impostazioni?.home?.passoBottone || 'Richiedi informazioni',
+  }
 
   const eroe = typeof impostazioni?.immagineHero === 'object' ? impostazioni.immagineHero : null
   const eroeUrl = eroe?.sizes?.hero?.url || eroe?.url || null
@@ -170,14 +178,11 @@ export default async function Home() {
             aria-labelledby="titolo-percorsi"
           >
             <div className="contenitore bivio__intestazione">
-              <p className="occhiello">Il primo bivio</p>
+              <p className="occhiello">{bivio.occhiello}</p>
               <h2 className="display display--md" id="titolo-percorsi">
-                Qual è il tuo momento
+                {bivio.titolo}
               </h2>
-              <p className="testo">
-                Non serve sapere quale disciplina fa per te. Serve sapere perché sei qui: da lì si
-                arriva al corso giusto e al centro che lo tiene.
-              </p>
+              <p className="testo">{bivio.testo}</p>
             </div>
           </section>
 
@@ -360,6 +365,24 @@ export default async function Home() {
               </div>
             ) : null}
           </dl>
+        </div>
+      </section>
+
+      {/* La chiusura: la home orienta prima di convertire, e questa e' l'unica
+          richiesta di contatto dopo il bivio. Chiara prima del footer carbone:
+          uno stacco di valore, non di tinta. Un bottone solo, con l'etichetta
+          della barra: un intento, una parola. */}
+      <section className="sezione sezione--chiara" aria-labelledby="titolo-passo">
+        <div className="contenitore">
+          <h2 className="display display--md" id="titolo-passo">
+            {passo.titolo}
+          </h2>
+          <p className="testo prima__attacco">{passo.testo}</p>
+          <p className="coda-azione">
+            <Link className="bottone bottone--primario" href="/contatti">
+              {passo.bottone}
+            </Link>
+          </p>
         </div>
       </section>
     </>

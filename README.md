@@ -70,7 +70,7 @@ sta in un profilo a parte perché applicare lo schema è una decisione, non un e
 collaterale dell'avvio.
 
 ```sh
-cp .env.example .env      # PAYLOAD_SECRET, NEXT_PUBLIC_SITE_URL, SMTP_*
+cp .env.example .env      # PAYLOAD_SECRET, NEXT_PUBLIC_SITE_URL, SMTP_*, TURNSTILE_*
 docker compose --profile strumenti build
 docker compose run --rm migrate
 docker compose up -d
@@ -128,7 +128,7 @@ sulla rete dei servizi e il database non lo raggiunge. Il perché sta in `docs/a
 1. Nuova risorsa **Docker Compose**, repo del progetto, branch `main`, file
    `docker-compose.coolify.yml`.
 2. Le variabili: `POSTGRES_PASSWORD`, `PAYLOAD_SECRET` (**un segreto nuovo, non quello di
-   `.env.example`**), `NEXT_PUBLIC_SITE_URL`, e gli `SMTP_*` se la posta deve partire
+   `.env.example`**), `NEXT_PUBLIC_SITE_URL`, gli `SMTP_*` se la posta deve partire e i `TURNSTILE_*` per il «non sono un robot»
    davvero. `POSTGRES_USER` e `POSTGRES_DB` hanno un default.
 3. Il dominio sul servizio `app`, porta 3000. Al certificato pensa Coolify.
 
@@ -170,6 +170,8 @@ riempirsi da sole: è il prezzo del build senza database (`docs/adr/0013`). `/ce
 - Il testo dei tre percorsi, che è una prima stesura e va riletto dal cliente.
 - SMTP configurato: senza, la richiesta si salva lo stesso ma l'avviso finisce nel log e
   `emailInviata` resta spento sulla scheda.
+- Turnstile: senza chiavi il form ha solo il filtro invisibile. Con le chiavi, lo script di
+  Cloudflare va citato nell'informativa privacy.
 
 ## Note
 

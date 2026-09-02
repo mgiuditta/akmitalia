@@ -53,7 +53,7 @@ Divieto trasversale: **niente foto stock**. Meglio nessuna immagine che una comp
 
 ## Design Principles
 
-1. **Presenza prima del marchio.** AKM è centri, istruttori e orari reali distribuiti sul territorio, non un logo con vent'anni di storia. Ogni sezione dovrebbe poter nominare un luogo o una persona. Se una pagina non ne nomina nessuno, sta vendendo un'astrazione.
+1. **Presenza prima del marchio.** AKM è centri, docenti e corsi distribuiti sul territorio, non un marchio astratto ventennale. Ogni sezione dovrebbe poter nominare un luogo o una persona. Se una pagina non ne nomina nessuno, sta vendendo un'astrazione.
 
 2. **Prima orientare, poi convertire.** Il visitatore non sa cosa gli serve. La prima decisione che il sito gli chiede non è «iscriviti», è «qual è il tuo momento»: sicurezza quotidiana, crescita dei ragazzi, antiaggressione, formazione tecnica. Nessuna richiesta di contatto prima che quel bivio sia risolto.
 

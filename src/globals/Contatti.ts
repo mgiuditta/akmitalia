@@ -1,5 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
+import { ALTRE_VOCI_DI_SERIE } from '@/app/(frontend)/contatti/validazione'
+
 import { authenticated, publicRead } from '../access'
 
 export const Contatti: GlobalConfig = {
@@ -91,6 +93,19 @@ export const Contatti: GlobalConfig = {
                 'Grazie: la richiesta e arrivata. Ti ricontattiamo entro pochi giorni.',
             },
           ],
+        },
+        {
+          name: 'altreVoci',
+          type: 'array',
+          label: 'Altre voci del percorso',
+          labels: { singular: 'Voce', plural: 'Voci' },
+          maxRows: 12,
+          admin: {
+            description:
+              'Dopo i corsi pubblicati, le voci senza una pagina: stage, discipline tenute a parte, «Altro». Finiscono nella richiesta come testo.',
+          },
+          defaultValue: ALTRE_VOCI_DI_SERIE.map((etichetta) => ({ etichetta })),
+          fields: [{ name: 'etichetta', type: 'text', required: true, label: 'Voce', maxLength: 60 }],
         },
         // Un campo spento sparisce dal modulo e smette di essere obbligatorio
         // anche sul server: la Server Action rilegge questi tre interruttori.

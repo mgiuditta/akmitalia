@@ -1349,6 +1349,15 @@ export interface Contatti {
     paginaPrivacy?: (number | null) | Pagine;
     etichettaInvio?: string | null;
     messaggioConferma?: string | null;
+    /**
+     * Dopo i corsi pubblicati, le voci senza una pagina: stage, discipline tenute a parte, «Altro». Finiscono nella richiesta come testo.
+     */
+    altreVoci?:
+      | {
+          etichetta: string;
+          id?: string | null;
+        }[]
+      | null;
     chiediDataNascita?: boolean | null;
     chiediPercorso?: boolean | null;
     chiediMessaggio?: boolean | null;
@@ -1408,7 +1417,15 @@ export interface Impostazioni {
     ctaSecondariaHref?: string | null;
   };
   /**
-   * «Cosa succede quando entri» e il paragrafo delle qualifiche. I numeri delle prove li conta il sito da solo.
+   * L intestazione sopra i percorsi, in home e in /corsi. Le righe del bivio sono i corsi con «Nel bivio» acceso.
+   */
+  bivio?: {
+    occhiello?: string | null;
+    titolo?: string | null;
+    testo?: string | null;
+  };
+  /**
+   * «Cosa succede quando entri», il paragrafo delle qualifiche e la chiusura «Prossimo passo». I numeri delle prove li conta il sito da solo.
    */
   home?: {
     /**
@@ -1429,6 +1446,12 @@ export interface Impostazioni {
      * Sotto «Le qualifiche si contano». Vuoto: resta il testo di serie con CSEN-CONI, F.E.K.D.A. e P.T.D.
      */
     testoQualifiche?: string | null;
+    passoTitolo?: string | null;
+    passoTesto?: string | null;
+    /**
+     * Porta sempre a /contatti. Stessa etichetta della barra: un intento, una parola.
+     */
+    passoBottone?: string | null;
   };
   /**
    * Centri, percorsi e istruttori sono pagine di codice e non hanno una scheda a CMS: la loro fotografia si carica qui. Orizzontali, almeno 1600px di lato lungo.
@@ -1508,6 +1531,12 @@ export interface ContattiSelect<T extends boolean = true> {
         paginaPrivacy?: T;
         etichettaInvio?: T;
         messaggioConferma?: T;
+        altreVoci?:
+          | T
+          | {
+              etichetta?: T;
+              id?: T;
+            };
         chiediDataNascita?: T;
         chiediPercorso?: T;
         chiediMessaggio?: T;
@@ -1552,6 +1581,13 @@ export interface ImpostazioniSelect<T extends boolean = true> {
         ctaSecondariaEtichetta?: T;
         ctaSecondariaHref?: T;
       };
+  bivio?:
+    | T
+    | {
+        occhiello?: T;
+        titolo?: T;
+        testo?: T;
+      };
   home?:
     | T
     | {
@@ -1564,6 +1600,9 @@ export interface ImpostazioniSelect<T extends boolean = true> {
             };
         immagineIngresso?: T;
         testoQualifiche?: T;
+        passoTitolo?: T;
+        passoTesto?: T;
+        passoBottone?: T;
       };
   fotoPagine?:
     | T

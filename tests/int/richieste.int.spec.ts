@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import { leggi, valida, type ValoriRichiesta } from '@/app/(frontend)/contatti/validazione'
+import {
+  OPZIONI_DI_SERIE,
+  altreVoci,
+  leggi,
+  valida,
+  type ValoriRichiesta,
+} from '@/app/(frontend)/contatti/validazione'
 
 /* Le regole del form, senza Payload: e' codice puro. */
 const buoni: ValoriRichiesta = {
@@ -38,9 +44,10 @@ describe('valida', () => {
 
   it('accetta il percorso vuoto, numerico o fra le voci extra, e rifiuta il resto', () => {
     expect(valida({ ...buoni, corso: '3' }).corso).toBeUndefined()
-    expect(valida({ ...buoni, corso: 'stage' }).corso).toBeUndefined()
-    expect(valida({ ...buoni, corso: 'altro' }).corso).toBeUndefined()
+    expect(valida({ ...buoni, corso: 'Stage o evento' }).corso).toBeUndefined()
+    expect(valida({ ...buoni, corso: 'Kick Boxing' }).corso).toBeUndefined()
     expect(valida({ ...buoni, corso: 'toString' }).corso).toBeDefined()
+    expect(valida({ ...buoni, corso: 'Kick Boxing' }, { ...OPZIONI_DI_SERIE, altreVoci: ['Altro'] }).corso).toBeDefined()
   })
 })
 
@@ -48,7 +55,7 @@ describe('valida', () => {
    Action: un campo spento a CMS non deve restare obbligatorio sul server, ed e'
    l'unico punto in cui la validazione cambia forma. */
 describe('valida con i campi facoltativi spenti', () => {
-  const spenti = { dataNascita: false, percorso: false, messaggio: false }
+  const spenti = { dataNascita: false, percorso: false, messaggio: false, altreVoci: [] }
 
   it('non chiede la data di nascita quando il campo e spento', () => {
     expect(valida({ ...buoni, dataNascita: '' }).dataNascita).toBeDefined()
@@ -71,6 +78,14 @@ describe('valida con i campi facoltativi spenti', () => {
     expect(Object.keys(valida(vuoti, spenti)).sort()).toEqual(
       ['cognome', 'consenso', 'email', 'sede'].sort(),
     )
+  })
+})
+
+describe('altreVoci', () => {
+  it('usa le voci del global e ricade su quelle di serie se mancano', () => {
+    expect(altreVoci({ altreVoci: [{ etichetta: ' Kick Boxing ' }, { etichetta: '' }] })).toEqual(['Kick Boxing'])
+    expect(altreVoci({ altreVoci: [] })).toContain('Altro')
+    expect(altreVoci(null)).toContain('Stage o evento')
   })
 })
 

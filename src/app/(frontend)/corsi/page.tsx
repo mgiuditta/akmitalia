@@ -4,7 +4,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { apriPayload } from '@/componenti/payload'
-import { idDisciplina, ordinale, pubblicato } from '@/componenti/dati'
+import { idDisciplina, ordinale, pubblicato, testiBivio } from '@/componenti/dati'
 import { Figura } from '@/componenti/Figura'
 import { metadatiPagina } from '@/componenti/seo'
 
@@ -62,15 +62,14 @@ export default async function PaginaCorsi() {
     for (const id of idCorsi) sediPerCorso.set(id, (sediPerCorso.get(id) ?? 0) + 1)
   }
 
+  const bivio = testiBivio(impostazioni)
+
   return (
     <>
       <section className="sezione sezione--nera testata bivio__testa">
         <div className="contenitore testata__contenuto">
-          <h1 className="display display--lg">Qual è il tuo momento</h1>
-          <p className="testo testata__testo">
-            Non serve sapere quale disciplina fa per te. Serve sapere perché sei qui: da lì si
-            arriva al corso giusto e al centro che lo tiene.
-          </p>
+          <h1 className="display display--lg">{bivio.titolo}</h1>
+          <p className="testo testata__testo">{bivio.testo}</p>
           {/* Il conteggio sta qui e non in una sezione sua: una fascia intera per
               una riga di titolo era un blocco vuoto fra due blocchi pieni. */}
           {corsi.docs.length > 0 ? (

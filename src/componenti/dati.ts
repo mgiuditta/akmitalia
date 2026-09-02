@@ -1,4 +1,4 @@
-import type { Sedi } from '@/payload-types'
+import type { Impostazioni, Sedi } from '@/payload-types'
 
 /**
  * Le poche funzioni di lettura che ogni pagina rifa uguale: giorni scritti per
@@ -125,4 +125,19 @@ const PROVINCE: Record<string, string> = {
 export function provinciaEstesa(sigla?: string | null) {
   if (!sigla) return ''
   return PROVINCE[sigla.trim().toUpperCase()] ?? sigla
+}
+
+/**
+ * L'intestazione del bivio, uguale in home e in /corsi. Sta in Impostazioni >
+ * bivio; i valori di serie sono il ripiego per un campo svuotato dall'admin.
+ */
+export function testiBivio(impostazioni?: Pick<Impostazioni, 'bivio'> | null) {
+  const b = impostazioni?.bivio
+  return {
+    occhiello: b?.occhiello || 'Prima scelta',
+    titolo: b?.titolo || 'Qual è il tuo momento',
+    testo:
+      b?.testo ||
+      'Capisci quale percorso risponde al tuo momento: sicurezza quotidiana, crescita dei ragazzi, antiaggressione e formazione tecnica.',
+  }
 }

@@ -142,8 +142,18 @@
 }
 
 .barra__nome {
-  font-size: 1.0625rem;
+  /* 19px e non 17: a 19px bold e' testo grande e AA chiede 3:1. Su nero il
+     verde fa 5.5:1 e il rosso 4.3:1; a 17px il rosso non passerebbe. */
+  font-size: 1.1875rem;
   letter-spacing: 0.08em;
+}
+
+.barra__lettera--verde {
+  color: var(--tricolore-verde);
+}
+
+.barra__lettera--rosso {
+  color: var(--tricolore-rosso);
 }
 
 .barra__paese {

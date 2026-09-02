@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import React from 'react'
 
 import { FormRichiesta, type TestiModulo } from '@/componenti/FormRichiesta'
-import { pubblicato } from '@/componenti/dati'
+import { indirizzoLeggibile, pubblicato } from '@/componenti/dati'
 import { apriPayload } from '@/componenti/payload'
-import type { OpzioniModulo } from './validazione'
+import { altreVoci, type OpzioniModulo } from './validazione'
 import { Figura } from '@/componenti/Figura'
 import { metadatiPagina } from '@/componenti/seo'
 
@@ -49,7 +49,7 @@ export default async function PaginaContatti({
       depth: 0,
       limit: 200,
       sort: 'indirizzo.citta',
-      select: { nome: true, indirizzo: true },
+      select: { nome: true, indirizzo: true, palestra: true, mapsUrl: true },
       where: { and: [{ attivo: { equals: true } }, pubblicato] },
     }),
     payload.find({
@@ -78,6 +78,7 @@ export default async function PaginaContatti({
     dataNascita: modulo?.chiediDataNascita !== false,
     percorso: modulo?.chiediPercorso !== false,
     messaggio: modulo?.chiediMessaggio !== false,
+    altreVoci: altreVoci(modulo),
   }
 
   const corsoIniziale = slugCorso
@@ -111,11 +112,15 @@ export default async function PaginaContatti({
                 id: s.id,
                 nome: s.nome,
                 citta: s.indirizzo?.citta ?? '',
+                indirizzo: indirizzoLeggibile(s.indirizzo),
+                palestra: s.palestra ?? null,
+                mapsUrl: s.mapsUrl ?? null,
               }))}
               corsi={corsi.docs.map((c) => ({ id: c.id, nome: c.nome }))}
               testi={testiModulo}
               opzioni={opzioni}
               corsoIniziale={corsoIniziale}
+              turnstileSiteKey={process.env.TURNSTILE_SITE_KEY || null}
             />
           </div>
 

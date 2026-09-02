@@ -743,11 +743,18 @@
   font-weight: var(--peso-regular);
 }
 
+/* La nota sotto un campo: l'indirizzo del centro scelto, il link all'informativa.
+   Corpo pieno da 14px, mai sotto: e' un dato, non una didascalia (Regola del Dato Nudo). */
+.campo__nota {
+  margin: 0;
+  font-size: var(--corpo-caption);
+  line-height: 1.5;
+}
+
 /* Il link all'informativa sta sotto l'etichetta, allineato al testo e non alla
    casella: e' una nota di quella frase, non una seconda scelta. */
 .campo--scelta .campo__nota {
   grid-column: 2;
-  font-size: var(--corpo-caption);
 }
 
 .campo--scelta .campo__errore {

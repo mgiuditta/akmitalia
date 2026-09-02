@@ -12,7 +12,7 @@
   "corsi": [
     {
       "slug": "krav-maga-self-defense-system",
-      "nome": "Krav Maga – Self Defense System",
+      "nome": "Krav Maga adulti",
       "target": "adulti",
       "superficie": "nero",
       "inBivio": true,
@@ -22,7 +22,7 @@
     },
     {
       "slug": "krav-maga-antibullismo",
-      "nome": "Krav Maga – Antibullismo Self Defense System",
+      "nome": "Krav Maga kids",
       "target": "bambini",
       "superficie": "bianco",
       "inBivio": true,
@@ -32,7 +32,7 @@
     },
     {
       "slug": "krav-maga-antiaggressione-femminile",
-      "nome": "Krav Maga – Antiaggressione femminile",
+      "nome": "Difesa personale donna",
       "target": "donne",
       "superficie": "carbone",
       "inBivio": true,
@@ -53,8 +53,34 @@
       "slug": "omar-borghini",
       "nome": "Omar Borghini",
       "nomeBreve": "Omar",
-      "qualifica": "maestro",
-      "ordine": 2
+      "qualifica": "direttore-tecnico",
+      "ordine": 2,
+      "ruolo": "Vice Presidente e Direttore Tecnico AKM Italia",
+      "credenziali": [
+        {
+          "voce": "Capo Istruttore AKM Italia Full Contact e Sport da Combattimento"
+        },
+        {
+          "voce": "Krav Maga Master CSEN-CONI"
+        },
+        {
+          "voce": "Krav Maga Master Docente Nazionale F.E.K.D.A."
+        },
+        {
+          "voce": "Responsabile Formazione P.T.D. Police Training Division"
+        }
+      ],
+      "focus": [
+        {
+          "voce": "Direzione Tecnica AKM Italia"
+        },
+        {
+          "voce": "Formazione Istruttori AKM Italia"
+        },
+        {
+          "voce": "Difesa Personale"
+        }
+      ]
     },
     {
       "slug": "alberto",

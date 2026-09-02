@@ -103,12 +103,45 @@ export const Impostazioni: GlobalConfig = {
       ],
     },
     {
-      name: 'home',
+      name: 'bivio',
       type: 'group',
-      label: 'Le due sezioni in fondo alla home',
+      label: 'Il bivio dei percorsi',
       admin: {
         description:
-          '«Cosa succede quando entri» e il paragrafo delle qualifiche. I numeri delle prove li conta il sito da solo.',
+          'L intestazione sopra i percorsi, in home e in /corsi. Le righe del bivio sono i corsi con «Nel bivio» acceso.',
+      },
+      fields: [
+        {
+          name: 'occhiello',
+          type: 'text',
+          label: 'Occhiello',
+          maxLength: 40,
+          defaultValue: 'Prima scelta',
+        },
+        {
+          name: 'titolo',
+          type: 'text',
+          label: 'Titolo',
+          maxLength: 60,
+          defaultValue: 'Qual è il tuo momento',
+        },
+        {
+          name: 'testo',
+          type: 'textarea',
+          label: 'Testo',
+          maxLength: 300,
+          defaultValue:
+            'Capisci quale percorso risponde al tuo momento: sicurezza quotidiana, crescita dei ragazzi, antiaggressione e formazione tecnica.',
+        },
+      ],
+    },
+    {
+      name: 'home',
+      type: 'group',
+      label: 'Le sezioni in fondo alla home',
+      admin: {
+        description:
+          '«Cosa succede quando entri», il paragrafo delle qualifiche e la chiusura «Prossimo passo». I numeri delle prove li conta il sito da solo.',
       },
       fields: [
         {
@@ -164,6 +197,29 @@ export const Impostazioni: GlobalConfig = {
             description:
               'Sotto «Le qualifiche si contano». Vuoto: resta il testo di serie con CSEN-CONI, F.E.K.D.A. e P.T.D.',
           },
+        },
+        {
+          name: 'passoTitolo',
+          type: 'text',
+          label: 'Titolo della chiusura',
+          maxLength: 60,
+          defaultValue: 'Prossimo passo',
+        },
+        {
+          name: 'passoTesto',
+          type: 'textarea',
+          label: 'Testo della chiusura',
+          maxLength: 300,
+          defaultValue:
+            'Vuoi capire se AKM fa per te? Scrivici: ti orientiamo sul corso e sulla sede più adatti al tuo obiettivo.',
+        },
+        {
+          name: 'passoBottone',
+          type: 'text',
+          label: 'Bottone della chiusura',
+          maxLength: 32,
+          defaultValue: 'Richiedi informazioni',
+          admin: { description: 'Porta sempre a /contatti. Stessa etichetta della barra: un intento, una parola.' },
         },
       ],
     },

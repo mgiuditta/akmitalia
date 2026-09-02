@@ -32,8 +32,22 @@ export type StatoRichiesta = {
 
 export const STATO_INIZIALE: StatoRichiesta = { ok: false, errori: {}, messaggio: null, valori: {} }
 
-/** Le voci del percorso che non sono corsi: restano testuali in `corsoIndicato`. */
-export const CORSO_EXTRA = { stage: 'Stage o evento', altro: 'Altro' } as const
+/**
+ * Le voci del percorso che non sono corsi: restano testuali in `corsoIndicato`.
+ * L'elenco vero sta in Contatti > modulo > altreVoci; questo e' il ripiego.
+ */
+export const ALTRE_VOCI_DI_SERIE = [
+  'Formazione istruttori',
+  'Kick Boxing',
+  'Full Contact',
+  'Stage o evento',
+  'Altro',
+]
+
+export function altreVoci(modulo?: { altreVoci?: { etichetta: string }[] | null } | null) {
+  const voci = (modulo?.altreVoci ?? []).map((v) => v.etichetta.trim()).filter(Boolean)
+  return voci.length > 0 ? voci : ALTRE_VOCI_DI_SERIE
+}
 
 /** Sotto questo tempo fra apertura e invio non e' una persona. */
 export const TEMPO_MINIMO_MS = 3000
@@ -47,12 +61,15 @@ export type OpzioniModulo = {
   dataNascita: boolean
   percorso: boolean
   messaggio: boolean
+  /** Le voci del percorso senza un corso dietro: il valore inviato e' l'etichetta. */
+  altreVoci: string[]
 }
 
 export const OPZIONI_DI_SERIE: OpzioniModulo = {
   dataNascita: true,
   percorso: true,
   messaggio: true,
+  altreVoci: ALTRE_VOCI_DI_SERIE,
 }
 
 const CAMPI: CampoRichiesta[] = [
@@ -107,7 +124,7 @@ export function valida(
 
   if (!/^\d+$/.test(v.sede)) errori.sede = 'Scegli il centro tecnico che ti interessa.'
 
-  if (opzioni.percorso && v.corso && !/^\d+$/.test(v.corso) && !Object.hasOwn(CORSO_EXTRA, v.corso)) {
+  if (opzioni.percorso && v.corso && !/^\d+$/.test(v.corso) && !opzioni.altreVoci.includes(v.corso)) {
     errori.corso = 'Scegli una voce dall elenco.'
   }
 
