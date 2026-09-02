@@ -166,7 +166,16 @@ export const Corsi: CollectionConfig = {
       label: 'Testo del pulsante',
       defaultValue: 'Chiedi una prova',
     },
-    { name: 'immagine', type: 'upload', relationTo: 'media', label: 'Immagine' },
+    {
+      name: 'immagine',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Segno del percorso',
+      admin: {
+        description:
+          'Il marchio grafico del percorso, non una fotografia: inchiostro su trasparente, quadrato. Sta in filigrana dietro la testata e accanto alla riga in elenco.',
+      },
+    },
     {
       name: 'sedi',
       type: 'join',

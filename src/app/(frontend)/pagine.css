@@ -1,0 +1,796 @@
+/*
+ * Le pagine interne: testata, centri, percorsi, pagine editoriali, albo,
+ * contatti e modulo.
+ */
+
+/* ---------- slot immagine e segnaposto ---------- */
+
+/*
+ * Ogni fotografia del sito passa da qui. Il monocromo non e' un effetto: e' la
+ * regola con cui l'immagine entra nel sistema, come valore e non come colore.
+ * Lo stesso trattamento dell'eroe, senza il velo, che li' serve al testo sopra.
+ */
+/* Il tetto d'altezza vale su monitor larghi: un 21:9 a 2000px di larghezza e'
+   alto 850px e da solo riempiva lo schermo. Il ritaglio lo fa object-fit, non
+   un secondo formato. */
+.figura {
+  position: relative;
+  inline-size: 100%;
+  max-block-size: 62svh;
+  overflow: clip;
+  background: var(--colore-surface-alt);
+}
+
+.figura__foto {
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.06);
+}
+
+/*
+ * Il segnaposto di uno slot vuoto: superficie carbone, la marca in filigrana e
+ * scritto sopra che cosa ci va. Non e' un errore e non e' un caricamento in
+ * corso, e' un posto dichiarato in attesa del suo file.
+ */
+/* Un segnaposto non pesa quanto la fotografia che aspetta: al formato «banda»
+   una foto vera occupa mezzo schermo, e mezzo schermo di rettangolo vuoto legge
+   come un guasto. Il tetto lo tiene alto quanto basta a dichiararsi. */
+.segnaposto {
+  position: relative;
+  inline-size: 100%;
+  max-block-size: clamp(200px, 30svh, 340px);
+  display: grid;
+  place-items: center;
+  /* Le due righe stanno insieme al centro del riquadro: senza questo si
+     distribuivano sull'altezza e la marca finiva a un terzo, l'etichetta a due
+     terzi, con un buco in mezzo che leggeva come un errore di impaginazione. */
+  align-content: center;
+  gap: var(--spazio-sm);
+  padding: var(--spazio-lg);
+  text-align: center;
+  background: var(--colore-surface-alt);
+  color: var(--colore-muted);
+  /* Il tratteggio dice «vuoto» senza scriverlo, e resta a spigolo vivo. */
+  box-shadow: inset 0 0 0 1px var(--colore-ink-secondary);
+}
+
+.segnaposto__marca {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 5.625rem);
+  line-height: var(--interlinea-display);
+  color: var(--colore-on-primary);
+  opacity: 0.12;
+}
+
+.segnaposto__voce {
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+}
+
+/* Il filetto chiude il segnaposto in fondo: e' la stessa firma della barra, e
+   dice che quel rettangolo appartiene al sito e non e' un buco. */
+.segnaposto::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: 3px;
+  background: linear-gradient(
+    to right,
+    var(--tricolore-verde) 0 33.33%,
+    var(--colore-surface-light) 33.33% 66.67%,
+    var(--tricolore-rosso) 66.67% 100%
+  );
+}
+
+/* ---------- testata di pagina ---------- */
+
+/* Il titolo di una sezione-elenco non tocca la prima riga: senza questo stacco
+   l'intestazione e la prima scheda si sovrappongono. */
+.titolo-elenco {
+  margin-block-end: clamp(var(--spazio-lg), 3vw, var(--spazio-xxl));
+}
+
+/* Le pagine interne non hanno una fotografia a tutta altezza: la testata e' un
+   blocco tipografico che parte sotto la barra fissa. */
+.testata {
+  padding-block-start: calc(var(--altezza-header) + clamp(var(--spazio-xxl), 7vw, var(--spazio-section)));
+}
+
+/*
+ * Lo stacco fra le voci della testata e' proporzionale al display che le apre,
+ * non un 16px fisso: sotto un titolo da 90px un paragrafo a 24px di distanza si
+ * legge attaccato al titolo, non sotto di esso. Il margine in piu' che
+ * .testata__testo si portava dietro sommava un secondo stacco allo stesso posto
+ * e non c'e' piu': lo spazio lo decide la griglia, in un punto solo.
+ */
+.testata__contenuto {
+  display: grid;
+  gap: clamp(var(--spazio-lg), 2.2vw, var(--spazio-xxl));
+  justify-items: start;
+}
+
+/*
+ * Il sommario e' un ponte, non testo corrente: fra un Anton da 90px e un Roboto
+ * da 16px il salto e' cosi' largo che il paragrafo legge come una didascalia
+ * finita nel posto sbagliato. Sale al tetto della scala funzionale
+ * (heading-lg, 22px) restando in peso leggero, e la colonna si allarga con lui:
+ * 34rem di misura sotto un titolo largo il doppio lasciavano un moncone.
+ * La Regola dello Stacco Netto regge: Roboto non passa i 22px.
+ */
+.testata__testo {
+  font-size: var(--corpo-heading-lg);
+  font-weight: var(--peso-light);
+  line-height: var(--interlinea-larga);
+  max-width: 42rem;
+}
+
+/* La testata di un percorso porta il segno del corso e i due fatti che
+   decidono: a chi si rivolge e in quanti centri si tiene. */
+.testata--percorso {
+  position: relative;
+  overflow: hidden;
+}
+
+/*
+ * Il segno e' inchiostro su trasparente: sul nero va invertito, altrimenti
+ * sparisce. Sta dietro il testo e non porta informazione, quindi e' fuori dal
+ * flusso e senza testo alternativo.
+ */
+.testata__segno {
+  position: absolute;
+  inset-block-start: calc(var(--altezza-header) * 0.6);
+  inset-inline-end: calc(var(--margine-pagina) * -1);
+  inline-size: clamp(180px, 34vw, 420px);
+  block-size: auto;
+  filter: invert(1);
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+@media (max-width: 800px) {
+  .testata__segno {
+    inset-block-start: auto;
+    inset-block-end: calc(var(--spazio-xxl) * -1);
+    opacity: 0.1;
+  }
+}
+
+.testata__fatti {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spazio-md) var(--spazio-xxl);
+  margin-block-start: var(--spazio-md);
+  font-size: var(--corpo-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.testata__fatti dt {
+  font-weight: var(--peso-bold);
+  padding-block-end: 2px;
+}
+
+.testata__azione {
+  margin-block-start: var(--spazio-md);
+}
+
+.briciola {
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+  text-decoration: none;
+}
+
+.briciola:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+
+/* ---------- pagina centri ---------- */
+
+.mappa__nota {
+  padding-block-start: var(--spazio-sm);
+}
+
+.centri {
+  display: grid;
+  gap: clamp(var(--spazio-xl), 5vw, var(--spazio-section));
+  align-items: start;
+}
+
+/* Sopra i 900px la mappa affianca l'elenco e resta ferma mentre l'elenco scorre. */
+@media (min-width: 900px) {
+  .centri {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+  }
+
+  .centri__mappa {
+    position: sticky;
+    inset-block-start: calc(var(--altezza-header) + var(--spazio-lg));
+    order: 2;
+  }
+
+  /* Dentro la pagina centri l'elenco sta gia' in una colonna stretta: le due
+     colonne che usa in home qui lo spezzerebbero. */
+  .centri .centri__elenco {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Filtri e bottone della posizione stanno sulla stessa riga finche' ci stanno:
+   sono due modi di restringere lo stesso elenco. */
+.scelte {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--spazio-md);
+  padding-block-end: var(--spazio-md);
+}
+
+.filtri {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spazio-xs);
+}
+
+/* La riga di stato esiste sempre nel DOM anche quando e' vuota: e' una regione
+   live, e una regione che compare e sparisce non viene annunciata. */
+.vicino__avviso:empty {
+  display: none;
+}
+
+.vicino__avviso {
+  max-inline-size: var(--misura-testo);
+  padding-block-end: var(--spazio-lg);
+}
+
+.filtro {
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+  text-decoration: none;
+  padding: var(--spazio-xs) var(--spazio-sm-alt);
+  border: 1px solid var(--riga-locale);
+  white-space: nowrap;
+}
+
+.filtro--attivo {
+  background: var(--colore-azione);
+  border-color: var(--colore-azione);
+  color: var(--colore-on-primary);
+}
+
+/* Su telefono i filtri diventano una riga che scorre: a capo occuperebbero
+   mezzo schermo prima del primo centro. */
+@media (max-width: 620px) {
+  .filtri {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-inline: calc(var(--margine-pagina) * -1);
+    padding-inline: var(--margine-pagina);
+  }
+}
+
+.centro__collegamento {
+  text-decoration: none;
+}
+
+.centro__collegamento:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ---------- scheda di un centro ---------- */
+
+.scheda {
+  display: grid;
+  gap: clamp(var(--spazio-xl), 5vw, var(--spazio-section));
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .scheda {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+  }
+}
+
+.orari {
+  display: grid;
+  font-variant-numeric: tabular-nums;
+}
+
+.orari__riga {
+  display: grid;
+  grid-template-columns: 9rem 7rem 1fr;
+  gap: var(--spazio-md);
+  padding-block: var(--spazio-sm-alt);
+  border-block-start: 1px solid var(--riga-locale);
+  font-size: var(--corpo-caption);
+}
+
+.orari__riga:last-child {
+  border-block-end: 1px solid var(--riga-locale);
+}
+
+.orari__giorni {
+  font-weight: var(--peso-bold);
+}
+
+/* Sotto i 620px la riga diventa un blocco: tre colonne dentro 375px spezzano
+   ogni cella su due righe e la colonna di orari smette di leggersi. */
+@media (max-width: 620px) {
+  .orari__riga {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
+
+.elenco__voci {
+  display: grid;
+  gap: var(--spazio-sm);
+  font-size: var(--corpo-caption);
+}
+
+/* «Questo percorso e' per te se»: frasi intere, quindi corpo pieno e due
+   colonne larghe, non la lista fitta di una scheda. */
+.elenco__voci--largo {
+  font-size: var(--corpo-testo);
+  gap: var(--spazio-md);
+}
+
+@media (min-width: 800px) {
+  .elenco__voci--largo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--spazio-section);
+  }
+}
+
+/* Le etichette del «su cosa si lavora»: righe corte in fila, senza raggio e
+   senza riempimento, un contorno e basta. */
+.etichette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spazio-xs);
+  margin-block-start: var(--spazio-md);
+}
+
+.etichetta {
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+  padding: var(--spazio-xs) var(--spazio-sm-alt);
+  border: 1px solid var(--riga-locale);
+}
+
+/* I risultati: un elenco numerato, e il numero e' l'ordine di lettura, non una
+   decorazione. Due colonne sopra gli 800px, una sotto. */
+.numerati {
+  display: grid;
+  gap: var(--spazio-lg);
+}
+
+@media (min-width: 800px) {
+  .numerati {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--spazio-section);
+  }
+}
+
+.numerato {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--spazio-md);
+  align-items: baseline;
+  padding-block-start: var(--spazio-sm-alt);
+  border-block-start: 1px solid var(--riga-locale);
+}
+
+.numerato__indice {
+  font-family: var(--font-display);
+  font-size: var(--corpo-display-sm);
+  line-height: var(--interlinea-display);
+  font-variant-numeric: tabular-nums;
+}
+
+.blocco {
+  display: grid;
+  gap: var(--spazio-md);
+  padding-block-start: var(--spazio-lg);
+  margin-block-start: var(--spazio-lg);
+  border-block-start: 1px solid var(--riga-locale);
+}
+
+.blocco h2,
+.blocco h3 {
+  font-size: var(--corpo-heading-lg);
+  font-weight: var(--peso-bold);
+  line-height: var(--interlinea-stretta);
+}
+
+/* ---------- scheda di un corso ---------- */
+
+/* Il discorso e le etichette stanno in colonna stretta: e' testo corrente, non
+   un blocco di dati. */
+.corso__discorso {
+  display: grid;
+  gap: var(--spazio-xl);
+}
+
+.corso__sottotitolo {
+  font-size: var(--corpo-heading-lg);
+  font-weight: var(--peso-bold);
+  line-height: var(--interlinea-stretta);
+}
+
+/*
+ * La prova sta da sola sul nero. L'enfasi la fa l'isolamento e il valore della
+ * superficie, non la scala: Roboto si ferma a 22px e Anton parte da 33px
+ * (Regola dello Stacco Netto), e un testo di trecento caratteri in Anton
+ * maiuscolo non si legge. Quindi resta funzionale, al massimo della sua scala.
+ */
+.corso__prova {
+  max-width: 42rem;
+  font-size: var(--corpo-heading-lg);
+  font-weight: var(--peso-bold);
+  line-height: var(--interlinea-stretta);
+  text-wrap: pretty;
+}
+
+/* Tante colonne quante sono le righe compilate: con `repeat(3, 1fr)` fisso, un
+   corso che dichiara solo cadenza e ingresso lasciava un terzo di riga vuoto. */
+.corso__dati {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--spazio-lg) var(--spazio-xxl);
+  margin-block: var(--spazio-xl);
+}
+
+.corso__dato {
+  display: grid;
+  gap: var(--spazio-xs);
+  padding-block-start: var(--spazio-sm-alt);
+  border-block-start: 1px solid var(--riga-locale);
+  font-size: var(--corpo-caption);
+}
+
+.corso__dato dt {
+  font-weight: var(--peso-bold);
+}
+
+.colonne {
+  display: grid;
+  gap: clamp(var(--spazio-lg), 4vw, var(--spazio-xxl));
+  margin-block-start: var(--spazio-xl);
+}
+
+.coda-azione {
+  margin-block-start: var(--spazio-xxl);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spazio-sm-alt);
+}
+
+@media (min-width: 800px) {
+  .colonne--tre {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.ricco {
+  max-width: var(--misura-testo);
+}
+
+.ricco p {
+  margin-block: 0 var(--spazio-md);
+}
+
+.ricco h2,
+.ricco h3 {
+  font-size: var(--corpo-heading-lg);
+  font-weight: var(--peso-bold);
+  line-height: var(--interlinea-stretta);
+  margin-block: var(--spazio-lg) var(--spazio-xs);
+}
+
+.ricco ul,
+.ricco ol {
+  display: grid;
+  gap: var(--spazio-xs);
+  margin-block: 0 var(--spazio-md);
+  padding-inline-start: var(--spazio-gutter);
+  list-style: disc;
+}
+
+/* ---------- pagina editoriale ---------- */
+
+/*
+ * Privacy, cookie e le pagine importate. Una colonna stretta e nient'altro: la
+ * densita' del testo legale e' il contenuto, e ogni sezione e' un titolo piu'
+ * del testo corrente. Il filetto non apre queste sezioni (docs/adr/0009), le
+ * separa il vuoto.
+ */
+.editoriale {
+  display: grid;
+  gap: clamp(var(--spazio-xl), 5vw, var(--spazio-section));
+}
+
+.editoriale__sezione {
+  display: grid;
+  gap: var(--spazio-md);
+  max-inline-size: var(--misura-testo);
+}
+
+.editoriale__sezione h2 {
+  font-size: var(--corpo-display-sm);
+  font-family: var(--font-display);
+  font-weight: var(--peso-bold);
+  line-height: var(--interlinea-display);
+  text-transform: uppercase;
+  padding-block-start: 0.08em;
+}
+
+/* A tutta larghezza fra testata e testo: e' uno stacco di ritmo, non una
+   figura dentro la colonna. */
+.editoriale__foto {
+  inline-size: 100%;
+  block-size: clamp(200px, 32vw, 420px);
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.05);
+}
+
+/* ---------- istruttori ---------- */
+
+.albo {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: clamp(var(--spazio-lg), 3vw, var(--spazio-xxl));
+  align-items: start;
+}
+
+.istruttore {
+  display: grid;
+  gap: var(--spazio-sm);
+  align-content: start;
+  padding-block-start: var(--spazio-md);
+  border-block-start: 1px solid var(--riga-locale);
+}
+
+/* Ritratto piccolo e quadrato, non un poster: l'albo e' un registro e non tutti
+   hanno una foto. Un ritratto a tutta colonna alzava la riga per tutti e
+   lasciava mezzo schermo vuoto accanto a chi la foto non ce l'ha.
+   E' uno slot: quando la foto manca resta il segnaposto, della stessa misura,
+   cosi' la griglia non si scompone da una scheda all'altra. */
+.istruttore__foto {
+  inline-size: 88px;
+  margin-block-end: var(--spazio-xs);
+}
+
+/* A 88px non c'e' posto per l'etichetta scritta ne' per il filetto, che a quella
+   misura legge come tre trattini colorati: resta la sola marca, e il nome del
+   campo lo porta l'aria-label. */
+.istruttore__foto.segnaposto {
+  padding: var(--spazio-xs);
+}
+
+.istruttore__foto .segnaposto__voce,
+.istruttore__foto.segnaposto::after {
+  display: none;
+}
+
+.istruttore__foto .segnaposto__marca {
+  font-size: 1.75rem;
+}
+
+.istruttore__nome {
+  font-size: var(--corpo-heading-lg);
+  font-weight: var(--peso-bold);
+  line-height: var(--interlinea-stretta);
+}
+
+.istruttore__ruolo {
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+}
+
+.istruttore__voci {
+  display: grid;
+  gap: 2px;
+  font-size: var(--corpo-caption);
+}
+
+/* ---------- vuoto ---------- */
+
+.vuoto {
+  padding-block: var(--spazio-xxl);
+  font-size: var(--corpo-caption);
+}
+
+/* ---------- comuni in home ---------- */
+
+.comuni {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--spazio-sm) var(--spazio-lg);
+  font-size: var(--corpo-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.comune {
+  padding-block: var(--spazio-xs);
+  border-block-start: 1px solid var(--riga-locale);
+}
+
+.comune--resto {
+  font-weight: var(--peso-bold);
+}
+
+/* ---------- contatti e modulo ---------- */
+
+/* Modulo a sinistra, recapiti a destra: la stessa proporzione delle schede.
+   Sotto i 900px i recapiti scendono sotto il modulo, la foto per prima. */
+.contatto {
+  display: grid;
+  gap: var(--spazio-xxl);
+}
+
+@media (min-width: 900px) {
+  .contatto {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: var(--spazio-section-sm);
+    align-items: start;
+  }
+}
+
+.contatto__recapiti {
+  display: grid;
+  gap: var(--spazio-lg);
+}
+
+.contatto__foto {
+  inline-size: 100%;
+}
+
+.recapiti {
+  display: grid;
+  gap: var(--spazio-md);
+  margin: 0;
+}
+
+.recapito dt {
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+}
+
+.recapito dd {
+  margin: 0;
+}
+
+.modulo {
+  display: grid;
+  gap: var(--spazio-lg);
+  max-width: var(--misura-testo);
+}
+
+.modulo__riga {
+  display: grid;
+  gap: var(--spazio-lg);
+}
+
+@media (min-width: 620px) {
+  .modulo__riga {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.campo {
+  display: grid;
+  gap: var(--spazio-xs);
+}
+
+.campo label {
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+}
+
+/* Bianco pieno su carta, bordo inchiostro da 1px, spigolo vivo. Il fuoco e' un
+   secondo bordo esterno, non un bagliore: la Regola del Valore vale anche qui. */
+.campo input,
+.campo select,
+.campo textarea {
+  font: inherit;
+  font-size: var(--corpo-testo);
+  color: var(--colore-ink);
+  background: var(--colore-surface-light);
+  border: 1px solid var(--colore-ink);
+  border-radius: var(--raggio);
+  padding: var(--spazio-sm-alt);
+  inline-size: 100%;
+  min-block-size: 48px;
+}
+
+.campo textarea {
+  resize: vertical;
+}
+
+.campo input:focus-visible,
+.campo select:focus-visible,
+.campo textarea:focus-visible {
+  outline: 3px solid var(--colore-ink);
+  outline-offset: 2px;
+}
+
+.campo [aria-invalid='true'] {
+  border-color: var(--colore-azione-premuta);
+  border-width: 2px;
+}
+
+.campo--scelta {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  column-gap: var(--spazio-sm-alt);
+}
+
+.campo--scelta input {
+  inline-size: 20px;
+  block-size: 20px;
+  min-block-size: 0;
+  margin: 2px 0 0;
+  padding: 0;
+  accent-color: var(--colore-azione);
+}
+
+.campo--scelta label {
+  font-size: var(--corpo-testo);
+  font-weight: var(--peso-regular);
+}
+
+/* Il link all'informativa sta sotto l'etichetta, allineato al testo e non alla
+   casella: e' una nota di quella frase, non una seconda scelta. */
+.campo--scelta .campo__nota {
+  grid-column: 2;
+  font-size: var(--corpo-caption);
+}
+
+.campo--scelta .campo__errore {
+  grid-column: 1 / -1;
+}
+
+/* Il campo esca: fuori schermo e fuori dal tab, ma nel DOM. */
+.campo--nascosto {
+  position: absolute;
+  inset-inline-start: -9999px;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+}
+
+/* Rosso premuto su bianco: 7.28:1. */
+.campo__errore,
+.modulo__avviso {
+  margin: 0;
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+  color: var(--colore-azione-premuta);
+}
+
+.modulo__avviso {
+  font-size: var(--corpo-testo);
+  padding: var(--spazio-sm-alt);
+  border: 2px solid var(--colore-azione-premuta);
+}
+
+.modulo__avviso:focus-visible {
+  outline: 3px solid var(--colore-ink);
+  outline-offset: 2px;
+}
+
+.modulo .bottone[disabled] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.conferma {
+  display: grid;
+  gap: var(--spazio-lg);
+  justify-items: start;
+  max-width: var(--misura-testo);
+}

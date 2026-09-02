@@ -8,10 +8,17 @@ import React from 'react'
 
 import config from '@/payload.config'
 import { giorniLeggibili, idDisciplina, indirizzoLeggibile, pubblicato } from '@/componenti/dati'
+import { metadatiPagina } from '@/componenti/seo'
 
 /**
- * La pagina di un percorso. Finisce dove finisce ogni percorso: nell'elenco dei
- * centri che lo tengono, con gli orari di quel corso e nient'altro.
+ * La pagina di un percorso. Orienta, spiega, e finisce dove finisce ogni
+ * percorso: nei centri che lo tengono e nel modulo, con il percorso gia'
+ * scelto.
+ *
+ * I blocchi di mezzo esistono solo se il campo e' compilato, e le superfici si
+ * alternano su quelli che restano: cosi' una scheda scarna non produce quattro
+ * sezioni chiare di fila, e una piena non ripete due volte lo stesso ritmo.
+ * E' la Regola del Valore applicata alla sequenza, non al singolo blocco.
  */
 
 export const revalidate = 60
@@ -47,11 +54,11 @@ export async function generateMetadata({
   const { slug } = await params
   const corso = await trovaCorso(slug)
   if (!corso) return {}
-  return {
-    title: corso.nome,
-    description: corso.sommario,
-    alternates: { canonical: `/corsi/${corso.slug}` },
-  }
+  return metadatiPagina({
+    titolo: corso.nome,
+    descrizione: corso.sommario,
+    path: `/corsi/${corso.slug}`,
+  })
 }
 
 export default async function PaginaCorso({ params }: { params: Promise<{ slug: string }> }) {
@@ -66,100 +73,191 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
     limit: 200,
     sort: 'indirizzo.citta',
     where: {
-      and: [
-        { attivo: { equals: true } },
-        { 'orari.disciplina': { equals: corso.id } },
-        pubblicato,
-      ],
+      and: [{ attivo: { equals: true } }, { 'orari.disciplina': { equals: corso.id } }, pubblicato],
     },
   })
 
-  const immagine = typeof corso.immagine === 'object' ? corso.immagine : null
-  const immagineUrl = immagine?.sizes?.card?.url || immagine?.url || null
+  const centri = sedi.docs
+  const segno = typeof corso.immagine === 'object' ? corso.immagine : null
+  const segnoUrl = segno?.sizes?.thumbnail?.url || segno?.url || null
 
-  const elenchi = [
-    { titolo: 'Su cosa si lavora', voci: corso.focus },
-    { titolo: 'Cosa ti porti a casa', voci: corso.risultati },
-    { titolo: 'Adatto a', voci: corso.adattoA },
-  ].filter((e) => (e.voci ?? []).length > 0)
+  const comeFunziona = [
+    { voce: 'Come funziona', dato: corso.durata },
+    { voce: 'Cadenza', dato: corso.cadenza },
+    { voce: 'Come si entra', dato: corso.ingresso },
+  ].filter((r): r is { voce: string; dato: string } => Boolean(r.dato))
 
-  return (
-    <>
-      <section className="sezione sezione--nera testata">
-        <div className="contenitore testata__contenuto">
-          <Link className="briciola" href="/corsi">
-            Torna ai percorsi
-          </Link>
-          <span className="filetto" aria-hidden="true" />
-          <p className="occhiello">{corso.occhiello || 'Percorso'}</p>
-          <h1 className="display display--lg">{corso.domanda || corso.nome}</h1>
-          <p className="testo testata__testo">{corso.sommario}</p>
-          {corso.aChiSiRivolge ? <p className="dato">{corso.aChiSiRivolge}</p> : null}
-        </div>
-      </section>
+  const focus = corso.focus ?? []
+  const risultati = corso.risultati ?? []
+  const adattoA = corso.adattoA ?? []
 
-      <section className="sezione sezione--chiara">
+  /* Un blocco per campo compilato. L'ordine e' fisso, la superficie no: si
+     alterna su quelli che esistono davvero. */
+  const blocchi: { chiave: string; nodo: React.ReactNode }[] = []
+
+  if (comeFunziona.length > 0) {
+    blocchi.push({
+      chiave: 'come',
+      nodo: (
         <div className="contenitore">
-          {immagineUrl ? (
-            <Image
-              src={immagineUrl}
-              alt={immagine?.alt || ''}
-              width={800}
-              height={800}
-              sizes="(max-width: 800px) 100vw, 800px"
-              style={{ height: 'auto' }}
-            />
-          ) : null}
-
+          <h2 className="display display--sm titolo-elenco">Come si pratica</h2>
           <dl className="corso__dati">
-            {corso.durata ? (
-              <div className="corso__dato">
-                <dt>Come funziona</dt>
-                <dd>{corso.durata}</dd>
+            {comeFunziona.map((riga) => (
+              <div className="corso__dato" key={riga.voce}>
+                <dt>{riga.voce}</dt>
+                <dd>{riga.dato}</dd>
               </div>
-            ) : null}
-            {corso.cadenza ? (
-              <div className="corso__dato">
-                <dt>Cadenza</dt>
-                <dd>{corso.cadenza}</dd>
-              </div>
-            ) : null}
-            {corso.ingresso ? (
-              <div className="corso__dato">
-                <dt>Come si entra</dt>
-                <dd>{corso.ingresso}</dd>
-              </div>
-            ) : null}
+            ))}
           </dl>
+        </div>
+      ),
+    })
+  }
 
+  if (corso.descrizione || focus.length > 0) {
+    blocchi.push({
+      chiave: 'descrizione',
+      nodo: (
+        <div className="contenitore corso__discorso">
           {corso.descrizione ? (
             <div className="ricco">
               <RichText data={corso.descrizione} />
             </div>
           ) : null}
 
-          {elenchi.length > 0 ? (
-            <div className="colonne colonne--tre">
-              {elenchi.map((elenco) => (
-                <div className="blocco" key={elenco.titolo}>
-                  <h2>{elenco.titolo}</h2>
-                  <ul className="elenco__voci">
-                    {(elenco.voci ?? []).map((v) => (
-                      <li key={v.id ?? v.voce}>{v.voce}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+          {focus.length > 0 ? (
+            <div className="rivela">
+              <h2 className="corso__sottotitolo">Su cosa si lavora</h2>
+              {/* Etichette brevi in fila, non una terza colonna di un tris: e'
+                  quello che il campo dichiara di essere. */}
+              <ul className="etichette">
+                {focus.map((v) => (
+                  <li className="etichetta" key={v.id ?? v.voce}>
+                    {v.voce}
+                  </li>
+                ))}
+              </ul>
             </div>
           ) : null}
+        </div>
+      ),
+    })
+  }
 
-          {corso.prova ? (
-            <p className="testo dato blocco">{corso.prova}</p>
-          ) : null}
+  if (risultati.length > 0) {
+    blocchi.push({
+      chiave: 'risultati',
+      nodo: (
+        <div className="contenitore">
+          <h2 className="display display--sm titolo-elenco">Cosa ti porti a casa</h2>
+          <ol className="numerati">
+            {risultati.map((v, i) => (
+              <li className="rivela numerato" key={v.id ?? v.voce}>
+                <span className="numerato__indice" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span>{v.voce}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ),
+    })
+  }
+
+  if (adattoA.length > 0) {
+    blocchi.push({
+      chiave: 'adatto',
+      nodo: (
+        <div className="contenitore">
+          <h2 className="display display--sm titolo-elenco">Questo percorso è per te se</h2>
+          <ul className="elenco__voci elenco__voci--largo">
+            {adattoA.map((v) => (
+              <li key={v.id ?? v.voce}>{v.voce}</li>
+            ))}
+          </ul>
+        </div>
+      ),
+    })
+  }
+
+  return (
+    <>
+      <section className="sezione sezione--nera testata testata--percorso">
+        {/* Il segno e' inchiostro su trasparente: sul nero va invertito, come la
+            fotografia dell'eroe entra nel sistema come valore e non come colore. */}
+        {segnoUrl ? (
+          <Image
+            className="testata__segno"
+            src={segnoUrl}
+            alt=""
+            width={400}
+            height={400}
+            sizes="400px"
+            priority
+          />
+        ) : null}
+
+        <div className="contenitore testata__contenuto">
+          <Link className="briciola" href="/corsi">
+            Torna ai percorsi
+          </Link>
+          <p className="occhiello">{corso.occhiello || 'Percorso'}</p>
+          <h1 className="display display--lg">{corso.domanda || corso.nome}</h1>
+          <p className="testo testata__testo">{corso.sommario}</p>
+
+          <dl className="testata__fatti">
+            <div>
+              <dt>Il corso</dt>
+              <dd>{corso.nome}</dd>
+            </div>
+            {corso.aChiSiRivolge ? (
+              <div>
+                <dt>A chi si rivolge</dt>
+                <dd>{corso.aChiSiRivolge}</dd>
+              </div>
+            ) : null}
+            {centri.length > 0 ? (
+              <div>
+                <dt>Dove si pratica</dt>
+                <dd>
+                  {centri.length} {centri.length === 1 ? 'centro' : 'centri'}
+                </dd>
+              </div>
+            ) : null}
+          </dl>
+
+          <p className="testata__azione">
+            <Link
+              className="bottone bottone--primario"
+              href={`/contatti?corso=${encodeURIComponent(corso.slug)}`}
+            >
+              {corso.azione || 'Chiedi una prova'}
+            </Link>
+          </p>
         </div>
       </section>
 
-      <section className="sezione sezione--carbone" aria-labelledby="titolo-dove">
+      {blocchi.map((blocco, i) => (
+        <section
+          className={`sezione sezione--${i % 2 === 0 ? 'chiara' : 'carbone'}`}
+          key={blocco.chiave}
+        >
+          {blocco.nodo}
+        </section>
+      ))}
+
+      {/* La prova sta da sola sul nero e a corpo grande: e' la riga che dimostra
+          il percorso, non una nota in coda a una colonna. */}
+      {corso.prova ? (
+        <section className="sezione sezione--nera">
+          <div className="contenitore">
+            <p className="corso__prova">{corso.prova}</p>
+          </div>
+        </section>
+      ) : null}
+
+      <section className="sezione sezione--chiara" aria-labelledby="titolo-dove">
         <div className="contenitore">
           <div className="centri__intestazione">
             <span className="filetto" aria-hidden="true" />
@@ -167,18 +265,16 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
               Dove si pratica
             </h2>
             <p className="testo">
-              {sedi.docs.length > 0
-                ? `${sedi.docs.length} ${sedi.docs.length === 1 ? 'centro tiene' : 'centri tengono'} questo percorso. Gli orari qui sotto sono solo quelli di ${corso.nome}.`
+              {centri.length > 0
+                ? `${centri.length} ${centri.length === 1 ? 'centro tiene' : 'centri tengono'} questo percorso. Gli orari qui sotto sono solo quelli di ${corso.nome}.`
                 : 'Questo percorso non è ancora in calendario in nessun centro. Scrivici e ti diciamo quando parte.'}
             </p>
           </div>
 
-          {sedi.docs.length > 0 ? (
+          {centri.length > 0 ? (
             <ul className="centri__elenco">
-              {sedi.docs.map((sede) => {
-                const suoi = (sede.orari ?? []).filter(
-                  (o) => idDisciplina(o.disciplina) === corso.id,
-                )
+              {centri.map((sede) => {
+                const suoi = (sede.orari ?? []).filter((o) => idDisciplina(o.disciplina) === corso.id)
 
                 return (
                   <li className="rivela centro" key={sede.id}>
@@ -205,12 +301,17 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
             </ul>
           ) : null}
 
-          {/* Il bottone porta ai centri, quindi si chiama come ogni altro bottone
-              che porta ai centri. Il campo `azione` a CMS ("Chiedi informazioni")
-              prometteva un form che non esiste ancora: torna quando esiste. */}
+          {/* La pagina finisce dove finisce il percorso: nel modulo, con questo
+              percorso gia' selezionato. */}
           <p className="coda-azione">
-            <Link className="bottone bottone--primario" href="/centri">
-              Trova un centro
+            <Link
+              className="bottone bottone--primario"
+              href={`/contatti?corso=${encodeURIComponent(corso.slug)}`}
+            >
+              {corso.azione || 'Chiedi una prova'}
+            </Link>
+            <Link className="bottone bottone--secondario" href="/centri">
+              Vedi tutti i centri
             </Link>
           </p>
         </div>

@@ -1,0 +1,491 @@
+/* L'eroe, il bivio, i centri, la prima volta, le prove: le sezioni della home. */
+
+/* ---------- eroe ---------- */
+
+.eroe {
+  position: relative;
+  isolation: isolate;
+  min-height: clamp(540px, 88svh, 900px);
+  margin-block-start: var(--altezza-header);
+  display: flex;
+  align-items: flex-end;
+  background: var(--colore-surface);
+  overflow: clip;
+}
+
+.eroe__foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Il taglio tiene la sala, non il soffitto: su verticale il centro dell'inquadratura
+     cade troppo in alto. */
+  object-position: center 62%;
+  /* Monocromo: la fotografia entra nel sistema come valore, non come colore.
+     A 0.5 di luminosita' sommata al velo la sala spariva del tutto e l'eroe
+     leggeva come un rettangolo nero: il titolo regge lo stesso a 0.72, perche'
+     il contrasto glielo da' il velo in basso, non lo spegnimento della foto. */
+  filter: grayscale(1) contrast(1.05) brightness(0.72);
+  z-index: -2;
+}
+
+/* Velo di leggibilita', non un gradiente di marca: esiste solo perche' il titolo
+   bianco deve reggere AA sopra una fotografia, e non e' un token riutilizzabile. */
+.eroe__velo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.94) 12%, rgba(0, 0, 0, 0.5) 55%, rgba(0, 0, 0, 0.18) 100%);
+  z-index: -1;
+}
+
+.eroe__contenuto {
+  width: 100%;
+  padding-block: clamp(var(--spazio-xxl), 7vw, var(--spazio-section));
+  display: grid;
+  gap: var(--spazio-lg);
+}
+
+.eroe__titolo {
+  max-width: 15ch;
+}
+
+.eroe__coda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spazio-lg);
+}
+
+/* Sotto i 520px i due inviti prendono la stessa larghezza: due bottoni di misura
+   diversa impilati leggono come un errore di allineamento. */
+@media (max-width: 520px) {
+  .eroe__coda {
+    display: grid;
+    gap: var(--spazio-md);
+  }
+
+  .eroe__coda .bottone {
+    text-align: center;
+  }
+}
+
+/* ---------- bivio ---------- */
+
+/* L'intestazione del bivio non si stacca dalle righe: la prima riga e' il seguito
+   della domanda, non un blocco nuovo. */
+.bivio__testa {
+  padding-block-end: 0;
+}
+
+/* Stesso stacco della testata di pagina: sotto un display l'aria e' proporzionale
+   al corpo che la apre, non un 16px fisso. Vedi .testata__contenuto. */
+.bivio__intestazione {
+  display: grid;
+  gap: clamp(var(--spazio-lg), 2.2vw, var(--spazio-xxl));
+  padding-block-end: clamp(var(--spazio-xl), 4vw, var(--spazio-section-sm));
+}
+
+.percorso {
+  border-block-start: 1px solid var(--riga-locale);
+}
+
+.percorso:last-child {
+  border-block-end: 1px solid var(--riga-locale);
+}
+
+.percorso--nero {
+  background: var(--colore-surface);
+  color: var(--colore-on-primary);
+  --riga-locale: var(--colore-ink-secondary);
+}
+
+.percorso--carbone {
+  background: var(--colore-surface-alt);
+  color: var(--colore-on-primary);
+  --riga-locale: var(--colore-ink-secondary);
+}
+
+.percorso--bianco {
+  background: var(--colore-surface-light);
+  color: var(--colore-ink);
+  --riga-locale: var(--colore-ink);
+}
+
+.percorso--grigio {
+  background: var(--colore-muted);
+  color: var(--colore-ink);
+  --riga-locale: var(--colore-ink);
+}
+
+.percorso__testa {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: clamp(var(--spazio-md), 3vw, var(--spazio-xxl));
+  padding-block: clamp(var(--spazio-lg), 3.5vw, var(--spazio-xxl));
+  cursor: pointer;
+  list-style: none;
+  transition: background-color var(--durata) var(--curva);
+}
+
+.percorso__testa::-webkit-details-marker {
+  display: none;
+}
+
+/* La riga occupa tutta la larghezza: un anello esterno finisce fuori schermo.
+   Qui il focus si disegna dentro. */
+.percorso__testa:focus-visible {
+  outline-offset: -4px;
+}
+
+/* L'hover scambia il valore di superficie, mai la tinta. */
+.percorso--nero .percorso__testa:hover,
+.percorso--carbone .percorso__testa:hover {
+  background: #0f0f0f;
+}
+
+.percorso--bianco .percorso__testa:hover,
+.percorso--grigio .percorso__testa:hover {
+  background: #f3f3f3;
+}
+
+.percorso__indice {
+  font-family: var(--font-display);
+  font-size: var(--corpo-display-sm);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.5;
+}
+
+.percorso__domanda {
+  display: grid;
+  gap: var(--spazio-xs);
+}
+
+/* La riga dell'indice: stesso vocabolario del bivio in home, ma e' un link
+   intero e non un pannello che si apre. */
+.percorso__riga {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(var(--spazio-md), 3vw, var(--spazio-xxl));
+  padding-block: clamp(var(--spazio-lg), 4vw, var(--spazio-section-sm));
+  text-decoration: none;
+  transition: background-color var(--durata) var(--curva);
+}
+
+@media (min-width: 800px) {
+  .percorso__riga {
+    grid-template-columns: auto minmax(0, 1fr) 96px;
+  }
+}
+
+.percorso__riga:focus-visible {
+  outline-offset: -4px;
+}
+
+/* L'hover scambia il valore di superficie, mai la tinta. */
+.percorso--nero .percorso__riga:hover,
+.percorso--carbone .percorso__riga:hover {
+  background: #0f0f0f;
+}
+
+.percorso--bianco .percorso__riga:hover,
+.percorso--grigio .percorso__riga:hover {
+  background: #f3f3f3;
+}
+
+.percorso__riga:hover .display {
+  text-decoration: underline;
+  text-underline-offset: 8px;
+}
+
+.percorso__sommario {
+  margin-block-start: var(--spazio-xs);
+}
+
+.percorso__coda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spazio-xs) var(--spazio-lg);
+  margin-block-start: var(--spazio-sm);
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+}
+
+/* Il marchio del percorso e' inchiostro su trasparente: sulle superfici scure
+   si inverte invece di sparire. Sotto gli 800px esce dalla riga: a colonna
+   singola ruberebbe l'altezza al titolo. */
+.percorso__segno-marchio {
+  display: none;
+  inline-size: 96px;
+  block-size: auto;
+  opacity: 0.75;
+}
+
+@media (min-width: 800px) {
+  .percorso__segno-marchio {
+    display: block;
+  }
+}
+
+.percorso--nero .percorso__segno-marchio,
+.percorso--carbone .percorso__segno-marchio {
+  filter: invert(1);
+}
+
+.percorso__nome {
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+  line-height: var(--interlinea-display);
+}
+
+/* Il segno di apertura e' un piu' fatto di due barrette da 2px, lo stesso
+   vocabolario del bottone del menu: il sistema non ha una libreria di icone e
+   una freccia di testo non e' un'icona, e' un carattere che cambia da font a font. */
+.percorso__segno {
+  position: relative;
+  inline-size: 16px;
+  block-size: 16px;
+  flex: none;
+}
+
+.percorso__segno::before,
+.percorso__segno::after {
+  content: '';
+  position: absolute;
+  inset-block-start: 7px;
+  inset-inline-start: 0;
+  inline-size: 16px;
+  block-size: 2px;
+  background: currentColor;
+  transition: transform var(--durata) var(--curva);
+}
+
+.percorso__segno::after {
+  transform: rotate(90deg);
+}
+
+/* Aperto, il piu' diventa un meno: la barretta verticale rientra nell'orizzontale. */
+.percorso details[open] .percorso__segno::after {
+  transform: rotate(0deg);
+}
+
+.percorso__corpo {
+  display: grid;
+  gap: var(--spazio-lg);
+  padding-block-end: clamp(var(--spazio-lg), 3vw, var(--spazio-xxl));
+  padding-inline-start: 0;
+}
+
+@media (min-width: 800px) {
+  .percorso__corpo {
+    grid-template-columns: minmax(0, 34rem) minmax(0, 1fr);
+    gap: var(--spazio-xxl);
+  }
+}
+
+.percorso__prova {
+  margin-block-start: var(--spazio-md);
+}
+
+.percorso__azione {
+  margin-block-start: var(--spazio-lg);
+}
+
+.percorso__fatti {
+  display: grid;
+  gap: var(--spazio-sm-alt);
+  align-content: start;
+}
+
+.percorso__fatto {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  gap: var(--spazio-md);
+  font-size: var(--corpo-caption);
+  padding-block-start: var(--spazio-sm-alt);
+  border-block-start: 1px solid var(--riga-locale);
+}
+
+.percorso__fatto dt {
+  font-weight: var(--peso-bold);
+}
+
+/* Su telefono l'etichetta scende sopra il dato: due colonne dentro 390px
+   spezzano ogni riga in tre. */
+@media (max-width: 620px) {
+  .percorso__fatto {
+    grid-template-columns: 1fr;
+    gap: var(--spazio-xs);
+  }
+}
+
+/* ---------- centri ---------- */
+
+.centri__intestazione {
+  display: grid;
+  gap: clamp(var(--spazio-lg), 2.2vw, var(--spazio-xxl));
+  padding-block-end: clamp(var(--spazio-xl), 4vw, var(--spazio-section-sm));
+}
+
+.centri__elenco {
+  display: grid;
+  gap: 0;
+}
+
+@media (min-width: 900px) {
+  .centri__elenco {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--spazio-section);
+  }
+}
+
+.centro {
+  display: grid;
+  gap: var(--spazio-sm);
+  padding-block: var(--spazio-lg);
+  border-block-start: 1px solid var(--riga-locale);
+}
+
+.centro__nome {
+  font-size: var(--corpo-heading-lg);
+  font-weight: var(--peso-bold);
+  line-height: var(--interlinea-stretta);
+}
+
+.centro__indirizzo {
+  font-size: var(--corpo-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+/* La distanza e' un dato, quindi cifre tabulari e corpo pieno: non e' un
+   distintivo e non prende ne' fondo ne' bordo. */
+.centro__distanza {
+  font-weight: var(--peso-bold);
+  margin-inline-start: var(--spazio-sm);
+}
+
+.centro__vicino {
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+  text-transform: uppercase;
+}
+
+/* Il centro piu' vicino si stacca cambiando il valore del bordo, non con una
+   tinta: la Regola del Valore vale anche per una riga di elenco. */
+.centro--vicino {
+  border-block-start-width: 3px;
+  border-block-start-color: currentColor;
+}
+
+.centro__orari {
+  display: grid;
+  gap: var(--spazio-xs);
+  font-size: var(--corpo-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.centro__orario {
+  display: grid;
+  grid-template-columns: 8.5rem auto;
+  gap: var(--spazio-md);
+}
+
+.centro__giorni {
+  font-weight: var(--peso-bold);
+}
+
+@media (max-width: 620px) {
+  .centro__orario {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
+
+.centro__maps {
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  justify-self: start;
+}
+
+/* ---------- prima volta ---------- */
+
+.prima {
+  display: grid;
+  gap: clamp(var(--spazio-xl), 5vw, var(--spazio-section));
+}
+
+@media (min-width: 900px) {
+  .prima {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 30rem);
+    align-items: start;
+  }
+}
+
+.prima__attacco {
+  margin-block-start: var(--spazio-lg);
+}
+
+.prima__punti {
+  display: grid;
+  gap: var(--spazio-lg);
+}
+
+.prima__punto {
+  display: grid;
+  gap: var(--spazio-xs);
+  padding-block-start: var(--spazio-md);
+  border-block-start: 1px solid var(--riga-locale);
+}
+
+.prima__punto h3 {
+  font-size: var(--corpo-heading-lg);
+  font-weight: var(--peso-bold);
+  line-height: var(--interlinea-stretta);
+}
+
+/* ---------- prove ---------- */
+
+.prove {
+  display: grid;
+  gap: clamp(var(--spazio-xl), 5vw, var(--spazio-section));
+}
+
+@media (min-width: 900px) {
+  .prove {
+    grid-template-columns: minmax(0, 26rem) minmax(0, 1fr);
+  }
+}
+
+.prove__numeri {
+  display: grid;
+}
+
+.prova {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: var(--spazio-gutter);
+  padding-block: var(--spazio-md);
+  border-block-start: 1px solid var(--riga-locale);
+}
+
+.prova:last-child {
+  border-block-end: 1px solid var(--riga-locale);
+}
+
+.prova__valore {
+  font-family: var(--font-display);
+  font-size: var(--corpo-display-sm);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  min-width: 3.5ch;
+}
+
+.prova__voce {
+  font-size: var(--corpo-caption);
+}

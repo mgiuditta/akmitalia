@@ -141,7 +141,16 @@ export const Sedi: CollectionConfig = {
       },
     },
     { name: 'descrizione', type: 'textarea', label: 'Descrizione' },
-    { name: 'foto', type: 'upload', relationTo: 'media', label: 'Foto' },
+    {
+      name: 'foto',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Foto',
+      admin: {
+        description:
+          'La sala di questo centro. Orizzontale, sta in cima alla scheda. Senza foto resta un segnaposto con la marca.',
+      },
+    },
     {
       name: 'istruttori',
       type: 'relationship',

@@ -1,67 +1,127 @@
-# Payload Blank Template
+# AKM Italia
 
-This template comes configured with the bare minimum to get started on anything you need.
+Sito pubblico di AKM Italia: centri tecnici, percorsi, istruttori e il modulo di richiesta.
+Next.js 16 e Payload 3 nello stesso processo, PostgreSQL, media su disco.
 
-## Quick start
+I documenti che spiegano il perché delle cose:
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+- `PRODUCT.md` — a chi parla il sito e qual è l'unico esito che conta.
+- `CONTEXT.md` — il glossario del dominio: centro, orario, docente, corso, percorso.
+- `DESIGN.md` — il sistema visivo, con le sue regole nominate.
+- `docs/adr/` — le decisioni, una per file, con il motivo per cui si è scelto così.
 
-## Quick Start - local setup
+## Sviluppo
 
-To spin up this template locally, follow these steps:
+Serve Node 22 e pnpm 11, più Docker per il database.
 
-### Clone
+```sh
+cp .env.example .env      # e cambia PAYLOAD_SECRET
+pnpm install
+pnpm font:scarica         # Anton e Roboto, self-hostate
+docker compose up -d db
+pnpm dev
+```
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+Il sito sta su `http://localhost:3000`, il pannello su `/admin`. Il primo accesso chiede di
+creare un utente.
 
-### Development
+In sviluppo lo schema del database si applica da solo (`push` di Payload). In produzione no:
+vedi «Migration» qui sotto.
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URL` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+## Script
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+| Comando | Cosa fa |
+|---|---|
+| `pnpm dev` | Server di sviluppo. |
+| `pnpm build` / `pnpm start` | Build e avvio in produzione. |
+| `pnpm test` | Test di integrazione (Vitest) più end-to-end (Playwright). |
+| `pnpm generate:types` | Riscrive `src/payload-types.ts` dopo un cambio di collection o global. Va rilanciato ogni volta. |
+| `pnpm font:scarica` | Scarica i caratteri in `public/`. Non sono nel repo. |
+| `pnpm media:scarica` | Scarica in `data/wp-media` le immagini del vecchio sito. |
+| `pnpm importa:centri` | Importa corsi, istruttori e sedi da `data/centri-tecnici.json`. Rieseguibile: fa upsert per slug. |
+| `pnpm sedi:geocodifica` | Riempie le coordinate delle sedi che non ce l'hanno. |
+| `pnpm pagine:legali` | Crea `/privacy` e `/cookie` con il testo di partenza. |
+| `pnpm contenuti:corsi` | Riempie i tre percorsi con descrizione, focus, risultati e adatto a. |
+| `pnpm immagini:editoriali` | Genera le fotografie editoriali in bianco e nero (serve `GEMINI_API_KEY`), le carica in Media e le assegna agli slot. Rieseguibile: non rigenera quello che sta gia' in `data/immagini`. |
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+Gli ultimi tre sono punti di partenza, non fonti di verità: da lì in poi il contenuto si
+modifica dall'admin, e rilanciarli sovrascrive quello che il cliente ha cambiato.
 
-#### Docker (Optional)
+## Migration
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+In produzione `push` è spento, quindi lo schema si applica con le migration e mai in
+automatico.
 
-To do so, follow these steps:
+```sh
+# dopo un cambio a una collection o a un global
+NODE_ENV=production pnpm payload migrate:create <nome>
 
-- Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+# applicare
+pnpm payload migrate
+```
 
-## How it works
+`migrate:create` confronta lo schema con l'ultimo snapshot in `src/migrations/`, non con il
+database: si lancia anche senza toccare il database di sviluppo.
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+## Rilascio con Docker
 
-### Collections
+`docker-compose.yml` alza tre servizi: `db` (PostgreSQL), `app` (il sito) e `migrate`, che
+sta in un profilo a parte perché applicare lo schema è una decisione, non un effetto
+collaterale dell'avvio.
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+```sh
+cp .env.example .env      # PAYLOAD_SECRET, NEXT_PUBLIC_SITE_URL, SMTP_*
+docker compose --profile strumenti build
+docker compose run --rm migrate
+docker compose up -d
+```
 
-- #### Users (Authentication)
+Da sapere:
 
-  Users are auth-enabled collections that have access to the admin panel.
+- **`NEXT_PUBLIC_SITE_URL` si legge al momento del build**, non all'avvio: finisce nel
+  bundle del browser. Cambiare dominio vuol dire ricostruire l'immagine.
+- **I media stanno nel volume `media`**, montato su `/app/media`. Senza quel volume le
+  immagini caricate sparirebbero al primo rilascio.
+- **L'immagine dell'app è `output: 'standalone'`**: non contiene `node_modules` né i
+  sorgenti, e infatti non può lanciare `payload migrate`. Per quello c'è il servizio
+  `migrate`, che parte dallo stadio `migrator` del `Dockerfile`.
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/3.x/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+Al primo rilascio il volume `media` è vuoto: se stai portando su un database che ha già dei
+file caricati, copiaci dentro la cartella `media/` prima di alzare l'app, altrimenti il sito
+parte con le immagini rotte.
 
-- #### Media
+```sh
+docker run --rm -v akmitalia_media:/media -v "$PWD/media":/dentro alpine \
+  sh -c 'cp -a /dentro/. /media/'
+```
 
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+Il primo rilascio va completato dal pannello: `/admin` per creare l'utente, poi
+**Sistema > Contatti** per l'email che riceve le richieste (è obbligatoria) e per collegare
+`/privacy` al consenso del modulo.
 
-### Docker
+### Backup
 
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
+Due cose, e vanno prese insieme:
 
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
+```sh
+docker compose exec -T db pg_dump -U payload akm > akm-$(date +%F).sql
+docker run --rm -v akmitalia_media:/media -v "$PWD":/fuori alpine \
+  tar czf /fuori/media-$(date +%F).tar.gz -C /media .
+```
 
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
+Il database senza i media dà un sito con le immagini rotte, i media senza il database non
+sono niente.
 
-## Questions
+## Da confermare prima di andare online
 
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+- `Sistema > Contatti`: email, telefono, sede legale, e la pagina dell'informativa.
+- `/privacy`: titolare, tempi di conservazione e PEC sono segnaposto scritti in chiaro.
+- Il testo dei tre percorsi, che è una prima stesura e va riletto dal cliente.
+- SMTP configurato: senza, la richiesta si salva lo stesso ma l'avviso finisce nel log e
+  `emailInviata` resta spento sulla scheda.
+
+## Note
+
+`pnpm lint` è rotto per un'incompatibilità fra `@eslint/eslintrc` e la configurazione di
+`eslint-config-next` presente. Non dipende dal codice del sito. `pnpm test` e
+`npx tsc --noEmit` sono verdi e sono quelli che vanno guardati.

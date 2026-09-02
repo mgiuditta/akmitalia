@@ -5,8 +5,9 @@ import config from '@/payload.config'
 import { pubblicato, sitoUrl } from '@/componenti/dati'
 
 /**
- * La sitemap elenca le stesse rotte che il sito espone, niente di piu': le sei
- * pagine fisse e le schede pubblicate di corsi e centri. Un centro non attivo
+ * La sitemap elenca le stesse rotte che il sito espone, niente di piu': le
+ * pagine fisse, le schede pubblicate di corsi e centri, e le pagine editoriali
+ * che passano dalla rotta `[...path]` (docs/adr/0011). Un centro non attivo
  * resta pubblicato ma sparisce dagli elenchi, quindi sparisce anche da qui.
  *
  * ponytail: nessuna priorita' e nessuna frequenza. Google le ignora da anni e
@@ -19,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = sitoUrl()
   const payload = await getPayload({ config: await config })
 
-  const [corsi, sedi] = await Promise.all([
+  const [corsi, sedi, pagine] = await Promise.all([
     payload.find({
       collection: 'corsi',
       depth: 0,
@@ -34,9 +35,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       select: { slug: true, updatedAt: true },
       where: { and: [{ attivo: { equals: true } }, pubblicato] },
     }),
+    payload.find({
+      collection: 'pagine',
+      depth: 0,
+      limit: 500,
+      select: { path: true, updatedAt: true },
+      where: pubblicato,
+    }),
   ])
 
-  const fisse = ['', '/corsi', '/centri', '/istruttori'].map((rotta) => ({
+  const fisse = ['', '/corsi', '/centri', '/istruttori', '/contatti'].map((rotta) => ({
     url: `${base}${rotta}`,
     lastModified: new Date(),
   }))
@@ -51,5 +59,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${base}/centri/${s.slug}`,
       lastModified: s.updatedAt ? new Date(s.updatedAt) : undefined,
     })),
+    ...pagine.docs
+      .filter((p): p is typeof p & { path: string } => Boolean(p.path))
+      .map((p) => ({
+        url: `${base}${p.path}`,
+        lastModified: p.updatedAt ? new Date(p.updatedAt) : undefined,
+      })),
   ]
 }

@@ -82,7 +82,11 @@ export const Istruttori: CollectionConfig = {
       name: 'foto',
       type: 'upload',
       relationTo: 'media',
-      label: 'Foto',
+      label: 'Ritratto',
+      admin: {
+        description:
+          'Verticale, mezzo busto, sfondo neutro. Senza ritratto la scheda mostra un segnaposto: la riga non sparisce, perche la griglia la prevede.',
+      },
       // Il testo alternativo sta sul file in Media: e una proprieta dell immagine.
     },
     {

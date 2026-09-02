@@ -117,10 +117,12 @@ export interface Config {
   globals: {
     contatti: Contatti;
     impostazioni: Impostazioni;
+    navigazione: Navigazione;
   };
   globalsSelect: {
     contatti: ContattiSelect<false> | ContattiSelect<true>;
     impostazioni: ImpostazioniSelect<false> | ImpostazioniSelect<true>;
+    navigazione: NavigazioneSelect<false> | NavigazioneSelect<true>;
   };
   locale: 'it';
   widgets: {
@@ -178,6 +180,9 @@ export interface Pagine {
    * Il paragrafo sotto il titolo, in cima alla pagina.
    */
   sommario?: string | null;
+  /**
+   * Orizzontale, a tutta larghezza fra la testata e il testo. Facoltativa.
+   */
   immagineHero?: (number | null) | Media;
   /**
    * I blocchi della pagina, uno sotto l altro.
@@ -375,6 +380,9 @@ export interface Sedi {
    */
   attivo?: boolean | null;
   descrizione?: string | null;
+  /**
+   * La sala di questo centro. Orizzontale, sta in cima alla scheda. Senza foto resta un segnaposto con la marca.
+   */
   foto?: (number | null) | Media;
   istruttori?: (number | Istruttori)[] | null;
   /**
@@ -459,6 +467,9 @@ export interface Istruttori {
    * La riga sotto il ruolo. Es. «Krav Maga Master Teacher».
    */
   livello?: string | null;
+  /**
+   * Verticale, mezzo busto, sfondo neutro. Senza ritratto la scheda mostra un segnaposto: la riga non sparisce, perche la griglia la prevede.
+   */
   foto?: (number | null) | Media;
   /**
    * Una o due righe, usate nella card dell elenco.
@@ -608,6 +619,9 @@ export interface Corsi {
    */
   prova?: string | null;
   azione?: string | null;
+  /**
+   * Il marchio grafico del percorso, non una fotografia: inchiostro su trasparente, quadrato. Sta in filigrana dietro la testata e accanto alla riga in elenco.
+   */
   immagine?: (number | null) | Media;
   /**
    * Compilato dagli orari delle schede centro: qui non si modifica.
@@ -1315,6 +1329,34 @@ export interface Contatti {
    * In formato internazionale, es. +393401234567.
    */
   whatsapp?: string | null;
+  /**
+   * Riceve le richieste del form in /contatti. Se vuota si usa l Email qui sopra.
+   */
+  emailRichieste?: string | null;
+  /**
+   * Due o tre righe sopra il form. Vuoto: resta il testo di serie.
+   */
+  introRichieste?: string | null;
+  /**
+   * I testi del form e quali campi facoltativi chiedere. I campi obbligatori (cognome, nome, email, telefono, centro, consenso) non si spengono: senza non si puo ricontattare nessuno.
+   */
+  modulo?: {
+    nota?: string | null;
+    etichettaConsenso?: string | null;
+    /**
+     * Il link «Leggi l informativa» accanto al consenso. Vuoto: il link non compare.
+     */
+    paginaPrivacy?: (number | null) | Pagine;
+    etichettaInvio?: string | null;
+    messaggioConferma?: string | null;
+    chiediDataNascita?: boolean | null;
+    chiediPercorso?: boolean | null;
+    chiediMessaggio?: boolean | null;
+  };
+  /**
+   * Verticale, accanto al form. Senza foto la colonna resta di solo testo.
+   */
+  immagineContatti?: (number | null) | Media;
   sedeLegale?: {
     via?: string | null;
     cap?: string | null;
@@ -1338,12 +1380,64 @@ export interface Contatti {
 export interface Impostazioni {
   id: number;
   siteName: string;
+  /**
+   * Lo stemma. Quadrato, sfondo trasparente, almeno 400x400.
+   */
   logo?: (number | null) | Media;
+  /**
+   * Quella che si vede su WhatsApp e sui social. Orizzontale 1200x630. Lasciala vuota: il sito ne compone una da solo, con il titolo e lo stemma.
+   */
   ogImage?: (number | null) | Media;
   /**
-   * Una sola foto, mostrata in monocromo sotto il titolo. Senza immagine la home resta tipografica su nero.
+   * Una sola foto, mostrata in monocromo sotto il titolo. Orizzontale, almeno 1600px di lato lungo, con spazio a destra: il titolo occupa la meta sinistra. Senza immagine la home resta tipografica su nero.
    */
   immagineHero?: (number | null) | Media;
+  /**
+   * Occhiello, titolo, riga di testo e i due bottoni dell eroe.
+   */
+  eroe?: {
+    occhiello?: string | null;
+    titolo?: string | null;
+    /**
+     * Vuota: il sito scrive da solo «N centri tecnici attivi, lezioni settimanali tutto l anno, istruttori con nome e cognome».
+     */
+    testo?: string | null;
+    ctaPrimariaEtichetta?: string | null;
+    ctaPrimariaHref?: string | null;
+    ctaSecondariaEtichetta?: string | null;
+    ctaSecondariaHref?: string | null;
+  };
+  /**
+   * «Cosa succede quando entri» e il paragrafo delle qualifiche. I numeri delle prove li conta il sito da solo.
+   */
+  home?: {
+    /**
+     * Quattro al massimo: sopra gli 800px stanno in due colonne.
+     */
+    primaVolta?:
+      | {
+          titolo: string;
+          testo: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Orizzontale, la sala durante una lezione. Sta accanto ai quattro punti. Senza foto resta un segnaposto con la marca.
+     */
+    immagineIngresso?: (number | null) | Media;
+    /**
+     * Sotto «Le qualifiche si contano». Vuoto: resta il testo di serie con CSEN-CONI, F.E.K.D.A. e P.T.D.
+     */
+    testoQualifiche?: string | null;
+  };
+  /**
+   * Centri, percorsi e istruttori sono pagine di codice e non hanno una scheda a CMS: la loro fotografia si carica qui. Orizzontali, almeno 1600px di lato lungo.
+   */
+  fotoPagine?: {
+    centri?: (number | null) | Media;
+    corsi?: (number | null) | Media;
+    istruttori?: (number | null) | Media;
+  };
   testoFooter?: string | null;
   /**
    * Compaiono nel footer e nella pagina 5x1000.
@@ -1362,12 +1456,63 @@ export interface Impostazioni {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigazione".
+ */
+export interface Navigazione {
+  id: number;
+  /**
+   * Sopra i 1024px stanno in riga nella barra: cinque al massimo.
+   */
+  voci?:
+    | {
+        etichetta: string;
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * In fondo alla pagina, accanto al copyright. Le pagine si scrivono in Contenuti > Pagine.
+   */
+  piede?:
+    | {
+        etichetta: string;
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Il bottone rosso in barra. Non si nasconde mai.
+   */
+  cta: {
+    etichetta: string;
+    href: string;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contatti_select".
  */
 export interface ContattiSelect<T extends boolean = true> {
   email?: T;
   telefono?: T;
   whatsapp?: T;
+  emailRichieste?: T;
+  introRichieste?: T;
+  modulo?:
+    | T
+    | {
+        nota?: T;
+        etichettaConsenso?: T;
+        paginaPrivacy?: T;
+        etichettaInvio?: T;
+        messaggioConferma?: T;
+        chiediDataNascita?: T;
+        chiediPercorso?: T;
+        chiediMessaggio?: T;
+      };
+  immagineContatti?: T;
   sedeLegale?:
     | T
     | {
@@ -1396,6 +1541,37 @@ export interface ImpostazioniSelect<T extends boolean = true> {
   logo?: T;
   ogImage?: T;
   immagineHero?: T;
+  eroe?:
+    | T
+    | {
+        occhiello?: T;
+        titolo?: T;
+        testo?: T;
+        ctaPrimariaEtichetta?: T;
+        ctaPrimariaHref?: T;
+        ctaSecondariaEtichetta?: T;
+        ctaSecondariaHref?: T;
+      };
+  home?:
+    | T
+    | {
+        primaVolta?:
+          | T
+          | {
+              titolo?: T;
+              testo?: T;
+              id?: T;
+            };
+        immagineIngresso?: T;
+        testoQualifiche?: T;
+      };
+  fotoPagine?:
+    | T
+    | {
+        centri?: T;
+        corsi?: T;
+        istruttori?: T;
+      };
   testoFooter?: T;
   datiFiscali?:
     | T
@@ -1404,6 +1580,35 @@ export interface ImpostazioniSelect<T extends boolean = true> {
         codiceFiscale?: T;
         partitaIva?: T;
         iban?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigazione_select".
+ */
+export interface NavigazioneSelect<T extends boolean = true> {
+  voci?:
+    | T
+    | {
+        etichetta?: T;
+        href?: T;
+        id?: T;
+      };
+  piede?:
+    | T
+    | {
+        etichetta?: T;
+        href?: T;
+        id?: T;
+      };
+  cta?:
+    | T
+    | {
+        etichetta?: T;
+        href?: T;
       };
   updatedAt?: T;
   createdAt?: T;

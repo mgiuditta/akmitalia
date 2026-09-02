@@ -5,27 +5,36 @@ import { getPayload } from 'payload'
 import React from 'react'
 
 import config from '@/payload.config'
-import { idDisciplina, pubblicato } from '@/componenti/dati'
+import { idDisciplina, ordinale, pubblicato } from '@/componenti/dati'
+import { Figura } from '@/componenti/Figura'
+import { metadatiPagina } from '@/componenti/seo'
 
 /**
  * L'indice dei percorsi. Un percorso e' un corso marcato, non una collection
  * (docs/adr/0003): qui si elencano tutti i corsi, e quelli che stanno nel bivio
  * portano anche la loro domanda in prima persona.
+ *
+ * Ogni riga e' una fascia a tutta larghezza sul proprio ruolo di superficie
+ * (`corso.superficie`), che e' il modo in cui DESIGN.md distingue un corso da
+ * un altro: il sistema non ha accenti cromatici, quindi si cambia il valore del
+ * fondo, e sempre con il nome scritto accanto (Regola dell'Etichetta).
+ * E' lo stesso trattamento del bivio in home, senza il ripiegamento a fisarmonica:
+ * qui la riga porta direttamente alla scheda.
  */
 
 export const revalidate = 60
 
-export const metadata: Metadata = {
-  title: 'Percorsi',
-  description:
+export const metadata: Metadata = metadatiPagina({
+  titolo: 'Percorsi',
+  descrizione:
     'I percorsi AKM Italia: difesa personale per adulti, Krav Maga Kids, antiaggressione, formazione tecnica. A chi si rivolgono e dove si praticano.',
-  alternates: { canonical: '/corsi' },
-}
+  path: '/corsi',
+})
 
 export default async function PaginaCorsi() {
   const payload = await getPayload({ config: await config })
 
-  const [corsi, sedi] = await Promise.all([
+  const [corsi, sedi, impostazioni] = await Promise.all([
     payload.find({
       collection: 'corsi',
       depth: 1,
@@ -40,6 +49,7 @@ export default async function PaginaCorsi() {
       select: { orari: true },
       where: { and: [{ attivo: { equals: true } }, pubblicato] },
     }),
+    payload.findGlobal({ slug: 'impostazioni', depth: 1 }),
   ])
 
   // Quante sedi tengono un dato corso: la prova che un percorso non e' un'astrazione.
@@ -55,83 +65,86 @@ export default async function PaginaCorsi() {
 
   return (
     <>
-      <section className="sezione sezione--nera testata">
+      <section className="sezione sezione--nera testata bivio__testa">
         <div className="contenitore testata__contenuto">
-          <span className="filetto" aria-hidden="true" />
           <h1 className="display display--lg">Qual è il tuo momento</h1>
           <p className="testo testata__testo">
             Non serve sapere quale disciplina fa per te. Serve sapere perché sei qui: da lì si
             arriva al corso giusto e al centro che lo tiene.
           </p>
-        </div>
-      </section>
-
-      <section className="sezione sezione--chiara" aria-labelledby="titolo-corsi">
-        <div className="contenitore">
-          <h2 className="display display--sm titolo-elenco" id="titolo-corsi">
-            {corsi.docs.length > 0 ? `${corsi.docs.length} percorsi` : 'I percorsi'}
-          </h2>
-
+          {/* Il conteggio sta qui e non in una sezione sua: una fascia intera per
+              una riga di titolo era un blocco vuoto fra due blocchi pieni. */}
           {corsi.docs.length > 0 ? (
-            <ul className="corsi">
-              {corsi.docs.map((corso) => {
-                const quante = sediPerCorso.get(corso.id) ?? 0
-
-                const segno = typeof corso.immagine === 'object' ? corso.immagine : null
-
-                return (
-                  <li className="rivela corso" key={corso.id}>
-                    {/* Il segno del percorso vive solo su superficie chiara: e'
-                        inchiostro su trasparente e sul nero sparirebbe. */}
-                    {segno?.url ? (
-                      <Image
-                        className="corso__segno"
-                        src={segno.url}
-                        alt=""
-                        width={96}
-                        height={96}
-                        sizes="96px"
-                      />
-                    ) : null}
-                    <div className="corso__testo">
-                      <h3 className="corso__nome">
-                        <Link href={`/corsi/${corso.slug}`}>{corso.domanda || corso.nome}</Link>
-                      </h3>
-                      <p className="testo">{corso.sommario}</p>
-                    </div>
-
-                    <div className="corso__coda">
-                      <p>
-                        <strong>{corso.nome}</strong>
-                      </p>
-                      {/* La categoria e' un dato della riga, non un'etichetta sopra il
-                          titolo: tre micro-etichette in fila su una pagina di due
-                          sezioni sono il ritmo templated che il sistema evita. */}
-                      {corso.occhiello ? <p>{corso.occhiello}</p> : null}
-                      {corso.aChiSiRivolge ? <p>{corso.aChiSiRivolge}</p> : null}
-                      {quante > 0 ? (
-                        <p className="stato">
-                          {quante} {quante === 1 ? 'centro lo tiene' : 'centri lo tengono'}
-                        </p>
-                      ) : null}
-                      <p>
-                        <Link className="briciola" href={`/corsi/${corso.slug}`}>
-                          Vedi il percorso
-                        </Link>
-                      </p>
-                    </div>
-                  </li>
-                )
-              })}
-            </ul>
-          ) : (
-            <p className="testo vuoto">
-              I percorsi della stagione sono in aggiornamento. Scrivici e ti diciamo qual è quello
-              che ti riguarda.
-            </p>
-          )}
+            <p className="dato">{corsi.docs.length} percorsi, in ordine di lettura.</p>
+          ) : null}
         </div>
       </section>
+
+      {/* `priorita`: su queste pagine la banda e' l'LCP, la testata sopra e'
+          tipografica e non ha niente da caricare. */}
+      <Figura
+        slot={impostazioni?.fotoPagine?.corsi}
+        etichetta="Foto della pagina Percorsi"
+        formato="banda"
+        misura="grande"
+        sizes="100vw"
+        priorita
+      />
+
+      {corsi.docs.length > 0 ? (
+        <ol className="bivio" aria-label="I percorsi">
+          {corsi.docs.map((corso, i) => {
+            const superficie = corso.superficie ?? 'carbone'
+            const quante = sediPerCorso.get(corso.id) ?? 0
+            const segno = typeof corso.immagine === 'object' ? corso.immagine : null
+
+            return (
+              <li className={`rivela percorso percorso--${superficie}`} key={corso.id}>
+                <Link className="contenitore percorso__riga" href={`/corsi/${corso.slug}`}>
+                  <span className="percorso__indice" aria-hidden="true">
+                    {ordinale(i + 1)}
+                  </span>
+
+                  <span className="percorso__domanda">
+                    <span className="display display--md">{corso.domanda || corso.nome}</span>
+                    <span className="percorso__nome">{corso.nome}</span>
+                    <span className="testo percorso__sommario">{corso.sommario}</span>
+                    <span className="percorso__coda">
+                      {corso.aChiSiRivolge ? <span>{corso.aChiSiRivolge}</span> : null}
+                      {quante > 0 ? (
+                        <span className="stato">
+                          {quante} {quante === 1 ? 'centro lo tiene' : 'centri lo tengono'}
+                        </span>
+                      ) : null}
+                    </span>
+                  </span>
+
+                  {/* Il segno e' inchiostro su trasparente: sulle superfici scure
+                      si inverte, non si nasconde. */}
+                  {segno?.url ? (
+                    <Image
+                      className="percorso__segno-marchio"
+                      src={segno.url}
+                      alt=""
+                      width={96}
+                      height={96}
+                      sizes="96px"
+                    />
+                  ) : null}
+                </Link>
+              </li>
+            )
+          })}
+        </ol>
+      ) : (
+        <section className="sezione sezione--chiara">
+          <p className="testo vuoto contenitore">
+            I percorsi della stagione sono in aggiornamento. Scrivici e ti diciamo qual è quello
+            che ti riguarda.
+          </p>
+        </section>
+      )}
+
     </>
   )
 }

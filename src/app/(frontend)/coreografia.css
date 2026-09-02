@@ -1,0 +1,91 @@
+/*
+ * Tutto il movimento del sito sta qui. Il repertorio e' chiuso e sono quattro
+ * voci (DESIGN.md, Regola dell'Indice): l'entrata scandita di .rivela, la
+ * sequenza a tempo dell'eroe, l'apertura dei details del bivio, e l'ingresso
+ * in cascata dei marker di mappa.
+ */
+
+/* ---------- coreografia ---------- */
+
+/*
+ * La sequenza scandisce un elenco: opacita' e traslazione, nessuna proprieta'
+ * di layout, nessun rimbalzo. E' scroll-driven in CSS e non in JavaScript, cosi'
+ * il contenuto non dipende da un observer per esistere: dove `view()` non c'e',
+ * e sotto prefers-reduced-motion, il blocco e' semplicemente gia' completo.
+ */
+@keyframes rivela {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .rivela {
+      animation: rivela linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 26%;
+    }
+  }
+}
+
+/*
+ * Il bivio si apre invece di saltare. E' una transizione di stato, non un
+ * intrattenimento: dice che il pannello viene da quella riga.
+ *
+ * `interpolate-size` sblocca l'animazione verso `auto`, che e' l'unico modo di
+ * farlo senza misurare l'altezza in JavaScript. Dove non c'e', il pannello si
+ * apre di scatto come prima: e' un miglioramento progressivo, non un requisito.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (interpolate-size: allow-keywords) {
+    html {
+      interpolate-size: allow-keywords;
+    }
+
+    .percorso details::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition:
+        block-size var(--durata-rivela) var(--curva),
+        content-visibility var(--durata-rivela) allow-discrete;
+    }
+
+    .percorso details[open]::details-content {
+      block-size: auto;
+    }
+  }
+}
+
+/* L'eroe e' l'unico blocco che entra a tempo e non a scorrimento: la pagina si
+   apre una volta sola, e la sequenza serve a dare l'ordine di lettura
+   (occhiello, titolo, testo, azioni), non a intrattenere. Stessi fotogrammi di
+   .rivela, nessuna curva elastica, come vuole la Regola dell'Indice. */
+@media (prefers-reduced-motion: no-preference) {
+  .eroe__contenuto > * {
+    animation: rivela var(--durata-rivela) var(--curva) both;
+  }
+
+  .eroe__contenuto > *:nth-child(2) {
+    animation-delay: 70ms;
+  }
+
+  .eroe__contenuto > *:nth-child(3) {
+    animation-delay: 140ms;
+  }
+
+  .eroe__contenuto > *:nth-child(4) {
+    animation-delay: 210ms;
+  }
+}
+
+/* Il rientro del testo sotto i titoli di testata e' stato tolto: a schermo largo
+   un paragrafo da 16px spostato di 144px sotto un display da 90px non leggeva
+   come composizione, leggeva come un allineamento sbagliato. Vale lo stesso
+   motivo per cui l'eroe della home non l'aveva mai avuto. Una colonna sola a
+   filo del margine, su ogni testata e su ogni intestazione di sezione. */

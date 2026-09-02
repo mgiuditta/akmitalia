@@ -1,0 +1,259 @@
+/*
+ * Reset, primitivi e i quattro fondi di sezione. Prima di tutto il resto:
+ * qui dentro sta cio' che ogni altra regola presuppone.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  background: var(--colore-surface);
+  scroll-behavior: smooth;
+  /* La navbar fissa non deve coprire il titolo quando si atterra su un'ancora. */
+  scroll-padding-top: var(--altezza-header);
+  /* Il menu blocca lo scroll di fondo: dove la barra di scorrimento occupa
+     spazio, riservarlo sempre evita che la pagina salti di 15px all'apertura. */
+  scrollbar-gutter: stable;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--colore-surface);
+  color: var(--colore-on-primary);
+  font-family: var(--font-body);
+  font-size: var(--corpo-testo);
+  font-weight: var(--peso-light);
+  line-height: var(--interlinea-testo);
+  font-kerning: normal;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+/* Il focus e' bianco su scuro e inchiostro su chiaro: l'outline di sistema
+   sparisce su nero puro. */
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- primitivi ---------- */
+
+.contenitore {
+  max-width: var(--larghezza-pagina);
+  margin-inline: auto;
+  padding-inline: var(--margine-pagina);
+}
+
+.sezione {
+  padding-block: clamp(var(--spazio-section-sm), 9vw, var(--spazio-section-lg));
+}
+
+.sezione--nera {
+  background: var(--colore-surface);
+  color: var(--colore-on-primary);
+  --riga-locale: var(--colore-ink-secondary);
+}
+
+.sezione--carbone {
+  background: var(--colore-surface-alt);
+  color: var(--colore-on-primary);
+  --riga-locale: var(--colore-ink-secondary);
+}
+
+.sezione--chiara {
+  background: var(--colore-surface-light);
+  color: var(--colore-ink);
+  --riga-locale: var(--colore-ink);
+}
+
+.sezione--grigia {
+  background: var(--colore-muted);
+  color: var(--colore-ink);
+  --riga-locale: var(--colore-ink);
+}
+
+/* Anton si compone in maiuscolo. Con interlinea 1 gli accenti maiuscoli toccano
+   la riga sopra: il padding-block-start li lascia respirare senza allentare
+   l'interlinea collassata che tiene il titolo a blocco. */
+.display {
+  font-family: var(--font-display);
+  font-weight: var(--peso-bold);
+  line-height: var(--interlinea-display);
+  text-transform: uppercase;
+  padding-block-start: 0.08em;
+  text-wrap: balance;
+}
+
+.display--eroe {
+  font-size: var(--corpo-hero-display);
+}
+
+.display--lg {
+  font-size: var(--corpo-display-lg);
+}
+
+.display--md {
+  font-size: var(--corpo-display-md);
+}
+
+.display--sm {
+  font-size: var(--corpo-display-sm);
+}
+
+.occhiello {
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+  line-height: var(--interlinea-display);
+}
+
+.testo {
+  max-width: var(--misura-testo);
+  line-height: var(--interlinea-testo);
+  text-wrap: pretty;
+}
+
+.dato {
+  font-size: var(--corpo-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Il filetto tricolore e' una firma strutturale, non un dato: e' decorativo e
+   sta in un pseudo-elemento o in un elemento vuoto con aria-hidden. */
+.filetto {
+  display: block;
+  inline-size: 96px;
+  block-size: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--tricolore-verde) 0 33.34%,
+    var(--filetto-centro, #ffffff) 33.33% 66.67%,
+    var(--tricolore-rosso) 66.66% 100%
+  );
+}
+
+/* Su fondo bianco la banda centrale bianca sparisce e il filetto legge come due
+   trattini: sulle superfici chiare passa al grigio riga. */
+.sezione--chiara {
+  --filetto-centro: var(--colore-border);
+}
+
+.sezione--grigia {
+  --filetto-centro: var(--colore-surface-light);
+}
+
+/* Il verde dice presenza: un dato vivo, non una categoria. La parola resta
+   sempre accanto al segno, cosi' il colore non porta informazione da solo. */
+.stato {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spazio-xs);
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+}
+
+.stato::before {
+  content: '';
+  inline-size: 8px;
+  block-size: 8px;
+  background: var(--colore-presenza);
+  flex: none;
+}
+
+/* Su fondo chiaro il verde chiaro non regge: la variante scura sta a 6.69:1. */
+.sezione--chiara .stato::before,
+.sezione--grigia .stato::before,
+.percorso--bianco .stato::before,
+.percorso--grigio .stato::before {
+  background: var(--colore-presenza-scura);
+}
+
+.bottone {
+  display: inline-block;
+  padding: var(--spazio-md) var(--spazio-lg);
+  font-size: var(--corpo-link);
+  font-weight: var(--peso-bold);
+  line-height: var(--interlinea-testo);
+  text-decoration: none;
+  border: 0;
+  border-radius: var(--raggio);
+  transition: background-color var(--durata) var(--curva), color var(--durata) var(--curva),
+    transform var(--durata) var(--curva);
+}
+
+/* Un pixel di affondamento: e' feedback, non coreografia. Sotto
+   prefers-reduced-motion --durata va a 0 e resta uno scatto secco. */
+.bottone:active {
+  transform: translateY(1px);
+}
+
+/* Il rosso dice azione e nient'altro: e' l'unica superficie colorata del sistema.
+   Bianco su #e30917 sta a 4.86:1, sopra la soglia AA. */
+.bottone--primario {
+  background: var(--colore-azione);
+  color: var(--colore-on-primary);
+  box-shadow: var(--ombra-bottone);
+}
+
+.bottone--primario:hover,
+.bottone--primario:active {
+  background: var(--colore-azione-premuta);
+}
+
+.bottone--secondario {
+  background: var(--colore-surface-alt);
+  color: var(--colore-on-primary);
+}
+
+.bottone--secondario:hover {
+  background: var(--colore-surface);
+}
+
+.salta {
+  position: absolute;
+  left: -9999px;
+  z-index: 100;
+}
+
+.salta:focus {
+  left: var(--margine-pagina);
+  top: var(--spazio-sm);
+  padding: var(--spazio-sm) var(--spazio-md);
+  background: var(--colore-muted);
+  color: var(--colore-ink);
+  font-weight: var(--peso-bold);
+}

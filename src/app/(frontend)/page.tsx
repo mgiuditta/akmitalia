@@ -4,7 +4,8 @@ import { getPayload } from 'payload'
 import React from 'react'
 
 import config from '@/payload.config'
-import { idDisciplina, ordinale, pubblicato } from '@/componenti/dati'
+import { idDisciplina, ordinale, provinciaEstesa, pubblicato } from '@/componenti/dati'
+import { Figura } from '@/componenti/Figura'
 
 /**
  * Home: orienta prima di convertire. Eroe, bivio dei percorsi, dove si pratica,
@@ -13,16 +14,16 @@ import { idDisciplina, ordinale, pubblicato } from '@/componenti/dati'
  * L'elenco completo dei centri con tutti gli orari vive in /centri e il dettaglio
  * di ogni percorso in /corsi: qui restano il bivio e il rimando.
  *
- * ponytail: il copy editoriale (eroe e prima lezione) sta qui e non a CMS. Sono
- * poche stringhe che nessuno ha ancora chiesto di poter cambiare da sola: quando
- * lo chiederanno diventano un gruppo di Impostazioni.
+ * Il copy editoriale (eroe, prima lezione, qualifiche) sta nel global
+ * Impostazioni. Le costanti qui sotto sono il ripiego: un campo svuotato
+ * dall'admin non lascia un buco in home.
  */
 
 /* La home e' generata staticamente e ricontrollata ogni minuto: le sedi cambiano di
    stagione, non di secondo, e cosi' una modifica dall'admin si vede senza un rebuild. */
 export const revalidate = 60
 
-const PRIMA_VOLTA = [
+const PRIMA_VOLTA_DI_SERIE = [
   {
     titolo: 'Non serve essere allenati',
     testo:
@@ -44,6 +45,9 @@ const PRIMA_VOLTA = [
       'Il referente è l’istruttore che tiene la lezione in quel centro. La richiesta che mandi arriva a lui, non a un centralino.',
   },
 ]
+
+const QUALIFICHE_DI_SERIE =
+  'I docenti sono diplomati dopo almeno quattro anni di percorso e un esame di abilitazione all’insegnamento, tesserati e assicurati CSEN. Le qualifiche AKM sono riconosciute da CSEN-CONI, F.E.K.D.A. e P.T.D.'
 
 export default async function Home() {
   const payload = await getPayload({ config: await config })
@@ -93,8 +97,32 @@ export default async function Home() {
     centri.map((c) => c.indirizzo?.provincia).filter((p): p is string => Boolean(p)),
   )
 
+  const primaVolta = impostazioni?.home?.primaVolta?.length
+    ? impostazioni.home.primaVolta
+    : PRIMA_VOLTA_DI_SERIE
+  const qualifiche = impostazioni?.home?.testoQualifiche || QUALIFICHE_DI_SERIE
+
   const eroe = typeof impostazioni?.immagineHero === 'object' ? impostazioni.immagineHero : null
   const eroeUrl = eroe?.sizes?.hero?.url || eroe?.url || null
+
+  /* Il copy dell'eroe sta in Impostazioni > eroe, con i valori di serie come
+     ripiego: un campo svuotato dall'admin non lascia un buco in home. */
+  const testi = impostazioni?.eroe
+  const occhiello = testi?.occhiello || 'Krav Maga · Milano, Monza e Brianza, Lodi, Varese'
+  const titolo = testi?.titolo || 'Difendersi si impara'
+  // Sotto le 20 parole: la coda «prima scegli il percorso, poi la sede»
+  // ripeteva a parole quello che i due bottoni qui sotto gia' fanno.
+  const riga =
+    testi?.testo ||
+    `${centri.length > 0 ? `${centri.length} centri tecnici attivi, lezioni` : 'Lezioni'} settimanali tutto l’anno, istruttori con nome e cognome.`
+  const primaria = {
+    testo: testi?.ctaPrimariaEtichetta || 'Scegli il tuo percorso',
+    href: testi?.ctaPrimariaHref || '#percorsi',
+  }
+  const secondaria = {
+    testo: testi?.ctaSecondariaEtichetta || 'Trova un centro',
+    href: testi?.ctaSecondariaHref || '/centri',
+  }
 
   return (
     <>
@@ -114,20 +142,22 @@ export default async function Home() {
         ) : null}
 
         <div className="contenitore eroe__contenuto">
-          <p className="occhiello">Krav Maga · Milano, Monza e Brianza, Lodi, Varese</p>
-          <h1 className="display display--eroe eroe__titolo">Difendersi si impara</h1>
-          {/* Sotto le 20 parole: la coda «prima scegli il percorso, poi la sede»
-              ripeteva a parole quello che i due bottoni qui sotto gia' fanno. */}
-          <p className="testo">
-            {centri.length > 0 ? `${centri.length} centri tecnici attivi, lezioni` : 'Lezioni'}{' '}
-            settimanali tutto l’anno, istruttori con nome e cognome.
-          </p>
+          <p className="occhiello">{occhiello}</p>
+          <h1 className="display display--eroe eroe__titolo">{titolo}</h1>
+          <p className="testo">{riga}</p>
           <div className="eroe__coda">
-            <a className="bottone bottone--primario" href="#percorsi">
-              Scegli il tuo percorso
-            </a>
-            <Link className="bottone bottone--secondario" href="/centri">
-              Trova un centro
+            {/* Un'ancora in pagina resta <a>: next/link su #percorsi rifarebbe la rotta. */}
+            {primaria.href.startsWith('#') ? (
+              <a className="bottone bottone--primario" href={primaria.href}>
+                {primaria.testo}
+              </a>
+            ) : (
+              <Link className="bottone bottone--primario" href={primaria.href}>
+                {primaria.testo}
+              </Link>
+            )}
+            <Link className="bottone bottone--secondario" href={secondaria.href}>
+              {secondaria.testo}
             </Link>
           </div>
         </div>
@@ -257,9 +287,24 @@ export default async function Home() {
             <Link className="bottone bottone--primario" href="/centri">
               Trova un centro
             </Link>
+            {/* Il secondo bottone non ripete il primo: dice come arrivarci, non
+                dove. La posizione la chiede /centri, che e' dove serve. */}
+            <Link className="bottone bottone--secondario" href="/centri?vicino=1">
+              Usa la mia posizione
+            </Link>
           </p>
         </div>
       </section>
+
+      {/* La sala prima del racconto della prima sera: chi non e' mai entrato in
+          una palestra vuole vederla, non leggerla. */}
+      <Figura
+        slot={impostazioni?.home?.immagineIngresso}
+        etichetta="Foto di «Cosa succede quando entri»"
+        formato="banda"
+        misura="grande"
+        sizes="100vw"
+      />
 
       <section className="sezione sezione--carbone" id="prima-volta" aria-labelledby="titolo-prima">
         <div className="contenitore prima">
@@ -274,7 +319,7 @@ export default async function Home() {
           </div>
 
           <div className="prima__punti">
-            {PRIMA_VOLTA.map((punto) => (
+            {primaVolta.map((punto) => (
               <div key={punto.titolo} className="rivela prima__punto">
                 <h3>{punto.titolo}</h3>
                 <p className="testo">{punto.testo}</p>
@@ -290,11 +335,7 @@ export default async function Home() {
             <h2 className="display display--md" id="titolo-prove">
               Le qualifiche si contano
             </h2>
-            <p className="testo prima__attacco">
-              I docenti sono diplomati dopo almeno quattro anni di percorso e un esame di
-              abilitazione all’insegnamento, tesserati e assicurati CSEN. Le qualifiche AKM sono
-              riconosciute da CSEN-CONI, F.E.K.D.A. e P.T.D.
-            </p>
+            <p className="testo prima__attacco">{qualifiche}</p>
           </div>
 
           {/* Un numero a zero non e' una prova: la riga sparisce invece di dichiarare il vuoto. */}
@@ -314,7 +355,9 @@ export default async function Home() {
             {province.size > 0 ? (
               <div className="prova">
                 <dt className="prova__valore">{province.size}</dt>
-                <dd className="prova__voce">province coperte: {[...province].sort().join(', ')}</dd>
+                <dd className="prova__voce">
+                  province coperte: {[...province].map(provinciaEstesa).sort().join(', ')}
+                </dd>
               </div>
             ) : null}
           </dl>

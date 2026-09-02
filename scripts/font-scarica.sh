@@ -22,4 +22,24 @@ scarica() {
 scarica anton/Anton-Regular.ttf Anton-Regular.ttf
 scarica "roboto/Roboto%5Bwdth,wght%5D.ttf" Roboto-Variable.ttf
 
+# Roboto in due istanze statiche, per la sola immagine di condivisione: il
+# compositore di next/og (satori) non sa leggere la tabella `fvar` di un file
+# variabile e si ferma con «Cannot read properties of undefined». Il sito
+# continua a usare il variabile, che nel browser va benissimo.
+#
+# Le istanze non stanno su google/fonts, che pubblica solo il variabile. Le
+# serve l'API v1 di Google Fonts interrogata con uno user agent vecchio: a un
+# browser che non conosce woff2 risponde in .ttf.
+statica() {
+  out="$DEST/Roboto-$2.ttf"
+  [ -s "$out" ] && return 0
+  url=$(curl -sSL -A "Mozilla/4.0" "https://fonts.googleapis.com/css?family=Roboto:$1" |
+    sed -n 's/.*url(\(https[^)]*\.ttf\)).*/\1/p' | head -1)
+  [ -z "$url" ] && { echo "FAIL Roboto-$2.ttf (nessuna URL)"; return 0; }
+  curl -sSL -f -o "$out" "$url" || { rm -f "$out"; echo "FAIL Roboto-$2.ttf"; }
+}
+
+statica 400 Regular
+statica 700 Bold
+
 ls -l "$DEST"

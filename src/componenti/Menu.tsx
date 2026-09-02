@@ -30,13 +30,16 @@ type Gsap = typeof import('gsap').gsap
 export type VoceMenu = {
   href: string
   testo: string
-  /** Un dato vero sotto la voce: conteggi, non decorazione. */
-  dato: string
+  /** Un dato vero sotto la voce: conteggi, non decorazione. Senza dato, niente riga. */
+  dato?: string
   /** Solo per il dato vivo: il pallino verde porta sempre la parola scritta. */
   vivo?: boolean
 }
 
 const FERMO = '(prefers-reduced-motion: reduce)'
+/* Sopra questa larghezza il pannello non esiste: le voci sono in riga nella
+   barra (docs/adr/0008). Stesso valore del CSS. */
+const LARGO = '(min-width: 1024px)'
 
 function ordinale(n: number) {
   return String(n + 1).padStart(2, '0')
@@ -61,6 +64,8 @@ export function Menu({
      Dal docs/adr/0007 lo scarica anche il desktop: e' il costo dichiarato. */
   useEffect(() => {
     if (window.matchMedia(FERMO).matches) return
+    /* Sopra i 1024px il pannello non si apre mai: GSAP resterebbe un peso a vuoto. */
+    if (window.matchMedia(LARGO).matches) return
 
     let annullato = false
     const scalda = () => {
@@ -198,6 +203,18 @@ export function Menu({
     setAperto(false)
   }, [percorso])
 
+  /* Aperto a 1000px e finestra allargata: il pannello sparisce col CSS ma il
+     resto della pagina resterebbe `inert`. E' il listener che docs/adr/0007
+     aveva tolto e che docs/adr/0008 rimette. */
+  useEffect(() => {
+    const largo = window.matchMedia(LARGO)
+    const chiudi = (e: MediaQueryListEvent) => {
+      if (e.matches) setAperto(false)
+    }
+    largo.addEventListener('change', chiudi)
+    return () => largo.removeEventListener('change', chiudi)
+  }, [])
+
   useEffect(() => {
     return () => {
       contesto.current?.revert()
@@ -251,9 +268,11 @@ export function Menu({
                   <span className="menu__testo">{voce.testo}</span>
                 </span>
               </Link>
-              <span className={voce.vivo ? 'menu__dato stato' : 'menu__dato'}>
-                {voce.dato}
-              </span>
+              {voce.dato ? (
+                <span className={voce.vivo ? 'menu__dato stato' : 'menu__dato'}>
+                  {voce.dato}
+                </span>
+              ) : null}
             </li>
           ))}
         </ul>

@@ -8,20 +8,38 @@ import { giorniLeggibili, indirizzoLeggibile, nomeIstruttore } from './dati'
  * Una riga dell'elenco centri: nome, indirizzo, orari veri, stato. Il dato sta
  * a corpo pieno e non si nasconde dietro un click, come vuole la Regola del
  * Dato Nudo. Il verde dello stato porta sempre la parola accanto.
+ *
+ * `distanza` compare solo dopo che l'utente ha chiesto il centro piu' vicino:
+ * fino ad allora la riga non sa dove sia chi legge.
  */
-export function SchedaCentro({ centro, titolo = 'h3' }: { centro: Sedi; titolo?: 'h2' | 'h3' }) {
+export function SchedaCentro({
+  centro,
+  titolo = 'h3',
+  distanza = null,
+  piuVicino = false,
+}: {
+  centro: Sedi
+  titolo?: 'h2' | 'h3'
+  distanza?: string | null
+  piuVicino?: boolean
+}) {
   const Titolo = titolo
   const orari = centro.orari ?? []
 
   return (
-    <li className="rivela centro">
+    <li className={`rivela centro${piuVicino ? ' centro--vicino' : ''}`}>
+      {/* Il piu' vicino porta la parola, non solo la posizione nell'elenco. */}
+      {piuVicino ? <p className="centro__vicino">Il più vicino a te</p> : null}
       <Titolo className="centro__nome">
         <Link className="centro__collegamento" href={`/centri/${centro.slug}`}>
           {centro.nome}
         </Link>
       </Titolo>
 
-      <p className="centro__indirizzo">{indirizzoLeggibile(centro.indirizzo)}</p>
+      <p className="centro__indirizzo">
+        {indirizzoLeggibile(centro.indirizzo)}
+        {distanza ? <span className="centro__distanza">a {distanza} da te</span> : null}
+      </p>
 
       {orari.length > 0 ? (
         <div className="centro__orari">

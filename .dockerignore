@@ -1,0 +1,15 @@
+# Il contesto di build resta piccolo: senza questo file `media/` e `data/wp-media`
+# (le immagini del vecchio sito) entrerebbero nell'immagine a ogni build.
+node_modules
+.next
+.git
+.env
+.env.*
+!.env.example
+
+media
+data/wp-media
+
+test-results
+playwright-report
+tsconfig.tsbuildinfo

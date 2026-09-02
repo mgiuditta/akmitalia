@@ -1,21 +1,87 @@
-# Solo il database, per lo sviluppo locale.
-# L'app gira sull'host con `pnpm dev`.
+# Rilascio completo: database, sito e migration.
+#
+# In sviluppo si alza il solo database e l'app gira sull'host:
+#   docker compose up -d db && pnpm dev
+#
+# In rilascio (il database deve essere in piedi gia' al build: le pagine si
+# pregenerano leggendo i dati veri):
+#   docker compose up -d db
+#   docker compose --profile strumenti build
+#   docker compose run --rm migrate
+#   docker compose up -d
+#
+# Le variabili arrivano da .env (vedi .env.example). DATABASE_URL punta a `db`,
+# che e' il nome del servizio sulla rete di compose, non a 127.0.0.1.
 services:
   db:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: payload
-      POSTGRES_PASSWORD: payload
-      POSTGRES_DB: akm
+      POSTGRES_USER: ${POSTGRES_USER:-payload}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-payload}
+      POSTGRES_DB: ${POSTGRES_DB:-akm}
     ports:
       - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U payload -d akm']
+      test:
+        ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-payload} -d ${POSTGRES_DB:-akm}']
       interval: 5s
       retries: 10
 
+  app:
+    build:
+      context: .
+      target: runner
+      # Il build parla con il database attraverso la porta che `db` pubblica
+      # sull'host: un container di build non sta sulla rete di compose.
+      extra_hosts:
+        - 'host.docker.internal:host-gateway'
+      args:
+        # Al build, non a runtime: finisce nel bundle del browser.
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?serve in .env}
+        DATABASE_URL: postgres://${POSTGRES_USER:-payload}:${POSTGRES_PASSWORD:-payload}@host.docker.internal:5432/${POSTGRES_DB:-akm}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-payload}:${POSTGRES_PASSWORD:-payload}@db:5432/${POSTGRES_DB:-akm}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?serve in .env}
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?serve in .env}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+    ports:
+      - '${PORTA:-3000}:3000'
+    volumes:
+      # I file caricati dall'admin. Senza questo volume sparirebbero a ogni
+      # `docker compose up` con un'immagine nuova.
+      - media:/app/media
+
+  # Una tantum, prima di far ripartire l'app: `docker compose run --rm migrate`.
+  # Non parte da sola con `up` perche' applicare lo schema e' una decisione, non
+  # un effetto collaterale dell'avvio.
+  migrate:
+    build:
+      context: .
+      target: migrator
+      extra_hosts:
+        - 'host.docker.internal:host-gateway'
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?serve in .env}
+        DATABASE_URL: postgres://${POSTGRES_USER:-payload}:${POSTGRES_PASSWORD:-payload}@host.docker.internal:5432/${POSTGRES_DB:-akm}
+    profiles: ['strumenti']
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-payload}:${POSTGRES_PASSWORD:-payload}@db:5432/${POSTGRES_DB:-akm}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?serve in .env}
+
 volumes:
   pgdata:
+  media:

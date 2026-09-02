@@ -100,6 +100,9 @@ export const Pagine: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       label: 'Immagine in cima',
+      admin: {
+        description: 'Orizzontale, a tutta larghezza fra la testata e il testo. Facoltativa.',
+      },
       // Il testo alternativo sta sul file in Media: si scrive una volta sola.
     },
     {

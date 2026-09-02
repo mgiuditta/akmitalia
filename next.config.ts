@@ -7,6 +7,8 @@ const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
+  // L'immagine Docker copia .next/standalone: senza questo quella cartella non esiste.
+  output: 'standalone',
   images: {
     localPatterns: [
       {

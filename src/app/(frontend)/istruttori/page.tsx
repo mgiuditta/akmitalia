@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 import { getPayload } from 'payload'
 import React from 'react'
 
 import config from '@/payload.config'
 import { pubblicato } from '@/componenti/dati'
+import { Figura } from '@/componenti/Figura'
+import { metadatiPagina } from '@/componenti/seo'
 
 /**
  * L'albo. Le credenziali sono prove, non decorazioni: nome, ruolo, grado e
@@ -21,13 +22,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const payload = await getPayload({ config: await config })
   const quanti = (await payload.count({ collection: 'istruttori', where: pubblicato })).totalDocs
 
-  return {
-    title: 'Istruttori',
-    description: quanti
+  return metadatiPagina({
+    titolo: 'Istruttori',
+    descrizione: quanti
       ? `${quanti} istruttori e maestri AKM Italia: nome, qualifica, grado e centro dove insegnano. Qualifiche riconosciute CSEN-CONI, F.E.K.D.A. e P.T.D.`
       : 'Gli istruttori e i maestri AKM Italia: nome, qualifica, grado e centro dove insegnano. Qualifiche riconosciute CSEN-CONI, F.E.K.D.A. e P.T.D.',
-    alternates: { canonical: '/istruttori' },
-  }
+    path: '/istruttori',
+  })
 }
 
 const QUALIFICHE: Record<string, string> = {
@@ -41,19 +42,21 @@ const QUALIFICHE: Record<string, string> = {
 export default async function PaginaIstruttori() {
   const payload = await getPayload({ config: await config })
 
-  const istruttori = await payload.find({
-    collection: 'istruttori',
-    depth: 1,
-    limit: 100,
-    sort: 'ordine',
-    where: pubblicato,
-  })
+  const [istruttori, impostazioni] = await Promise.all([
+    payload.find({
+      collection: 'istruttori',
+      depth: 1,
+      limit: 100,
+      sort: 'ordine',
+      where: pubblicato,
+    }),
+    payload.findGlobal({ slug: 'impostazioni', depth: 1 }),
+  ])
 
   return (
     <>
       <section className="sezione sezione--nera testata">
         <div className="contenitore testata__contenuto">
-          <span className="filetto" aria-hidden="true" />
           <h1 className="display display--lg">Le qualifiche si contano</h1>
           <p className="testo testata__testo">
             I docenti sono diplomati dopo almeno quattro anni di percorso e un esame di abilitazione
@@ -62,6 +65,17 @@ export default async function PaginaIstruttori() {
           </p>
         </div>
       </section>
+
+      {/* `priorita`: su queste pagine la banda e' l'LCP, la testata sopra e'
+          tipografica e non ha niente da caricare. */}
+      <Figura
+        slot={impostazioni?.fotoPagine?.istruttori}
+        etichetta="Foto della pagina Istruttori"
+        formato="banda"
+        misura="grande"
+        sizes="100vw"
+        priorita
+      />
 
       <section className="sezione sezione--chiara" aria-labelledby="titolo-albo">
         <div className="contenitore">
@@ -74,24 +88,23 @@ export default async function PaginaIstruttori() {
           {istruttori.docs.length > 0 ? (
             <ul className="albo">
               {istruttori.docs.map((istruttore) => {
-                const foto = typeof istruttore.foto === 'object' ? istruttore.foto : null
-                const fotoUrl = foto?.sizes?.card?.url || foto?.url || null
                 const sedi = (istruttore.sedi?.docs ?? []).filter(
                   (s): s is Exclude<typeof s, number> => typeof s === 'object' && s !== null,
                 )
 
                 return (
                   <li className="rivela istruttore" key={istruttore.id}>
-                    {fotoUrl ? (
-                      <Image
-                        className="istruttore__foto"
-                        src={fotoUrl}
-                        alt={foto?.alt || ''}
-                        width={176}
-                        height={176}
-                        sizes="88px"
-                      />
-                    ) : null}
+                    {/* Il ritratto non sparisce quando manca: la griglia della
+                        scheda lo prevede, e un segnaposto dice al cliente che
+                        li' va caricata una foto. */}
+                    <Figura
+                      classe="istruttore__foto"
+                      slot={istruttore.foto}
+                      etichetta="Ritratto"
+                      formato="quadro"
+                      misura="piccola"
+                      sizes="88px"
+                    />
 
                     <h3 className="istruttore__nome">{istruttore.nome}</h3>
                     {istruttore.ruolo ? (

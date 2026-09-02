@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
@@ -19,9 +20,33 @@ import { Sedi } from './collections/Sedi'
 import { Utenti } from './collections/Utenti'
 import { Contatti } from './globals/Contatti'
 import { Impostazioni } from './globals/Impostazioni'
+import { Navigazione } from './globals/Navigazione'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+/**
+ * L'avviso email delle richieste parte via SMTP del dominio. Senza SMTP_HOST
+ * `email` resta undefined e Payload usa il suo adapter console: la richiesta si
+ * salva lo stesso e il log dice a chi sarebbe andata. Non si chiama
+ * nodemailerAdapter() a vuoto perche' al boot contatterebbe Ethereal, e in
+ * sviluppo offline il sito non partirebbe.
+ */
+const portaSmtp = Number(process.env.SMTP_PORT || 587)
+const email = process.env.SMTP_HOST
+  ? nodemailerAdapter({
+      defaultFromAddress: process.env.SMTP_FROM || 'noreply@akm-italia.eu',
+      defaultFromName: 'AKM Italia',
+      transportOptions: {
+        host: process.env.SMTP_HOST,
+        port: portaSmtp,
+        secure: portaSmtp === 465,
+        auth: process.env.SMTP_USER
+          ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+          : undefined,
+      },
+    })
+  : undefined
 
 /** Le collezioni con una pagina pubblica: prendono i campi SEO e possono essere destinazione di un redirect. */
 const collezioniPubbliche = ['pagine', 'news', 'eventi', 'corsi', 'sedi', 'istruttori'] as const
@@ -57,8 +82,9 @@ export default buildConfig({
     },
   },
   collections: [Pagine, News, Eventi, Corsi, Sedi, Istruttori, Richieste, Media, Utenti],
-  globals: [Contatti, Impostazioni],
+  globals: [Contatti, Impostazioni, Navigazione],
   editor: lexicalEditor(),
+  email,
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

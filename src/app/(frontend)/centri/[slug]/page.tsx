@@ -13,6 +13,8 @@ import {
   pubblicato,
   sitoUrl,
 } from '@/componenti/dati'
+import { Figura } from '@/componenti/Figura'
+import { metadatiPagina } from '@/componenti/seo'
 
 /**
  * Scheda di un centro tecnico: e' la conversione. Indirizzo, orari, docenti e
@@ -65,13 +67,13 @@ export async function generateMetadata({
   const sede = await trovaSede(slug)
   if (!sede) return {}
 
-  return {
-    title: sede.nome,
-    description:
+  return metadatiPagina({
+    titolo: sede.nome,
+    descrizione:
       sede.descrizione ||
       `Krav Maga a ${sede.indirizzo?.citta}: ${indirizzoLeggibile(sede.indirizzo)}. Giorni, orari e docenti del centro tecnico AKM Italia.`,
-    alternates: { canonical: `/centri/${sede.slug}` },
-  }
+    path: `/centri/${sede.slug}`,
+  })
 }
 
 export default async function PaginaCentro({ params }: { params: Promise<{ slug: string }> }) {
@@ -151,13 +153,22 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
           <Link className="briciola" href="/centri">
             Torna ai centri
           </Link>
-          <span className="filetto" aria-hidden="true" />
           <p className="occhiello">Centro tecnico</p>
           <h1 className="display display--md">{sede.nome}</h1>
           <p className="testo dato">{indirizzoLeggibile(sede.indirizzo)}</p>
           {sede.attivo ? <p className="stato">Attivo in questa stagione</p> : null}
         </div>
       </section>
+
+      {/* La sala di questo centro, fra la testata e la scheda: chi sceglie dove
+          allenarsi vuole vedere il posto prima degli orari. */}
+      <Figura
+        slot={sede.foto}
+        etichetta="Foto del centro"
+        formato="banda"
+        misura="grande"
+        sizes="100vw"
+      />
 
       <section className="sezione sezione--chiara">
         <div className="contenitore scheda">

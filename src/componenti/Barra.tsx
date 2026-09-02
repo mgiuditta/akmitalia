@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
+import type { Navigazione } from '@/payload-types'
 import { Menu, type VoceMenu } from '@/componenti/Menu'
 
 /**
@@ -10,11 +11,16 @@ import { Menu, type VoceMenu } from '@/componenti/Menu'
  * piani in Roboto: lo stemma resta emblema e la scritta non usa Anton, che
  * sotto i 33px viola la Regola dello Stacco Netto di DESIGN.md.
  *
- * 77px su ogni breakpoint, e in riga tre cose sole: marchio, CTA e bottone del
- * menu. Le voci non sono mai in barra - vivono nel pannello di <Menu>, che
- * sopra i 700px e' un foglio da destra e sotto copre lo schermo. La barra resta
- * una firma invece di diventare un pannello. Il perche' sta in docs/adr/0007,
- * che estende al desktop la decisione presa in docs/adr/0006 per il telefono.
+ * 77px su ogni breakpoint. Sopra i 1024px in riga stanno marchio, voci e CTA:
+ * la riga e' server, senza JavaScript. Sotto, in riga restano marchio, CTA e
+ * bottone del menu, e le voci vivono nel pannello di <Menu>. Le due
+ * navigazioni esistono entrambe nel DOM ma mai insieme nell'albero di
+ * accessibilita': il CSS spegne l'una o l'altra con display: none. Il perche'
+ * del ritorno della riga, che docs/adr/0007 aveva tolto, sta in docs/adr/0008.
+ *
+ * Voci e CTA arrivano dal global Navigazione: il cliente le cambia dall'admin.
+ * I conteggi sotto le voci del pannello restano un fatto del codice, abbinati
+ * per indirizzo: una voce con un indirizzo sconosciuto non ha dato, e va bene.
  *
  * Il componente resta server: l'unico stato del sito pubblico e' l'apertura del
  * menu, e vive dentro <Menu>. Nessun indicatore di pagina attiva: l'H1 dice gia'
@@ -29,29 +35,37 @@ export type ConteggiBarra = {
 
 /* Il dato sotto ogni voce e' un conteggio reale, non un sottotitolo scritto a
    mano: «presenza prima del marchio». Il verde sta solo sul dato vivo. */
-function vociMenu(c: ConteggiBarra): VoceMenu[] {
-  return [
-    { href: '/corsi', testo: 'Percorsi', dato: `${c.corsi} ${c.corsi === 1 ? 'corso' : 'corsi'}` },
-    { href: '/centri', testo: 'Centri', dato: `${c.centri} attivi`, vivo: true },
-    {
-      href: '/istruttori',
-      testo: 'Istruttori',
+function dati(c: ConteggiBarra): Record<string, Pick<VoceMenu, 'dato' | 'vivo'>> {
+  return {
+    '/corsi': { dato: `${c.corsi} ${c.corsi === 1 ? 'corso' : 'corsi'}` },
+    '/centri': { dato: `${c.centri} attivi`, vivo: true },
+    '/istruttori': {
       dato: `${c.istruttori} ${c.istruttori === 1 ? 'qualificato' : 'qualificati'}`,
     },
-  ]
+  }
 }
 
 export function Barra({
   nome,
   stemma,
   conteggi,
+  navigazione,
 }: {
   nome: string
   stemma?: { url: string; alt: string }
   conteggi: ConteggiBarra
+  navigazione: Navigazione
 }) {
   const [marchio, ...resto] = nome.split(' ')
   const paese = resto.join(' ')
+
+  const conteggiPerRotta = dati(conteggi)
+  const voci: VoceMenu[] = (navigazione.voci ?? []).map((v) => ({
+    href: v.href,
+    testo: v.etichetta,
+    ...conteggiPerRotta[v.href.replace(/\/$/, '') || '/'],
+  }))
+  const cta = { href: navigazione.cta.href, testo: navigazione.cta.etichetta }
 
   return (
     <header className="barra">
@@ -73,7 +87,19 @@ export function Barra({
           </span>
         </Link>
 
-        <Menu voci={vociMenu(conteggi)} cta={{ href: '/centri', testo: 'Trova un centro' }} />
+        <nav className="barra__nav" aria-label="Principale">
+          <ul className="barra__voci">
+            {voci.map((voce) => (
+              <li key={voce.href}>
+                <Link className="barra__voce" href={voce.href}>
+                  {voce.testo}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <Menu voci={voci} cta={cta} />
       </div>
     </header>
   )

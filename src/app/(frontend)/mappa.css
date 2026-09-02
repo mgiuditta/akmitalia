@@ -1,0 +1,177 @@
+/* Mappa e marker, piu' gli override sul foglio di serie di Leaflet. */
+
+/* ---------- mappa ---------- */
+
+.mappa {
+  block-size: clamp(320px, 50svh, 520px);
+  inline-size: 100%;
+  background: var(--colore-surface-alt);
+}
+
+/*
+ * Il marker e' una targhetta su un'asta, non un pallino: un quadrato di presenza
+ * verde in cima a un filo bianco che tocca il punto esatto sulla carta. Il
+ * pallino centrato sulle coordinate diceva «qui intorno», l'asta dice «qui»,
+ * e il raggio resta 0 come ovunque nel sistema.
+ *
+ * Il nodo e' 28x28 perche' e' un bersaglio da dito e un'area di focus visibile;
+ * l'ancora sta in fondo all'asta, quindi la punta cade sulle coordinate.
+ */
+.mappa__segno {
+  background: transparent;
+}
+
+/* La targhetta. Il filo bianco intorno la stacca dalle tile, che il filtro
+   porta a grigi scuri e che a certi zoom hanno macchie chiare. */
+.mappa__segno::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 0;
+  translate: -50% 0;
+  inline-size: 14px;
+  block-size: 14px;
+  background: var(--colore-presenza);
+  box-shadow:
+    0 0 0 2px var(--colore-surface-light),
+    0 0 0 4px rgba(0, 0, 0, 0.55);
+  transition: scale var(--durata) var(--curva);
+}
+
+/* L'asta. Bianca e non nera: la carta e' gia' scura, un'asta nera sparisce. */
+.mappa__segno::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 15px;
+  translate: -50% 0;
+  inline-size: 2px;
+  block-size: 13px;
+  background: var(--colore-surface-light);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.55);
+}
+
+/* Il puntamento cresce dalla base: la targhetta si ingrandisce, la punta resta
+   dov'e'. Scalare il nodo intero sposterebbe il marker sulla carta. */
+.mappa__segno:hover::before,
+.mappa__segno:focus-visible::before {
+  scale: 1.25;
+}
+
+.mappa__segno:hover,
+.mappa__segno:focus-visible {
+  z-index: 900 !important;
+}
+
+.mappa__segno:focus-visible {
+  outline: 2px solid var(--colore-on-primary);
+  outline-offset: 2px;
+}
+
+/* Il centro piu' vicino: targhetta piena e piu' grande, con il comune scritto
+   accanto. Il valore non basta mai da solo (Regola dell'Etichetta). */
+.mappa__segno--vicino::before {
+  inline-size: 20px;
+  block-size: 20px;
+}
+
+.mappa__segno--vicino::after {
+  inset-block-start: 21px;
+  block-size: 7px;
+}
+
+/* L'etichetta sta all'altezza della targhetta, non del nodo: allineata al
+   centro del quadrato e non a meta' dell'asta. */
+.mappa__etichetta {
+  position: absolute;
+  inset-inline-start: calc(50% + 16px);
+  inset-block-start: 10px;
+  translate: 0 -50%;
+  padding: 3px var(--spazio-xs);
+  background: var(--colore-surface);
+  color: var(--colore-on-primary);
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+  white-space: nowrap;
+  box-shadow: 0 0 0 1px var(--colore-surface-light);
+}
+
+/*
+ * I marker entrano in sequenza: scandisce l'elenco dei centri. Il ritardo lo
+ * scrive Mappa.tsx sul nodo, e sotto prefers-reduced-motion non lo scrive
+ * affatto, quindi qui basta non dichiarare l'animazione in quel caso.
+ *
+ * Solo opacita': `transform` su un marker e' la sua posizione sulla mappa, e
+ * un `translateY` in coda a un fotogramma lo staccherebbe dal suo punto. Per
+ * questo non si riusa @keyframes rivela, che muove anche la traslazione.
+ */
+@keyframes entra-segno {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .mappa__segno {
+    animation: entra-segno var(--durata-rivela) var(--curva) both;
+    animation-delay: var(--ritardo, 0ms);
+  }
+}
+
+/* Le tile OSM sono a colori: il filtro le porta a monocromo scuro. Vale sul solo
+   riquadro delle tile, cosi' i marker verdi e l'attribuzione non lo prendono. */
+.leaflet-tile-pane {
+  filter: grayscale(1) invert(1) brightness(0.78) contrast(1.2);
+}
+
+/* Leaflet arrotonda e ammorbidisce tutto per default: qui no. */
+.leaflet-container {
+  font-family: var(--font-body);
+  font-size: var(--corpo-caption);
+  background: var(--colore-surface-alt);
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip,
+.leaflet-control-zoom a,
+.leaflet-control-attribution {
+  border-radius: var(--raggio) !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--colore-surface);
+  color: var(--colore-on-primary);
+  box-shadow: var(--ombra-scheda);
+}
+
+.leaflet-popup-tip {
+  background: var(--colore-surface);
+}
+
+.leaflet-popup-content a {
+  color: var(--colore-on-primary);
+  font-weight: var(--peso-bold);
+  text-underline-offset: 4px;
+}
+
+.leaflet-container .leaflet-control-zoom a {
+  background: var(--colore-surface);
+  color: var(--colore-on-primary);
+  border-color: var(--colore-ink-secondary);
+}
+
+.leaflet-container .leaflet-control-attribution {
+  background: rgba(0, 0, 0, 0.75);
+  color: var(--colore-on-primary);
+}
+
+.leaflet-container .leaflet-control-attribution a {
+  color: var(--colore-on-primary);
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  color: var(--colore-on-primary);
+}

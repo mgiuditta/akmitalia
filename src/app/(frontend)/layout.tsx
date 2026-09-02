@@ -3,7 +3,7 @@ import { getPayload } from 'payload'
 import React from 'react'
 
 import { Barra } from '@/componenti/Barra'
-import { pubblicato, sitoUrl } from '@/componenti/dati'
+import { provinciaEstesa, pubblicato, sitoUrl } from '@/componenti/dati'
 import { Pie } from '@/componenti/Pie'
 import config from '@/payload.config'
 import './styles.css'
@@ -12,9 +12,10 @@ import './styles.css'
 async function guscio() {
   const payload = await getPayload({ config: await config })
 
-  const [impostazioni, contatti, sedi, corsi, istruttori] = await Promise.all([
+  const [impostazioni, contatti, navigazione, sedi, corsi, istruttori] = await Promise.all([
     payload.findGlobal({ slug: 'impostazioni', depth: 1 }),
     payload.findGlobal({ slug: 'contatti', depth: 0 }),
+    payload.findGlobal({ slug: 'navigazione', depth: 0 }),
     payload.find({
       collection: 'sedi',
       depth: 0,
@@ -32,6 +33,7 @@ async function guscio() {
   return {
     impostazioni,
     contatti,
+    navigazione,
     sedi: sedi.docs,
     conteggi: {
       corsi: corsi.totalDocs,
@@ -42,20 +44,31 @@ async function guscio() {
 }
 
 /**
- * Il footer elenca i comuni, non i centri: tre centri di Milano fanno una riga sola.
- * Quando /centri esistera' queste voci diventano link alla scheda.
+ * Il footer elenca i comuni raggruppati per provincia, non i centri: tre centri
+ * di Milano fanno una voce sola, e la provincia e' scritta per esteso perche' e'
+ * quella la parola che qualcuno cerca.
+ *
+ * Le sedi senza provincia finiscono in un gruppo senza intestazione invece di
+ * sparire: un comune senza sigla resta un posto dove si pratica.
  */
-function citta(sedi: { nome: string; indirizzo?: { citta?: string | null; provincia?: string | null } | null }[]) {
-  const viste = new Map<string, { nome: string; citta: string; provincia?: string | null }>()
+function comuniPerProvincia(
+  sedi: { indirizzo?: { citta?: string | null; provincia?: string | null } | null }[],
+) {
+  const gruppi = new Map<string, Set<string>>()
   for (const s of sedi) {
-    const nome = s.indirizzo?.citta
-    if (!nome) continue
-    const chiave = `${nome}|${s.indirizzo?.provincia ?? ''}`
-    if (!viste.has(chiave)) {
-      viste.set(chiave, { nome: chiave, citta: nome, provincia: s.indirizzo?.provincia })
-    }
+    const comune = s.indirizzo?.citta
+    if (!comune) continue
+    const provincia = provinciaEstesa(s.indirizzo?.provincia)
+    const comuni = gruppi.get(provincia) ?? new Set<string>()
+    comuni.add(comune)
+    gruppi.set(provincia, comuni)
   }
-  return [...viste.values()]
+  return [...gruppi.entries()]
+    .sort(([a], [b]) => a.localeCompare(b, 'it'))
+    .map(([provincia, comuni]) => ({
+      provincia,
+      comuni: [...comuni].sort((a, b) => a.localeCompare(b, 'it')),
+    }))
 }
 
 const DESCRIZIONE =
@@ -63,12 +76,14 @@ const DESCRIZIONE =
 
 export async function generateMetadata(): Promise<Metadata> {
   const payload = await getPayload({ config: await config })
-  const impostazioni = await payload.findGlobal({ slug: 'impostazioni', depth: 1 })
+  const impostazioni = await payload.findGlobal({ slug: 'impostazioni', depth: 0 })
   const nome = impostazioni?.siteName || 'AKM Italia'
   const titolo = `${nome} · Krav Maga e difesa personale`
-  const og = typeof impostazioni?.ogImage === 'object' ? impostazioni.ogImage : null
-  const ogUrl = og?.sizes?.card?.url || og?.url || null
 
+  /* Nessuna `images` qui: la porta opengraph-image.tsx, che vale per ogni rotta
+     e legge l'immagine caricata in Impostazioni. Dichiarata qui sarebbe finita
+     sulla sola home, perche' l'openGraph di una pagina figlia sostituisce
+     quello del layout invece di fondersi. */
   return {
     metadataBase: new URL(sitoUrl()),
     title: { default: titolo, template: `%s · ${nome}` },
@@ -81,13 +96,13 @@ export async function generateMetadata(): Promise<Metadata> {
       title: titolo,
       description: DESCRIZIONE,
       url: '/',
-      images: ogUrl ? [{ url: ogUrl, alt: og?.alt || nome }] : undefined,
     },
+    twitter: { card: 'summary_large_image', title: titolo, description: DESCRIZIONE },
   }
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const { impostazioni, contatti, sedi, conteggi } = await guscio()
+  const { impostazioni, contatti, navigazione, sedi, conteggi } = await guscio()
 
   const nome = impostazioni?.siteName || 'AKM Italia'
   const logo = typeof impostazioni?.logo === 'object' ? impostazioni.logo : null
@@ -120,15 +135,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a className="salta" href="#contenuto">
           Salta al contenuto
         </a>
-        <Barra nome={nome} stemma={stemma} conteggi={conteggi} />
+        <Barra nome={nome} stemma={stemma} conteggi={conteggi} navigazione={navigazione} />
         <main id="contenuto">{children}</main>
         <Pie
           nome={nome}
           testo={impostazioni?.testoFooter}
-          centri={citta(sedi)}
+          province={comuniPerProvincia(sedi)}
           contatti={{ email: contatti?.email, telefono: contatti?.telefono }}
           ragioneSociale={impostazioni?.datiFiscali?.ragioneSociale}
           partitaIva={impostazioni?.datiFiscali?.partitaIva}
+          legali={navigazione?.piede ?? []}
         />
       </body>
     </html>
