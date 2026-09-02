@@ -23,6 +23,7 @@ describe('valoriPredefiniti', () => {
       '/corsi',
       '/centri',
       '/istruttori',
+      '/eventi',
       '/contatti',
     ])
     expect(navigazione.piede.map((v) => v.href)).toEqual(['/privacy', '/cookie'])

@@ -36,6 +36,7 @@ export const Navigazione: GlobalConfig = {
         { etichetta: 'Percorsi', href: '/corsi' },
         { etichetta: 'Centri', href: '/centri' },
         { etichetta: 'Istruttori', href: '/istruttori' },
+        { etichetta: 'Eventi', href: '/eventi' },
         { etichetta: 'Contatti', href: '/contatti' },
       ],
       fields: [

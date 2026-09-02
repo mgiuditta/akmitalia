@@ -41,10 +41,11 @@ vedi «Migration» qui sotto.
 | `pnpm sedi:geocodifica` | Riempie le coordinate delle sedi che non ce l'hanno. |
 | `pnpm pagine:legali` | Crea `/privacy` e `/cookie` con il testo di partenza. |
 | `pnpm contenuti:corsi` | Riempie i tre percorsi con descrizione, focus, risultati e adatto a. |
+| `pnpm importa:eventi` | Importa gli eventi dal 2024 in poi dal calendario del vecchio sito WordPress (API REST di The Events Calendar). Rieseguibile: fa upsert per slug. Gli eventi senza un centro riconosciuto finiscono in `luogo` e in un elenco a fine script, da assegnare dall'admin. |
 | `pnpm immagini:editoriali` | Genera le fotografie editoriali in bianco e nero (serve `GEMINI_API_KEY`), le carica in Media e le assegna agli slot. Rieseguibile: non rigenera quello che sta gia' in `data/immagini`. |
-| `pnpm semina` | I cinque comandi qui sopra in fila, per popolare un database appena migrato. Non applica le migration: quelle sono a parte. |
+| `pnpm semina` | I sei comandi qui sopra in fila, per popolare un database appena migrato. Non applica le migration: quelle sono a parte. |
 
-Gli ultimi tre sono punti di partenza, non fonti di verità: da lì in poi il contenuto si
+Gli ultimi quattro sono punti di partenza, non fonti di verità: da lì in poi il contenuto si
 modifica dall'admin, e rilanciarli sovrascrive quello che il cliente ha cambiato.
 
 ## Migration

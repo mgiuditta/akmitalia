@@ -21,9 +21,10 @@
     "sedi:geocodifica": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/geocodifica-sedi.ts",
     "pagine:legali": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/pagine-legali.ts",
     "contenuti:corsi": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/contenuti-corsi.ts",
+    "importa:eventi": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/importa-eventi.ts",
     "font:scarica": "sh scripts/font-scarica.sh",
     "immagini:editoriali": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/immagini-editoriali.ts",
-    "semina": "pnpm importa:centri && pnpm sedi:geocodifica && pnpm pagine:legali && pnpm contenuti:corsi && pnpm immagini:editoriali"
+    "semina": "pnpm importa:centri && pnpm sedi:geocodifica && pnpm pagine:legali && pnpm contenuti:corsi && pnpm importa:eventi && pnpm immagini:editoriali"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.88.0",

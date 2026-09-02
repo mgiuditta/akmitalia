@@ -232,7 +232,7 @@ export const Impostazioni: GlobalConfig = {
       label: 'Foto delle pagine indice',
       admin: {
         description:
-          'Centri, percorsi e istruttori sono pagine di codice e non hanno una scheda a CMS: la loro fotografia si carica qui. Orizzontali, almeno 1600px di lato lungo.',
+          'Centri, percorsi, istruttori ed eventi sono pagine di codice e non hanno una scheda a CMS: la loro fotografia si carica qui. Orizzontali, almeno 1600px di lato lungo.',
       },
       fields: [
         {
@@ -252,6 +252,12 @@ export const Impostazioni: GlobalConfig = {
           type: 'upload',
           relationTo: 'media',
           label: 'Foto della pagina Istruttori',
+        },
+        {
+          name: 'eventi',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Foto della pagina Eventi',
         },
       ],
     },

@@ -6,7 +6,25 @@ import { authenticated, authenticatedOrPublished } from '../access'
 /**
  * Stage e seminari: guardano avanti, si ordinano per data futura, hanno una sede
  * e un link di iscrizione. Per questo non sono News.
+ *
+ * Il tipo ricalca le sette categorie del calendario WordPress, cosi' l'import
+ * non inventa niente. Si scrive, non si colora: la categoria e' un'etichetta
+ * (DESIGN.md, Regola dell'Etichetta; docs/adr/0005).
  */
+
+export const TIPI_EVENTO = [
+  { label: 'Presentazione', value: 'presentazione' },
+  { label: 'Stage', value: 'stage' },
+  { label: 'Corso tecnico', value: 'corso-tecnico' },
+  { label: 'Esame', value: 'esame' },
+  { label: 'Lezioni estive', value: 'lezioni-estive' },
+  { label: 'Festa', value: 'festa' },
+  { label: 'Manifestazione', value: 'manifestazione' },
+] as const
+
+/* Il selettore mostra anche l'ora: uno stage alle 18:30 e uno stage di tre
+   giorni hanno la stessa forma, e la mezzanotte vuol dire «senza orario». */
+const dataConOra = { date: { pickerAppearance: 'dayAndTime' as const, displayFormat: 'd MMM yyyy HH:mm' } }
 export const Eventi: CollectionConfig = {
   slug: 'eventi',
   labels: { singular: 'Evento', plural: 'Eventi' },
@@ -19,7 +37,7 @@ export const Eventi: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'titolo',
-    defaultColumns: ['titolo', 'dataInizio', 'sede', '_status'],
+    defaultColumns: ['titolo', 'dataInizio', 'tipo', 'sede', '_status'],
     group: 'Contenuti',
   },
   defaultSort: '-dataInizio',
@@ -29,11 +47,28 @@ export const Eventi: CollectionConfig = {
     {
       type: 'row',
       fields: [
-        { name: 'dataInizio', type: 'date', required: true, label: 'Data inizio', index: true },
+        {
+          name: 'tipo',
+          type: 'select',
+          required: true,
+          label: 'Tipo',
+          index: true,
+          defaultValue: 'presentazione',
+          options: [...TIPI_EVENTO],
+        },
+        {
+          name: 'dataInizio',
+          type: 'date',
+          required: true,
+          label: 'Data inizio',
+          index: true,
+          admin: dataConOra,
+        },
         {
           name: 'dataFine',
           type: 'date',
           label: 'Data fine',
+          admin: dataConOra,
           validate: (value: unknown, { siblingData }: { siblingData: Record<string, unknown> }) => {
             const inizio = siblingData?.dataInizio
             if (!value || !inizio) return true

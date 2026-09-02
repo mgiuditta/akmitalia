@@ -2,6 +2,7 @@ import * as migration_20260902_125844_iniziale from './20260902_125844_iniziale'
 import * as migration_20260902_131708_moduli_e_navigazione from './20260902_131708_moduli_e_navigazione';
 import * as migration_20260902_142340_slot_immagine from './20260902_142340_slot_immagine';
 import * as migration_20260902_180253_bivio_passo_altre_voci from './20260902_180253_bivio_passo_altre_voci';
+import * as migration_20260902_181923_eventi_calendario from './20260902_181923_eventi_calendario';
 
 export const migrations = [
   {
@@ -22,6 +23,11 @@ export const migrations = [
   {
     up: migration_20260902_180253_bivio_passo_altre_voci.up,
     down: migration_20260902_180253_bivio_passo_altre_voci.down,
-    name: '20260902_180253_bivio_passo_altre_voci'
+    name: '20260902_180253_bivio_passo_altre_voci',
+  },
+  {
+    up: migration_20260902_181923_eventi_calendario.up,
+    down: migration_20260902_181923_eventi_calendario.down,
+    name: '20260902_181923_eventi_calendario'
   },
 ];

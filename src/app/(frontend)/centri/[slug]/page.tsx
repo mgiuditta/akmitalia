@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import React from 'react'
 
 import { apriPayload } from '@/componenti/payload'
+import { AgendaEventi } from '@/componenti/AgendaEventi'
 import { Mappa, type PuntoMappa } from '@/componenti/Mappa'
 import {
   giorniLeggibili,
@@ -79,6 +80,29 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
   const { slug } = await params
   const sede = await trovaSede(slug)
   if (!sede) notFound()
+
+  /* Gli eventi di questo centro da oggi in poi: uno stage e' datato e
+     straordinario, l'orario e' ricorrente. Stanno sotto gli orari, non dentro. */
+  const payload = await apriPayload()
+  const adesso = new Date().toISOString()
+  const eventi = await payload.find({
+    collection: 'eventi',
+    depth: 0,
+    limit: 5,
+    sort: 'dataInizio',
+    where: {
+      and: [
+        pubblicato,
+        { sede: { equals: sede.id } },
+        {
+          or: [
+            { dataFine: { greater_than_equal: adesso } },
+            { dataInizio: { greater_than_equal: adesso } },
+          ],
+        },
+      ],
+    },
+  })
 
   const orari = sede.orari ?? []
   const istruttori = (sede.istruttori ?? []).filter((i) => typeof i === 'object')
@@ -207,6 +231,18 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
                 <p className="dato">Orari in aggiornamento per la stagione.</p>
               )}
             </div>
+
+            {eventi.docs.length > 0 ? (
+              <div className="blocco">
+                <h2>Prossimi eventi qui</h2>
+                <AgendaEventi eventi={eventi.docs} mostraLuogo={false} />
+                <p>
+                  <Link className="briciola" href="/eventi">
+                    Tutto il calendario
+                  </Link>
+                </p>
+              </div>
+            ) : null}
 
             {discipline.size > 0 ? (
               <div className="blocco">

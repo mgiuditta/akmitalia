@@ -81,6 +81,13 @@ const SCATTI: Scatto[] = [
     soggetto:
       'Wide panoramic frame: one instructor in his fifties, grey hair, demonstrating a wrist lock on a younger student in the middle of the hall; five students stand watching in a loose semicircle to the left and right, seen from the side at eye level.',
   },
+  {
+    nome: 'akm-banda-eventi',
+    formato: '21:9',
+    alt: 'Una sala piena per uno stage: l’istruttore in piedi che spiega, gli allievi seduti a terra in ascolto',
+    soggetto:
+      'Wide panoramic frame of a crowded seminar: about thirty adults of mixed ages sitting on the parquet in loose rows, seen from behind and slightly above, all facing one instructor standing at the far end of the hall mid explanation. Sports bags along the wall.',
+  },
 ]
 
 async function esiste(file: string) {
@@ -178,6 +185,7 @@ await payload.updateGlobal({
       centri: id('akm-banda-centri'),
       corsi: id('akm-banda-corsi'),
       istruttori: id('akm-banda-istruttori'),
+      eventi: id('akm-banda-eventi'),
     },
   },
 })

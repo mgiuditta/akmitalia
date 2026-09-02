@@ -655,6 +655,7 @@ export interface Eventi {
    */
   generateSlug?: boolean | null;
   slug: string;
+  tipo: 'presentazione' | 'stage' | 'corso-tecnico' | 'esame' | 'lezioni-estive' | 'festa' | 'manifestazione';
   dataInizio: string;
   dataFine?: string | null;
   /**
@@ -983,6 +984,7 @@ export interface EventiSelect<T extends boolean = true> {
   titolo?: T;
   generateSlug?: T;
   slug?: T;
+  tipo?: T;
   dataInizio?: T;
   dataFine?: T;
   sede?: T;
@@ -1454,12 +1456,13 @@ export interface Impostazioni {
     passoBottone?: string | null;
   };
   /**
-   * Centri, percorsi e istruttori sono pagine di codice e non hanno una scheda a CMS: la loro fotografia si carica qui. Orizzontali, almeno 1600px di lato lungo.
+   * Centri, percorsi, istruttori ed eventi sono pagine di codice e non hanno una scheda a CMS: la loro fotografia si carica qui. Orizzontali, almeno 1600px di lato lungo.
    */
   fotoPagine?: {
     centri?: (number | null) | Media;
     corsi?: (number | null) | Media;
     istruttori?: (number | null) | Media;
+    eventi?: (number | null) | Media;
   };
   testoFooter?: string | null;
   /**
@@ -1610,6 +1613,7 @@ export interface ImpostazioniSelect<T extends boolean = true> {
         centri?: T;
         corsi?: T;
         istruttori?: T;
+        eventi?: T;
       };
   testoFooter?: T;
   datiFiscali?:

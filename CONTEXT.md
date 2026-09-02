@@ -20,6 +20,12 @@ L'indirizzo dove si e' tenuto o si terra' un evento: una presentazione, uno stag
 
 Un luogo evento non entra nell'elenco dei centri. Un centro chiuso non diventa un luogo evento: resta un centro non attivo se qualcuno pensa di riaprirlo, altrimenti sparisce.
 
+## Evento
+
+Un fatto datato e straordinario, in un centro tecnico o in un luogo evento: ha una data di inizio, eventualmente una di fine, e un **tipo**. I tipi sono sette e vengono dal calendario storico: **presentazione** (la lezione aperta di inizio stagione), **stage**, **corso tecnico** (la lezione di un ciclo intensivo a livelli), **esame**, **lezioni estive**, **festa**, **manifestazione**. Il tipo si scrive, non si colora.
+
+Il calendario e' l'elenco degli eventi mese per mese. Non contiene gli orari: quelli sono ricorrenti e stanno nella scheda del centro.
+
 ## Orario
 
 Una riga di programmazione settimanale di un centro tecnico: una disciplina, i giorni in cui si tiene, l'ora di inizio e di fine, e il **docente** che la tiene. Un centro ha piu' orari; un orario appartiene a un solo centro.

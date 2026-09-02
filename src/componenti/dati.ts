@@ -1,4 +1,6 @@
-import type { Impostazioni, Sedi } from '@/payload-types'
+import type { Eventi, Impostazioni, Sedi } from '@/payload-types'
+
+import { TIPI_EVENTO } from '@/collections/Eventi'
 
 /**
  * Le poche funzioni di lettura che ogni pagina rifa uguale: giorni scritti per
@@ -14,6 +16,18 @@ const GIORNI: Record<string, string> = {
   ven: 'Venerdì',
   sab: 'Sabato',
   dom: 'Domenica',
+}
+
+/** «Corso tecnico» da `corso-tecnico`: la categoria si scrive per esteso, sempre. */
+export function etichettaTipo(tipo: Eventi['tipo'] | null | undefined) {
+  return TIPI_EVENTO.find((t) => t.value === tipo)?.label ?? ''
+}
+
+/** Dove si tiene un evento, in una parola: la citta' del centro, o la prima parte del luogo scritto. */
+export function doveEvento(evento: Pick<Eventi, 'sede' | 'luogo'>) {
+  const sede = typeof evento.sede === 'object' ? evento.sede : null
+  if (sede) return sede.indirizzo?.citta || sede.nome
+  return (evento.luogo ?? '').split(',')[0].trim()
 }
 
 /** Solo le sedi pubblicate: la Local API scavalca l'access control. */

@@ -5,7 +5,7 @@ import { pubblicato, sitoUrl } from '@/componenti/dati'
 
 /**
  * La sitemap elenca le stesse rotte che il sito espone, niente di piu': le
- * pagine fisse, le schede pubblicate di corsi e centri, e le pagine editoriali
+ * pagine fisse, le schede pubblicate di corsi, centri ed eventi, e le pagine editoriali
  * che passano dalla rotta `[...path]` (docs/adr/0011). Un centro non attivo
  * resta pubblicato ma sparisce dagli elenchi, quindi sparisce anche da qui.
  *
@@ -19,7 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = sitoUrl()
   const payload = await apriPayload()
 
-  const [corsi, sedi, pagine] = await Promise.all([
+  const [corsi, sedi, pagine, eventi] = await Promise.all([
     payload.find({
       collection: 'corsi',
       depth: 0,
@@ -41,9 +41,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       select: { path: true, updatedAt: true },
       where: pubblicato,
     }),
+    payload.find({
+      collection: 'eventi',
+      depth: 0,
+      limit: 500,
+      select: { slug: true, updatedAt: true },
+      where: pubblicato,
+    }),
   ])
 
-  const fisse = ['', '/corsi', '/centri', '/istruttori', '/contatti'].map((rotta) => ({
+  const fisse = ['', '/corsi', '/centri', '/istruttori', '/eventi', '/contatti'].map((rotta) => ({
     url: `${base}${rotta}`,
     lastModified: new Date(),
   }))
@@ -57,6 +64,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...sedi.docs.map((s) => ({
       url: `${base}/centri/${s.slug}`,
       lastModified: s.updatedAt ? new Date(s.updatedAt) : undefined,
+    })),
+    ...eventi.docs.map((e) => ({
+      url: `${base}/eventi/${e.slug}`,
+      lastModified: e.updatedAt ? new Date(e.updatedAt) : undefined,
     })),
     ...pagine.docs
       .filter((p): p is typeof p & { path: string } => Boolean(p.path))

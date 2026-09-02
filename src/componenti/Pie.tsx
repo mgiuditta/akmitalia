@@ -86,6 +86,11 @@ export function Pie({
                 </Link>
               </li>
               <li>
+                <Link className="pie__link" href="/eventi">
+                  Gli eventi
+                </Link>
+              </li>
+              <li>
                 <Link className="pie__link" href="/#prima-volta">
                   La prima lezione
                 </Link>
