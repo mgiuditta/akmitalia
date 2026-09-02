@@ -28,7 +28,15 @@ services:
 
   # Applica lo schema e muore. L'app non parte finche' questo non e' uscito con
   # zero: le migration sono versionate e rigiocarle e' sicuro, quindi qui
-  # possono girare a ogni rilascio. I contenuti no, quelli sono `semina`.
+  # possono girare a ogni rilascio.
+  #
+  # E' anche il container da cui si semina, una volta sola e a mano - stesso
+  # stadio, comando diverso:
+  #
+  #   docker compose run --rm migrate pnpm semina
+  #
+  # Per questo monta il volume dei media: la semina carica le fotografie
+  # editoriali, e devono finire dove le cerca l'app.
   migrate:
     build:
       context: .
@@ -43,6 +51,9 @@ services:
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-payload}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-akm}
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:?serve un segreto}
+      MEDIA_DIR: /app/media
+    volumes:
+      - media:/app/media
 
   app:
     build:
@@ -79,31 +90,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 30s
-
-  # I contenuti di partenza, una volta sola e a mano: rilanciarlo sovrascrive
-  # quello che il cliente ha cambiato dall'admin. Non parte con `up` - sta in un
-  # profilo - e si chiama cosi':
-  #
-  #   docker compose -f docker-compose.coolify.yml --profile strumenti run --rm semina
-  semina:
-    build:
-      context: .
-      target: migrator
-      args:
-        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?serve l'origine pubblica}
-        BUILD_SENZA_DB: '1'
-    profiles: ['strumenti']
-    command: ['pnpm', 'semina']
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgres://${POSTGRES_USER:-payload}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-akm}
-      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?serve un segreto}
-      # Gli upload finiscono nello stesso volume che monta l'app.
-      MEDIA_DIR: /app/media
-    volumes:
-      - media:/app/media
 
 volumes:
   pgdata:

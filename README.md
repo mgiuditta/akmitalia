@@ -118,7 +118,7 @@ sono niente.
 Cambia in tre punti: il database non pubblica nessuna porta, l'unica porta instradata è
 quella che Coolify dà al servizio `app`, e `migrate` non sta più in un profilo — l'app
 parte solo dopo che è uscito con zero, quindi **le migration si applicano da sole a ogni
-rilascio**. I contenuti no: quelli sono `semina`, e si lancia a mano.
+rilascio**. I contenuti no: `pnpm semina` si lancia a mano, dentro `migrate`.
 
 Il build passa `BUILD_SENZA_DB=1`, perché il container che costruisce l'immagine non sta
 sulla rete dei servizi e il database non lo raggiunge. Il perché sta in `docs/adr/0013`.
@@ -135,12 +135,19 @@ sulla rete dei servizi e il database non lo raggiunge. Il perché sta in `docs/a
 ### Il primo rilascio
 
 1. Deploy da Coolify: build → `migrate` → `app`.
-2. I contenuti di partenza, dal server, una volta sola:
+2. I contenuti di partenza, dal terminale del server (Coolify → Terminal →
+   `localhost`), una volta sola:
 
    ```sh
-   cd /data/coolify/applications/<uuid>
-   docker compose -f docker-compose.coolify.yml --profile strumenti run --rm semina
+   cd /data/coolify/applications/<uuid>   # l'uuid della risorsa, sta nella URL
+   docker compose run --rm migrate pnpm semina
    ```
+
+   Il file lì dentro si chiama `docker-compose.yaml` e non è il nostro: Coolify
+   lo riscrive aggiungendo le sue etichette, e sostituisce ogni `build:` con
+   l'immagine che ha già costruito. Per questo si semina da `migrate` — stesso
+   stadio del Dockerfile, comando diverso — e non da un servizio a parte, che
+   stando in un profilo non verrebbe mai costruito.
 
 3. `/admin`: la pagina di primo accesso chiede di creare l'utente.
 4. **Sistema > Contatti**: l'email che riceve le richieste. Ha un default
