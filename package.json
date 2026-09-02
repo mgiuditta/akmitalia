@@ -22,7 +22,8 @@
     "pagine:legali": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/pagine-legali.ts",
     "contenuti:corsi": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/contenuti-corsi.ts",
     "font:scarica": "sh scripts/font-scarica.sh",
-    "immagini:editoriali": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/immagini-editoriali.ts"
+    "immagini:editoriali": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/immagini-editoriali.ts",
+    "semina": "pnpm importa:centri && pnpm sedi:geocodifica && pnpm pagine:legali && pnpm contenuti:corsi && pnpm immagini:editoriali"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.88.0",

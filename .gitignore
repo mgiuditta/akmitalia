@@ -50,7 +50,6 @@ node_modules/
 /playwright/.cache/
 
 # binari scaricati dal WordPress: in git resta solo il manifest data/wp-media.json
-/data/immagini
 /data/wp-media
 
 # worktree temporanei degli agenti

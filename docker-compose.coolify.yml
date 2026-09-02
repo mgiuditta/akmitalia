@@ -1,0 +1,110 @@
+# Rilascio su Coolify. Per lo sviluppo in locale c'e' `docker-compose.yml`.
+#
+# Sono due file perche' vogliono due cose opposte: in sviluppo il database deve
+# pubblicare la 5432 sull'host, che e' come `pnpm dev` ci parla; su un server
+# pubblico quella riga non ci deve stare. Qui il database non esce dalla rete
+# interna, e l'unica porta che vede il mondo e' quella che Coolify instrada.
+#
+# Da fare in Coolify, una volta:
+#   - risorsa «Docker Compose», repo del progetto, branch main, questo file
+#   - le variabili qui sotto nella scheda Environment Variables
+#   - il dominio sul servizio `app`, porta 3000: al TLS pensa lui
+#
+# Il primo rilascio e i dati iniziali stanno nel README, sezione «Coolify».
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-payload}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?serve una password}
+      POSTGRES_DB: ${POSTGRES_DB:-akm}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-payload} -d ${POSTGRES_DB:-akm}']
+      interval: 5s
+      retries: 20
+
+  # Applica lo schema e muore. L'app non parte finche' questo non e' uscito con
+  # zero: le migration sono versionate e rigiocarle e' sicuro, quindi qui
+  # possono girare a ogni rilascio. I contenuti no, quelli sono `semina`.
+  migrate:
+    build:
+      context: .
+      target: migrator
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?serve l'origine pubblica}
+        BUILD_SENZA_DB: '1'
+    restart: 'no'
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-payload}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-akm}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?serve un segreto}
+
+  app:
+    build:
+      context: .
+      target: runner
+      args:
+        # Al build, non a runtime: finisce nel bundle del browser.
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?serve l'origine pubblica}
+        # Qui il database non si raggiunge: il container di build non sta sulla
+        # rete dei servizi. Vedi src/componenti/payload.ts e docs/adr/0013.
+        BUILD_SENZA_DB: '1'
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-payload}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-akm}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?serve un segreto}
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?serve l'origine pubblica}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+    expose:
+      - '3000'
+    volumes:
+      # I file caricati dall'admin. Senza questo volume sparirebbero a ogni
+      # rilascio, perche' l'immagine si ricostruisce da capo.
+      - media:/app/media
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1:3000/']
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # I contenuti di partenza, una volta sola e a mano: rilanciarlo sovrascrive
+  # quello che il cliente ha cambiato dall'admin. Non parte con `up` - sta in un
+  # profilo - e si chiama cosi':
+  #
+  #   docker compose -f docker-compose.coolify.yml --profile strumenti run --rm semina
+  semina:
+    build:
+      context: .
+      target: migrator
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?serve l'origine pubblica}
+        BUILD_SENZA_DB: '1'
+    profiles: ['strumenti']
+    command: ['pnpm', 'semina']
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-payload}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-akm}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?serve un segreto}
+      # Gli upload finiscono nello stesso volume che monta l'app.
+      MEDIA_DIR: /app/media
+    volumes:
+      - media:/app/media
+
+volumes:
+  pgdata:
+  media:
