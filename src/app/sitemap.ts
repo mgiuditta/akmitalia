@@ -1,7 +1,6 @@
 import type { MetadataRoute } from 'next'
-import { getPayload } from 'payload'
 
-import config from '@/payload.config'
+import { apriPayload } from '@/componenti/payload'
 import { pubblicato, sitoUrl } from '@/componenti/dati'
 
 /**
@@ -18,7 +17,7 @@ export const revalidate = 3600
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = sitoUrl()
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
 
   const [corsi, sedi, pagine] = await Promise.all([
     payload.find({

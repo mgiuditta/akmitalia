@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { getPayload } from 'payload'
 import React from 'react'
 
-import config from '@/payload.config'
+import { apriPayload } from '@/componenti/payload'
 import { pubblicato } from '@/componenti/dati'
 import { Figura } from '@/componenti/Figura'
 import { metadatiPagina } from '@/componenti/seo'
@@ -19,7 +18,7 @@ import { metadatiPagina } from '@/componenti/seo'
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
   const quanti = (await payload.count({ collection: 'istruttori', where: pubblicato })).totalDocs
 
   return metadatiPagina({
@@ -40,7 +39,7 @@ const QUALIFICHE: Record<string, string> = {
 }
 
 export default async function PaginaIstruttori() {
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
 
   const [istruttori, impostazioni] = await Promise.all([
     payload.find({

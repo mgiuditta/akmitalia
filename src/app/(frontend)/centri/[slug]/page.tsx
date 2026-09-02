@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getPayload } from 'payload'
 import React from 'react'
 
-import config from '@/payload.config'
+import { apriPayload } from '@/componenti/payload'
 import { Mappa, type PuntoMappa } from '@/componenti/Mappa'
 import {
   giorniLeggibili,
@@ -36,7 +35,7 @@ const GIORNI_SCHEMA: Record<string, string> = {
 }
 
 async function trovaSede(slug: string) {
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
   const sedi = await payload.find({
     collection: 'sedi',
     depth: 2,
@@ -47,7 +46,7 @@ async function trovaSede(slug: string) {
 }
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
   const sedi = await payload.find({
     collection: 'sedi',
     depth: 0,

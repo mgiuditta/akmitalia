@@ -2,10 +2,9 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import { getPayload } from 'payload'
 import React from 'react'
 
-import config from '@/payload.config'
+import { apriPayload } from '@/componenti/payload'
 import { pubblicato } from '@/componenti/dati'
 import { metadatiPagina } from '@/componenti/seo'
 
@@ -27,7 +26,7 @@ import { metadatiPagina } from '@/componenti/seo'
 export const revalidate = 60
 
 async function trovaPagina(path: string) {
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
   const pagine = await payload.find({
     collection: 'pagine',
     depth: 1,
@@ -43,7 +42,7 @@ function aPath(segmenti: string[]) {
 }
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
   const pagine = await payload.find({
     collection: 'pagine',
     depth: 0,

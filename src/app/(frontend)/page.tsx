@@ -1,9 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { getPayload } from 'payload'
 import React from 'react'
 
-import config from '@/payload.config'
+import { apriPayload } from '@/componenti/payload'
 import { idDisciplina, ordinale, provinciaEstesa, pubblicato } from '@/componenti/dati'
 import { Figura } from '@/componenti/Figura'
 
@@ -50,7 +49,7 @@ const QUALIFICHE_DI_SERIE =
   'I docenti sono diplomati dopo almeno quattro anni di percorso e un esame di abilitazione all’insegnamento, tesserati e assicurati CSEN. Le qualifiche AKM sono riconosciute da CSEN-CONI, F.E.K.D.A. e P.T.D.'
 
 export default async function Home() {
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
 
   const [impostazioni, corsi, sedi, istruttori] = await Promise.all([
     payload.findGlobal({ slug: 'impostazioni', depth: 1 }),

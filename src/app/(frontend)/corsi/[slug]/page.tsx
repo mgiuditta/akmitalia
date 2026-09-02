@@ -3,10 +3,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import { getPayload } from 'payload'
 import React from 'react'
 
-import config from '@/payload.config'
+import { apriPayload } from '@/componenti/payload'
 import { giorniLeggibili, idDisciplina, indirizzoLeggibile, pubblicato } from '@/componenti/dati'
 import { metadatiPagina } from '@/componenti/seo'
 
@@ -24,7 +23,7 @@ import { metadatiPagina } from '@/componenti/seo'
 export const revalidate = 60
 
 async function trovaCorso(slug: string) {
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
   const corsi = await payload.find({
     collection: 'corsi',
     depth: 1,
@@ -35,7 +34,7 @@ async function trovaCorso(slug: string) {
 }
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
   const corsi = await payload.find({
     collection: 'corsi',
     depth: 0,
@@ -66,7 +65,7 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
   const corso = await trovaCorso(slug)
   if (!corso) notFound()
 
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
   const sedi = await payload.find({
     collection: 'sedi',
     depth: 2,

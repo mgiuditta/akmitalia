@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getPayload } from 'payload'
 import React from 'react'
 
-import config from '@/payload.config'
+import { apriPayload } from '@/componenti/payload'
 import { idDisciplina, ordinale, pubblicato } from '@/componenti/dati'
 import { Figura } from '@/componenti/Figura'
 import { metadatiPagina } from '@/componenti/seo'
@@ -32,7 +31,7 @@ export const metadata: Metadata = metadatiPagina({
 })
 
 export default async function PaginaCorsi() {
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
 
   const [corsi, sedi, impostazioni] = await Promise.all([
     payload.find({

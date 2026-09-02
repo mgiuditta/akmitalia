@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
-import { getPayload } from 'payload'
 import React from 'react'
 
 import { FormRichiesta, type TestiModulo } from '@/componenti/FormRichiesta'
 import { pubblicato } from '@/componenti/dati'
-import config from '@/payload.config'
+import { apriPayload } from '@/componenti/payload'
 import type { OpzioniModulo } from './validazione'
 import { Figura } from '@/componenti/Figura'
 import { metadatiPagina } from '@/componenti/seo'
@@ -41,7 +40,7 @@ export default async function PaginaContatti({
   searchParams: Promise<{ corso?: string }>
 }) {
   const { corso: slugCorso } = await searchParams
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
 
   const [contatti, sedi, corsi] = await Promise.all([
     payload.findGlobal({ slug: 'contatti', depth: 1 }),

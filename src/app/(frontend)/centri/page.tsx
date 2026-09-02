@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
-import { getPayload } from 'payload'
 import React from 'react'
 
-import config from '@/payload.config'
+import { apriPayload } from '@/componenti/payload'
 import { ElencoCentri } from '@/componenti/ElencoCentri'
 import { pubblicato } from '@/componenti/dati'
 import { Figura } from '@/componenti/Figura'
@@ -25,7 +24,7 @@ export const revalidate = 60
 /* La descrizione porta il numero vero: «15 centri in 4 province» dice al
    visitatore, gia' dal risultato di ricerca, che l'elenco esiste davvero. */
 export async function generateMetadata(): Promise<Metadata> {
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
   const sedi = await payload.find({
     collection: 'sedi',
     depth: 0,
@@ -56,7 +55,7 @@ export default async function PaginaCentri({
      la rotta dinamica, cosi' useSearchParams ha valori gia' in SSR e l'HTML di
      ?provincia=MI arriva filtrato al motore di ricerca e al primo paint. */
   await searchParams
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
 
   const [sedi, impostazioni] = await Promise.all([
     payload.find({

@@ -2,11 +2,10 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import { ImageResponse } from 'next/og'
-import { getPayload } from 'payload'
 import sharp from 'sharp'
 
 import { pubblicato } from '@/componenti/dati'
-import config from '@/payload.config'
+import { apriPayload } from '@/componenti/payload'
 
 /**
  * L'immagine di condivisione del sito. Sta qui e non in `generateMetadata`
@@ -37,7 +36,7 @@ const robotoBold = await readFile(path.join(process.cwd(), 'public/font/Roboto-B
 const cartellaMedia = process.env.MEDIA_DIR || path.resolve(process.cwd(), 'media')
 
 export default async function Immagine() {
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
 
   const [impostazioni, centri] = await Promise.all([
     payload.findGlobal({ slug: 'impostazioni', depth: 1 }),

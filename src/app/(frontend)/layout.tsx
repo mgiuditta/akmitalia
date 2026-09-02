@@ -1,16 +1,15 @@
 import type { Metadata } from 'next'
-import { getPayload } from 'payload'
 import React from 'react'
 
 import { Barra } from '@/componenti/Barra'
 import { provinciaEstesa, pubblicato, sitoUrl } from '@/componenti/dati'
 import { Pie } from '@/componenti/Pie'
-import config from '@/payload.config'
+import { apriPayload } from '@/componenti/payload'
 import './styles.css'
 
 /** Guscio del sito pubblico: legge i globali una volta e li passa a barra e footer. */
 async function guscio() {
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
 
   const [impostazioni, contatti, navigazione, sedi, corsi, istruttori] = await Promise.all([
     payload.findGlobal({ slug: 'impostazioni', depth: 1 }),
@@ -75,7 +74,7 @@ const DESCRIZIONE =
   'Krav Maga a Milano e provincia: centri tecnici con orari e istruttori, corsi per adulti, ragazzi e donne. Trova il centro piu vicino e chiedi una prova.'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const payload = await getPayload({ config: await config })
+  const payload = await apriPayload()
   const impostazioni = await payload.findGlobal({ slug: 'impostazioni', depth: 0 })
   const nome = impostazioni?.siteName || 'AKM Italia'
   const titolo = `${nome} · Krav Maga e difesa personale`

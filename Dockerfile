@@ -32,14 +32,19 @@ COPY . .
 ARG NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 
-# Il build interroga il database davvero: le pagine di centri, percorsi e pagine
-# editoriali si pregenerano da `generateStaticParams`, e senza connessione il
-# build si ferma su «Failed to collect page data». Quindi il servizio `db` deve
-# essere in piedi PRIMA di costruire l'immagine, e questa stringa deve
-# raggiungerlo: in compose e' host.docker.internal, cioe' la porta 5432 che il
-# database pubblica sull'host.
+# Il build interroga il database davvero: tutte le pagine hanno `revalidate`,
+# quindi Next le prerenderizza leggendo Payload. Con `db` in piedi questa
+# stringa deve raggiungerlo - in compose e' host.docker.internal, cioe' la
+# porta 5432 che il database pubblica sull'host - e il sito esce pregenerato.
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
+
+# La via d'uscita per chi costruisce dove il database non si raggiunge: su
+# Coolify il container di build non sta sulla rete dei servizi. A 1, Payload
+# risponde vuoto al solo build e le pagine si riempiono al primo accesso.
+# Vedi src/componenti/payload.ts e docs/adr/0013.
+ARG BUILD_SENZA_DB
+ENV BUILD_SENZA_DB=$BUILD_SENZA_DB
 ENV PAYLOAD_SECRET=build
 ENV NEXT_TELEMETRY_DISABLED=1
 
