@@ -276,7 +276,6 @@
   display: grid;
   gap: var(--spazio-lg);
   padding-block-end: clamp(var(--spazio-lg), 3vw, var(--spazio-xxl));
-  padding-inline-start: 0;
 }
 
 @media (min-width: 800px) {
