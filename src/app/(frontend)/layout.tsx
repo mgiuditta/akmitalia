@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import React from 'react'
 
 import { Barra } from '@/componenti/Barra'
-import { provinciaEstesa, pubblicato, sitoUrl } from '@/componenti/dati'
+import { jsonLd, provinciaEstesa, pubblicato, sitoUrl } from '@/componenti/dati'
 import { Pie } from '@/componenti/Pie'
 import { apriPayload } from '@/componenti/payload'
 import './styles.css'
@@ -129,7 +129,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(ente) }}
+          dangerouslySetInnerHTML={{ __html: jsonLd(ente) }}
         />
         <a className="salta" href="#contenuto">
           Salta al contenuto

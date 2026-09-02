@@ -30,6 +30,19 @@ export function doveEvento(evento: Pick<Eventi, 'sede' | 'luogo'>) {
   return (evento.luogo ?? '').split(',')[0].trim()
 }
 
+/**
+ * JSON-LD dentro uno <script>: un titolo che contenga «</script>» chiuderebbe
+ * il tag. Il «<» diventa \u003c, che per JSON e' lo stesso carattere e per il
+ * parser HTML no. Le stringhe vengono dal CMS e dall'import WordPress: non
+ * sono nostre.
+ */
+export function jsonLd(dati: unknown) {
+  return JSON.stringify(dati)
+    .replace(/</g, '\\u003c')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029')
+}
+
 /** Solo le sedi pubblicate: la Local API scavalca l'access control. */
 export const pubblicato = { _status: { equals: 'published' } }
 

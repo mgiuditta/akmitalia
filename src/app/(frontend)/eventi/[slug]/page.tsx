@@ -6,7 +6,7 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 
 import { apriPayload } from '@/componenti/payload'
 import { dataLeggibile, orarioLeggibile } from '@/componenti/calendario'
-import { etichettaTipo, indirizzoLeggibile, pubblicato, sitoUrl } from '@/componenti/dati'
+import { etichettaTipo, indirizzoLeggibile, jsonLd, pubblicato, sitoUrl } from '@/componenti/dati'
 import { Figura } from '@/componenti/Figura'
 import { metadatiPagina } from '@/componenti/seo'
 
@@ -109,7 +109,7 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(schema) }} />
       <section className="sezione sezione--nera testata">
         <div className="contenitore testata__contenuto">
           <Link className="briciola" href="/eventi">

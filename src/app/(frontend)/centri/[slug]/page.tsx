@@ -9,6 +9,7 @@ import { Mappa, type PuntoMappa } from '@/componenti/Mappa'
 import {
   giorniLeggibili,
   indirizzoLeggibile,
+  jsonLd,
   nomeIstruttore,
   pubblicato,
   sitoUrl,
@@ -169,7 +170,7 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(luogo) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(luogo) }}
       />
       <section className="sezione sezione--nera testata">
         <div className="contenitore testata__contenuto">

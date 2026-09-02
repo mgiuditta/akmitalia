@@ -99,3 +99,12 @@ describe('testi', () => {
     expect(nomeMese({ anno: 2026, mese: 9 })).toBe('Settembre 2026')
   })
 })
+
+describe('jsonLd', () => {
+  it('non lascia chiudere lo script a un titolo ostile', async () => {
+    const { jsonLd } = await import('@/componenti/dati')
+    const uscita = jsonLd({ name: '</script><script>alert(1)</script>' })
+    expect(uscita).not.toContain('</script>')
+    expect(JSON.parse(uscita)).toEqual({ name: '</script><script>alert(1)</script>' })
+  })
+})
