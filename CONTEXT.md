@@ -4,7 +4,7 @@ Glossario del dominio AKM Italia. Solo termini, nessuna decisione di implementaz
 
 ## Centro tecnico
 
-Il luogo dove si pratica, e l'unita' di conversione del sito: ogni percorso finisce in un centro tecnico. Nel codice e nella URL pubblica e' `sedi`; nel parlato di AKM e' «centro tecnico». I due nomi indicano la stessa cosa.
+Il luogo dove si pratica, e l'unita' di conversione del sito: ogni percorso finisce in un centro tecnico. Nel codice (collection, join, campi) e' `sedi`; nella URL pubblica e nel parlato di AKM e' «centro»: `/centri` e `/centri/[slug]`. I due nomi indicano la stessa cosa.
 
 Un centro tecnico e' identificato dal nome, che nella pratica unisce comune e struttura ospitante: «Abbiategrasso - Dynamic Dance School».
 

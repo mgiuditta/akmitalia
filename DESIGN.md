@@ -21,17 +21,17 @@ Il sistema rifiuta le scorciatoie di profondità. Ombre, sfocature e vetro non s
 **Key Characteristics:**
 
 - Due caratteri e basta: uno display condensato per le affermazioni, Roboto per tutto ciò che è funzionale.
-- Zero accento cromatico: nero, carbone, bianco, un grigio neutro.
+- Superfici senza tinta: nero, carbone, bianco, un grigio neutro. Il colore esiste in due soli ruoli semantici (rosso azione, verde presenza) e non tocca mai una superficie di sezione.
 - Piatto per default: solo `button-primary` e `card` portano ombra.
 - Geometria a spigolo vivo: nessun token di raggio esiste nel sistema.
 - Ritmo di sezione che alterna blocchi neri e blocchi chiari, gerarchia senza colore.
 - Tre pesi e non di più: 300, 400, 700. Il 500 è deliberatamente assente.
-- Navbar fissa a 77px, nera, opaca, senza bordo e senza blur a ogni posizione di scroll.
+- Navbar fissa a 77px, nera, opaca, senza bordo e senza blur a ogni posizione di scroll: sotto i 700px le voci escono dalla riga ed entrano in un pannello a tutto schermo, e l'altezza non cambia.
 - Nomi propri, indirizzi e orari restano a corpo pieno: la densità del dato non è negoziata dall'estetica.
 
 ## 2. Colors
 
-Nessun gradiente esiste come token riutilizzabile. La palette è ridotta per scelta a quasi-nero, nero puro, bianco e un neutro chiaro.
+Nessun gradiente esiste come token riutilizzabile. Le superfici sono ridotte per scelta a quasi-nero, nero puro, bianco e un neutro chiaro. Accanto ad esse vivono due colori semantici, e solo quelli: vedi la Regola del Colore Semantico più sotto.
 
 ### Primary
 
@@ -49,6 +49,14 @@ Nessun gradiente esiste come token riutilizzabile. La palette è ridotta per sce
 - **Bianco** `#FFFFFF`: il fondo delle sezioni chiare alternate.
 - **Grigio Carta** `#E8E8E8`: riempimento delle sezioni chiare e superficie di `button-primary`.
 
+### Semantic
+
+Non sono superfici e non entrano nella scala di valore: dicono cosa fa un elemento. Vedi `docs/adr/0005`.
+
+- **Azione** `#E30917`: il rosso dello stemma. Solo fondo di `button-primary`, con etichetta bianca. **Azione premuta** `#B00711` per hover e active.
+- **Presenza** `#00B44B`: verde su fondo scuro, per il dato vivo. **Presenza scura** `#006B2C` quando lo stesso segno cade su bianco o su grigio carta.
+- **Tricolore** `#00973F` / `#FFFFFF` / `#E30917`: i valori esatti dello stemma, usati solo nella banda da 3px. Mai come colore di testo.
+
 ### Neutral
 
 - **Bianco testo** `#FFFFFF`: colore dominante di testo e icone sulle superfici scure. Regge circa due terzi del peso testuale.
@@ -62,7 +70,11 @@ Non esiste un blocco di token per la modalità scura: il sistema è progettato *
 
 **La Regola dell'Etichetta.** Nessuna categoria è identificabile dal solo valore di superficie. Ogni occorrenza porta sempre il nome scritto. Il sistema è monocromo, quindi questa regola non è un ripiego per il daltonismo: è l'unico modo in cui un percorso si distingue da un altro.
 
-**La Regola del Rosso Assente.** Non esiste un rosso di marca. Errori di form, avvisi e stati distruttivi si dichiarano a parole e con l'icona, o con un rosso di sistema dichiarato fuori dal token set e usato solo lì.
+**La Regola del Colore Semantico.** Esistono due colori e due soli ruoli, dichiarati in `docs/adr/0005`. **Rosso `#E30917` = azione**: superficie del solo `button-primary`, etichetta bianca (4.86:1), `#B00711` per hover e active (7.28:1). **Verde `#00B44B` = presenza**: solo segnale di dato vivo (centro attivo, marker di mappa, conteggio dei centri), e su fondo chiaro passa a `#006B2C` perché il verde chiaro su bianco si ferma a 2.75:1. Nessun terzo ruolo, nessuna terza tinta.
+
+Il colore **non identifica mai una categoria**: la Regola del Valore continua a governare la gerarchia e la Regola dell'Etichetta continua a imporre il nome scritto, quindi il pallino verde non è mai solo, porta sempre la parola «Attivo». Errori di form, avvisi e stati distruttivi si dichiarano a parole e con l'icona: il rosso è già impegnato a dire «premi qui» e non può dire anche «attento».
+
+**Il filetto tricolore** (verde `#00973F` / bianco / rosso `#E30917`, banda da 3px) è una firma strutturale: chiude la barra in fondo e apre le sezioni di testata. Sta in uno pseudo-elemento o porta `aria-hidden`, e non veicola mai informazione.
 
 ## 3. Typography
 
@@ -95,6 +107,8 @@ Non esiste un blocco di token per la modalità scura: il sistema è progettato *
 
 **La Regola della Spaziatura Normale.** La crenatura è `normal` su ogni token. Il sistema non ha una strategia di tracking: la compattezza viene dalle lettere condensate di Anton, non da un `letter-spacing` negativo aggiunto a mano per simulare l'estetica atletica.
 
+*Unica eccezione:* il **wordmark** in barra, che è un lockup di marca e non un token tipografico. Lì il tracking è positivo e dichiarato (`+.08em` sulla riga «AKM», `+.22em` su «ITALIA»), perché due parole in maiuscolo a corpo piccolo accanto a uno stemma hanno bisogno di aria che il testo corrente non vuole. L'eccezione vale per quel lockup e per nient'altro.
+
 **La Regola dello Stacco Netto.** Le scale display e le scale funzionali non si sovrappongono mai: Anton parte da 33px in su, Roboto si ferma a 22px. Il salto è il confine fra testo «affermazione» e testo «funzione».
 
 **La Regola dell'Interlinea Collassata.** Ogni token display ha interlinea 1, per tenere il corpo grande visivamente denso e a blocco. Il testo funzionale Roboto si rilassa a 1.2-1.5 per leggibilità.
@@ -117,7 +131,7 @@ Il padding di componente resta piccolo e costante: bottone e scheda atterrano en
 
 ### Grid & Container
 
-Desktop usa una griglia a 3 colonne per le tessere di categoria, con gutter da 20px. Il testo corrente sta in una colonna centrata da 500-600px sotto i titoli sovradimensionati. Mobile collassa la griglia a colonna singola, immagini a tutta larghezza e didascalie sovrapposte in fondo alla foto. La navbar fissa tiene 77px costanti su entrambi i breakpoint.
+Desktop usa una griglia a 3 colonne per le tessere di categoria, con gutter da 20px. Il testo corrente sta in una colonna centrata da 500-600px sotto i titoli sovradimensionati. Mobile collassa la griglia a colonna singola, immagini a tutta larghezza e didascalie sovrapposte in fondo alla foto. La navbar fissa tiene 77px costanti su entrambi i breakpoint, e li tiene perché le voci non ci stanno dentro: stanno nel `menu`.
 
 ### Whitespace Philosophy
 
@@ -139,11 +153,16 @@ Il vuoto è uno status symbol, non un incidente. Blocchi larghi (80/100px) separ
 
 **La Regola dell'Indice.** La coreografia allo scroll scandisce un elenco, non intrattiene. Curve ease-out esponenziali, nessun rimbalzo, nessun elastico, mai animare proprietà di layout. Con `prefers-reduced-motion` la sequenza sparisce del tutto e il contenuto è immediatamente completo.
 
+**La Regola del Cromo Fermo.** Il cromo strutturale non si anima. Oltre al motivo estetico ce n'è uno meccanico: un `transform` su `.barra` o sulla sua griglia le rende blocco contenitore di ogni figlio `position: fixed`, e il pannello del menu collasserebbe dentro i 77px della barra. Si anima il pannello e i suoi figli, mai ciò che li contiene.
+
 ## 6. Components
 
-- **`navbar`** — barra fissa, 77px, fondo `#000000`, testo `#FFFFFF`. Nessun bordo, nessun blur, opaca a ogni posizione di scroll. Porta i link in `nav-link` (Roboto 16px peso 300) più un bottone CTA visibile. Layout identico fra desktop e mobile.
-- **`nav-link`** — testo bianco in `nav-link`. Il peso 300 tiene la navigazione visivamente silenziosa rispetto ai titoli e ai bottoni.
-- **`button-primary`** — fondo `#E8E8E8`, testo `#1C1C1C`, padding 16px 24px, etichetta in `link-strong`. È l'unico bottone con ombra (livello 1).
+- **`navbar`** — barra fissa, **77px su ogni breakpoint**, fondo `#000000`, testo `#FFFFFF`. Nessun bordo e nessun blur, opaca a ogni posizione di scroll, chiusa in fondo dal filetto tricolore da 3px, che sta **dentro** l'altezza. In riga stanno tre cose sole, a ogni breakpoint: marchio, bottone CTA e bottone del menu. **Le voci non sono mai in barra**: vivono nel componente `menu`. La CTA non si nasconde mai, perché la richiesta di contatto è l'unico esito misurabile del sito. Vedi `docs/adr/0007`.
+- **`menu`** — il pannello della navigazione, l'unico posto dove stanno le voci. Entra da destra dal bordo inferiore della barra in giù, fondo carbone pieno: nessun blur, nessun vetro, nessuna trasparenza. Carbone e non nero perché si posa su una pagina nera velata di nero, e la profondità in questo sistema si fa scambiando il valore della superficie — mai con un bordo o un'ombra. Largo `min(55vw, 620px)` sopra i 700px, a tutto schermo sotto — è l'unica cosa che cambia col breakpoint. Le voci sono in `display-md` (Anton 55px) maiuscolo, ognuna preceduta dal proprio ordinale in `label-strong` e seguita da un dato reale in `caption-strong` — quanti corsi, quanti centri attivi, quanti istruttori. La colonna sta in basso, non in alto: sopra le voci il nero resta vuoto per scelta. Il fondo entra in tre tempi, grigio carta, nero, carbone, che è uno stacco di valore e non di colore. Dove c'è un puntatore la voce puntata prende una lastra nera che entra da sinistra e sfora fino al bordo del foglio: ancora valore, mai una tinta. Mentre è aperto il resto della pagina è `inert` e sotto un velo nero al 66%, che è decorativo e `aria-hidden`.
+- **`menu-bottone`** — etichetta «Menu» in `label-strong` più due barrette da 2px che diventano una croce, area di tocco 44×44. Sotto i 420px l'etichetta esce dalla vista ma resta nell'albero di accessibilità, quindi il nome accessibile non cambia mai: lo stato lo dice `aria-expanded`, non la parola.
+- **`wordmark`** — stemma da 36px (solo emblema: la scritta dentro il tondo è illeggibile a quella misura) più un lockup a due piani in Roboto 700 maiuscolo, «AKM» a 17px e «ITALIA» a 11px. Anton resta fuori dalla barra: sotto i 33px violerebbe la Regola dello Stacco Netto, ed è esattamente l'errore che il lockup precedente commetteva.
+- **`nav-link`** — il token esiste ancora ma **nessuna navigazione lo usa più**: da `docs/adr/0007` le voci sono in `display-md` dentro il `menu`, e in barra non resta nessun link di navigazione. Resta disponibile per link di servizio in cromo scuro; se fra sei mesi non lo usa nessuno, si cancella.
+- **`button-primary`** — fondo `#E30917` (il rosso azione), testo `#FFFFFF`, padding 16px 24px, etichetta in `link-strong`, `#B00711` su hover e active. È l'unico bottone con ombra (livello 1) e l'unica superficie colorata del sistema.
 - **`button-secondary`** — fondo `#1C1C1C`, testo `#FFFFFF`, stesso padding e stessa tipografia del primario, ma piatto. Per azioni a minore enfasi, dove uno scuro-su-scuro deve arretrare.
 - **`card`** — fondo `#1C1C1C`, padding 24px, ombra di livello 2. È l'unico contenitore a cui è permessa un'ombra pesante.
 - **`hero-heading`** — `hero-display` (Anton 120px) in bianco, allineato a sinistra sull'hero nero.
@@ -163,7 +182,7 @@ Il vuoto è uno status symbol, non un incidente. Blocchi larghi (80/100px) separ
 - **Do** restringere i pesi a 300, 400 e 700. Non esiste il 500.
 - **Do** riservare le ombre a `button-primary` e `card`, e lasciare piatto tutto il resto.
 - **Do** tenere ogni angolo a 0px di raggio.
-- **Do** tenere la navbar fissa a 77px, nera, senza bordo e senza blur.
+- **Do** tenere la navbar fissa a 77px, nera, senza bordo e senza blur, su ogni breakpoint.
 - **Do** dichiarare `tabular-nums` su ogni colonna di orari, civici e CAP.
 - **Do** mostrare indirizzo, orari e referente della sede come testo leggibile, senza richiedere un click.
 - **Do** nominare per esteso sedi e istruttori: «Rozzano, Centro Aisha», mai «il nostro centro di zona».
@@ -172,7 +191,8 @@ Il vuoto è uno status symbol, non un incidente. Blocchi larghi (80/100px) separ
 
 ### Don't:
 
-- **Don't** introdurre un accento cromatico. Niente verde, niente rosso, niente tricolore fuori dal wordmark.
+- **Don't** usare il colore per distinguere due cose. Il rosso dice azione, il verde dice presenza, e non esiste un terzo ruolo: per separare due sezioni si cambia superficie, scala o peso.
+- **Don't** colorare una superficie di sezione, un titolo o un bordo. Il rosso vive nel bottone primario, il verde in un segno da 8px accanto a una parola, il tricolore in una banda da 3px.
 - **Don't** applicare le ombre di bottone o scheda al cromo strutturale (navbar, footer, wrapper di sezione).
 - **Don't** arrotondare nessun angolo.
 - **Don't** aggiungere `letter-spacing` ai titoli per fingere un look atletico.

@@ -18,6 +18,16 @@ export const Impostazioni: GlobalConfig = {
     },
     { name: 'logo', type: 'upload', relationTo: 'media', label: 'Logo' },
     { name: 'ogImage', type: 'upload', relationTo: 'media', label: 'Immagine di condivisione' },
+    {
+      name: 'immagineHero',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Immagine in cima alla home',
+      admin: {
+        description:
+          'Una sola foto, mostrata in monocromo sotto il titolo. Senza immagine la home resta tipografica su nero.',
+      },
+    },
     { name: 'testoFooter', type: 'textarea', label: 'Testo del footer' },
     {
       name: 'datiFiscali',

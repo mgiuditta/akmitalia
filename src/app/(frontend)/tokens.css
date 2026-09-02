@@ -22,8 +22,8 @@
 }
 
 :root {
-  /* Colori: nessun accento cromatico esiste nel sistema. La gerarchia viene dal
-     valore di superficie e dalla scala, mai dalla tinta. */
+  /* Colori: la gerarchia viene dal valore di superficie e dalla scala, mai dalla
+     tinta. Le superfici restano quattro e restano senza colore. */
   --colore-primary: #1c1c1c;
   --colore-on-primary: #ffffff;
   --colore-ink: #1c1c1c;
@@ -34,6 +34,17 @@
   --colore-muted: #e8e8e8;
   --colore-border: #e8e8e8;
 
+  /* L'unica eccezione al monocromo, dichiarata in docs/adr/0005. Il colore non
+     identifica mai una categoria: dice azione (rosso) o presenza (verde), e la
+     parola scritta resta sempre, come vuole la Regola dell'Etichetta.
+     Valori campionati dallo stemma; le varianti esistono solo per reggere AA. */
+  --colore-azione: #e30917; /* superficie del bottone primario, bianco sopra 4.86:1 */
+  --colore-azione-premuta: #b00711; /* hover e active, bianco sopra 7.28:1 */
+  --colore-presenza: #00b44b; /* verde su fondo scuro: 7.63 su nero, 6.19 su carbone */
+  --colore-presenza-scura: #006b2c; /* verde su fondo chiaro: 6.69 su bianco, 5.46 su grigio */
+  --tricolore-verde: #00973f; /* solo filetto: il valore esatto dello stemma, mai testo */
+  --tricolore-rosso: #e30917;
+
   /* Due famiglie e non tre. Anton per le affermazioni, Roboto per la funzione. */
   --font-display: 'Anton', 'Oswald', 'Arial Narrow', sans-serif;
   --font-body: 'Roboto', system-ui, sans-serif;
@@ -43,14 +54,21 @@
   --peso-regular: 400;
   --peso-bold: 700;
 
-  /* Scala: display da 33px in su, funzionale da 22px in giu'. Non si sovrappongono. */
-  --corpo-hero-display: 120px;
-  --corpo-display-lg: 90px;
-  --corpo-display-md: 55px;
-  --corpo-display-sm: 33px;
-  --corpo-heading-lg: 22px;
-  --corpo-link: 16px;
-  --corpo-caption: 14px;
+  /* Scala: display da 33px in su, funzionale da 22px in giu'. Non si sovrappongono.
+     I valori di DESIGN.md sono il tetto desktop; sotto, clamp() li riduce senza
+     introdurre gradini nuovi. Ogni clamp resta entro 2.5x fra minimo e massimo,
+     oltre quel rapporto lo zoom del browser si comporta male. */
+  --corpo-hero-display: clamp(3rem, 10.5vw, 7.5rem); /* 48 -> 120 */
+  --corpo-display-lg: clamp(2.5rem, 8vw, 5.625rem); /* 40 -> 90 */
+  --corpo-display-md: clamp(2rem, 5.4vw, 3.4375rem); /* 32 -> 55 */
+  --corpo-display-sm: clamp(1.5rem, 3vw, 2.0625rem); /* 24 -> 33 */
+  --corpo-heading-lg: clamp(1.125rem, 1.6vw, 1.375rem); /* 18 -> 22 */
+  --corpo-link: 1rem;
+  --corpo-caption: 0.875rem;
+  /* Deviazione dichiarata da DESIGN.md: il paragrafo corrente sta a 16px, non a 14.
+     Il traffico e' quasi tutto da telefono di sera e 14px di Roboto 300 su nero puro
+     tremola. Il 14px resta dov'e' un dato denso: orari, indirizzi, etichette. */
+  --corpo-testo: 1rem;
 
   --interlinea-display: 1;
   --interlinea-stretta: 1.2;
@@ -73,6 +91,12 @@
   --spazio-section-lg: 100px;
   --altezza-header: 77px;
 
+  /* Il ritmo macro e' generoso, il margine di pagina no: su telefono il dato deve
+     arrivare al bordo, come su un manifesto affisso. */
+  --margine-pagina: clamp(20px, 4vw, 60px);
+  --larghezza-pagina: 1400px;
+  --misura-testo: 34rem; /* la colonna stretta da 500-600px di DESIGN.md */
+
   /* Elevazione: livello 0 ovunque, 1 solo per button-primary, 2 solo per card.
      Il cromo strutturale non proietta mai ombra. */
   --ombra-bottone: rgba(69, 69, 69, 0.2) 0 8px 8px 0, rgba(69, 69, 69, 0.23) 0 2px 5px 0;
@@ -85,10 +109,12 @@
      nessun rimbalzo, nessun elastico. */
   --curva: cubic-bezier(0.16, 1, 0.3, 1);
   --durata: 320ms;
+  --durata-rivela: 560ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
   :root {
     --durata: 0ms;
+    --durata-rivela: 0ms;
   }
 }

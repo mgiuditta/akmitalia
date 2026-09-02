@@ -1340,6 +1340,10 @@ export interface Impostazioni {
   siteName: string;
   logo?: (number | null) | Media;
   ogImage?: (number | null) | Media;
+  /**
+   * Una sola foto, mostrata in monocromo sotto il titolo. Senza immagine la home resta tipografica su nero.
+   */
+  immagineHero?: (number | null) | Media;
   testoFooter?: string | null;
   /**
    * Compaiono nel footer e nella pagina 5x1000.
@@ -1391,6 +1395,7 @@ export interface ImpostazioniSelect<T extends boolean = true> {
   siteName?: T;
   logo?: T;
   ogImage?: T;
+  immagineHero?: T;
   testoFooter?: T;
   datiFiscali?:
     | T
