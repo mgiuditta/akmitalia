@@ -17,7 +17,6 @@ Serve Node 22 e pnpm 11, più Docker per il database.
 ```sh
 cp .env.example .env      # e cambia PAYLOAD_SECRET
 pnpm install
-pnpm font:scarica         # Anton e Roboto, self-hostate
 docker compose up -d db
 pnpm dev
 ```
@@ -36,7 +35,7 @@ vedi «Migration» qui sotto.
 | `pnpm build` / `pnpm start` | Build e avvio in produzione. |
 | `pnpm test` | Test di integrazione (Vitest) più end-to-end (Playwright). |
 | `pnpm generate:types` | Riscrive `src/payload-types.ts` dopo un cambio di collection o global. Va rilanciato ogni volta. |
-| `pnpm font:scarica` | Scarica i caratteri in `public/`. Non sono nel repo. |
+| `pnpm font:scarica` | Riscarica i caratteri in `public/font`. Ci sono già nel repo — Anton è OFL 1.1 e Roboto Apache 2.0, e il build ne ha bisogno: serve solo per aggiornarli. |
 | `pnpm media:scarica` | Scarica in `data/wp-media` le immagini del vecchio sito. |
 | `pnpm importa:centri` | Importa corsi, istruttori e sedi da `data/centri-tecnici.json`. Rieseguibile: fa upsert per slug. |
 | `pnpm sedi:geocodifica` | Riempie le coordinate delle sedi che non ce l'hanno. |
