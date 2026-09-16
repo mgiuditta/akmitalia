@@ -29,6 +29,12 @@ Il sistema rifiuta le scorciatoie di profondità. Ombre, sfocature e vetro non s
 - Navbar fissa a 77px, nera, opaca, senza bordo e senza blur a ogni posizione di scroll: sopra i 1024px le voci stanno in riga fra marchio e CTA, sotto entrano in un pannello, e l'altezza non cambia.
 - Nomi propri, indirizzi e orari restano a corpo pieno: la densità del dato non è negoziata dall'estetica.
 
+Dial: ENERGY 3 / RHYTHM 2 / MOTION 2
+
+- **ENERGY 3**: il saluto lo dà il display sovradimensionato sul nero, non il colore né gli effetti. Una sezione che apre sottovoce, senza scala, è fuori registro.
+- **RHYTHM 2**: coerente con pochi stacchi. L'alternanza nero/chiaro e la sola regola di asimmetria fanno il ritmo; tre sezioni di fila con la stessa composizione no.
+- **MOTION 2**: entrata allo scroll e transizioni, dentro il repertorio chiuso della Regola dell'Indice. Niente pin, niente parallasse.
+
 ## 2. Colors
 
 Nessun gradiente esiste come token riutilizzabile. Le superfici sono ridotte per scelta a quasi-nero, nero puro, bianco e un neutro chiaro. Accanto ad esse vivono due colori semantici, e solo quelli: vedi la Regola del Colore Semantico più sotto.
