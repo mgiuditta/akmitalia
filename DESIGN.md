@@ -32,7 +32,7 @@ Il sistema rifiuta le scorciatoie di profondità. Ombre, sfocature e vetro non s
 Dial: ENERGY 3 / RHYTHM 2 / MOTION 2
 
 - **ENERGY 3**: il saluto lo dà il display sovradimensionato sul nero, non il colore né gli effetti. Una sezione che apre sottovoce, senza scala, è fuori registro.
-- **RHYTHM 2**: coerente con pochi stacchi. L'alternanza nero/chiaro e la sola regola di asimmetria fanno il ritmo; tre sezioni di fila con la stessa composizione no.
+- **RHYTHM 2**: coerente con pochi stacchi. Il ritmo lo fanno l'alternanza nero/chiaro e la forma dei componenti (riga a tutta larghezza, elenco numerato, prova isolata, tessere), non il rientro, che è stato tolto; tre sezioni di fila con la stessa composizione no.
 - **MOTION 2**: entrata allo scroll e transizioni, dentro il repertorio chiuso della Regola dell'Indice. Niente pin, niente parallasse.
 
 ## 2. Colors
