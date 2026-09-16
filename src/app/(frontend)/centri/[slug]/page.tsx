@@ -59,6 +59,11 @@ export async function generateStaticParams() {
   return sedi.docs.map((sede) => ({ slug: sede.slug }))
 }
 
+/* Quando la scheda non c'e' la rotta chiama notFound() e rende not-found.tsx:
+   il titolo del documento lo decide comunque questa funzione, e «AKM Italia»
+   su una pagina che dice «questa pagina non c'e'» e' una riga che si contraddice. */
+const TITOLO_404 = { title: 'Pagina non trovata' }
+
 export async function generateMetadata({
   params,
 }: {
@@ -66,7 +71,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const sede = await trovaSede(slug)
-  if (!sede) return {}
+  if (!sede) return TITOLO_404
 
   return metadatiPagina({
     titolo: sede.nome,
@@ -180,7 +185,20 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
           <p className="occhiello">Centro tecnico</p>
           <h1 className="display display--md">{sede.nome}</h1>
           <p className="testo dato">{indirizzoLeggibile(sede.indirizzo)}</p>
-          {sede.attivo ? <p className="stato">Attivo in questa stagione</p> : null}
+          {/* Un centro non attivo resta pubblicato e sparisce dagli elenchi, ma la
+              sua scheda si apre lo stesso: ci si arriva dall'albo, da un evento
+              passato, da un vecchio link. Prima l'unico indizio era che mancava
+              il quadrato verde, cioe' niente: un'assenza non e' un'etichetta
+              (Regola dell'Etichetta). */}
+          {sede.attivo ? (
+            <p className="stato">Attivo in questa stagione</p>
+          ) : (
+            <p className="testo dato">
+              Questo centro non è attivo in questa stagione: gli orari qui sotto sono quelli
+              dell’ultima e non sono in corso. Scrivici e ti diciamo qual è il centro più vicino
+              aperto.
+            </p>
+          )}
         </div>
       </section>
 
@@ -201,6 +219,9 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
 
             <div className="blocco">
               <h2>Orari</h2>
+              {orari.length > 0 && !sede.attivo ? (
+                <p className="dato">Programmazione dell’ultima stagione, non in corso.</p>
+              ) : null}
               {orari.length > 0 ? (
                 <div className="orari">
                   {orari.map((orario) => {
@@ -294,8 +315,24 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
                   </a>
                 </p>
               ) : null}
-              <p>
-                <Link className="bottone bottone--primario" href="/corsi">
+              {/* L'unico bottone rosso della scheda portava via dalla conversione:
+                  PRODUCT.md misura il successo sulla richiesta con la sede
+                  selezionata, e nessuna azione apriva il modulo con questo centro
+                  gia' scelto. Ora l'azione e' quella, e l'indice dei percorsi
+                  resta dov'e' sempre stato, in barra e nel menu.
+                  Per un centro non attivo la richiesta parte senza sede: quel
+                  centro non e' fra le scelte del modulo, e mandarci qualcuno
+                  sarebbe una promessa che non possiamo tenere. */}
+              <p className="coda-azione">
+                <Link
+                  className="bottone bottone--primario"
+                  href={
+                    sede.attivo ? `/contatti?sede=${encodeURIComponent(sede.slug)}` : '/contatti'
+                  }
+                >
+                  Richiedi informazioni
+                </Link>
+                <Link className="bottone bottone--secondario" href="/corsi">
                   Tutti i percorsi
                 </Link>
               </p>

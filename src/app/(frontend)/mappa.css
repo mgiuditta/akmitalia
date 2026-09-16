@@ -14,8 +14,12 @@
  * pallino centrato sulle coordinate diceva «qui intorno», l'asta dice «qui»,
  * e il raggio resta 0 come ovunque nel sistema.
  *
- * Il nodo e' 28x28 perche' e' un bersaglio da dito e un'area di focus visibile;
- * l'ancora sta in fondo all'asta, quindi la punta cade sulle coordinate.
+ * Il nodo e' 44x44 e quasi tutto trasparente: e' il bersaglio minimo da dito,
+ * non la misura del segno. Il disegno - targhetta da 14px piu' asta da 13 - sta
+ * in fondo al nodo, dove cade l'ancora, cosi' la punta resta sulle coordinate e
+ * i 17px di aria sopra si prendono il dito senza spostare niente sulla carta.
+ * Prima il nodo era 28x28, e DESIGN.md ne dichiarava 24 chiamandolo «bersaglio
+ * da dito»: due misure diverse, tutte e due sotto la soglia.
  */
 .mappa__segno {
   background: transparent;
@@ -27,7 +31,7 @@
   content: '';
   position: absolute;
   inset-inline-start: 50%;
-  inset-block-start: 0;
+  inset-block-end: 13px;
   translate: -50% 0;
   inline-size: 14px;
   block-size: 14px;
@@ -43,7 +47,7 @@
   content: '';
   position: absolute;
   inset-inline-start: 50%;
-  inset-block-start: 15px;
+  inset-block-end: 0;
   translate: -50% 0;
   inline-size: 2px;
   block-size: 13px;
@@ -63,9 +67,15 @@
   z-index: 900 !important;
 }
 
+/* L'anello sta intorno alla targhetta e non al nodo: un quadrato di 48px quasi
+   tutto vuoto non direbbe dov'e' il marker. */
 .mappa__segno:focus-visible {
+  outline: none;
+}
+
+.mappa__segno:focus-visible::before {
   outline: 2px solid var(--colore-on-primary);
-  outline-offset: 2px;
+  outline-offset: 4px;
 }
 
 /* Il centro piu' vicino: targhetta piena e piu' grande, con il comune scritto
@@ -73,10 +83,10 @@
 .mappa__segno--vicino::before {
   inline-size: 20px;
   block-size: 20px;
+  inset-block-end: 7px;
 }
 
 .mappa__segno--vicino::after {
-  inset-block-start: 21px;
   block-size: 7px;
 }
 
@@ -85,8 +95,10 @@
 .mappa__etichetta {
   position: absolute;
   inset-inline-start: calc(50% + 16px);
-  inset-block-start: 10px;
-  translate: 0 -50%;
+  inset-block-end: 7px;
+  display: flex;
+  align-items: center;
+  block-size: 20px;
   padding: 3px var(--spazio-xs);
   background: var(--colore-surface);
   color: var(--colore-on-primary);
@@ -157,7 +169,12 @@
   text-underline-offset: 4px;
 }
 
+/* Leaflet li disegna a 30px: sono due bottoni veri e stanno a 44. */
 .leaflet-container .leaflet-control-zoom a {
+  inline-size: 44px;
+  block-size: 44px;
+  line-height: 44px;
+  font-size: 1.25rem;
   background: var(--colore-surface);
   color: var(--colore-on-primary);
   border-color: var(--colore-ink-secondary);

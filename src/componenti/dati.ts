@@ -163,8 +163,12 @@ export function testiBivio(impostazioni?: Pick<Impostazioni, 'bivio'> | null) {
   return {
     occhiello: b?.occhiello || 'Prima scelta',
     titolo: b?.titolo || 'Qual è il tuo momento',
+    /* Tre momenti e non quattro: la formazione tecnica non ha un corso, quindi
+       non ha una riga nel bivio (docs/adr/0003), e il testo che la annunciava
+       era smentito dal «3 percorsi» stampato due centimetri sotto. Tornera'
+       quando esistera' il corso che la porta. */
     testo:
       b?.testo ||
-      'Capisci quale percorso risponde al tuo momento: sicurezza quotidiana, crescita dei ragazzi, antiaggressione e formazione tecnica.',
+      'Capisci quale percorso risponde al tuo momento: sicurezza quotidiana, crescita dei ragazzi, antiaggressione.',
   }
 }

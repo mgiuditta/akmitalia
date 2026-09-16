@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import React from 'react'
 
 import { apriPayload } from '@/componenti/payload'
 import { pubblicato } from '@/componenti/dati'
+import { Figura } from '@/componenti/Figura'
 import { metadatiPagina } from '@/componenti/seo'
 
 /**
@@ -57,6 +57,11 @@ export async function generateStaticParams() {
     .map((path) => ({ path: path.replace(/^\//, '').split('/') }))
 }
 
+/* Quando la scheda non c'e' la rotta chiama notFound() e rende not-found.tsx:
+   il titolo del documento lo decide comunque questa funzione, e «AKM Italia»
+   su una pagina che dice «questa pagina non c'e'» e' una riga che si contraddice. */
+const TITOLO_404 = { title: 'Pagina non trovata' }
+
 export async function generateMetadata({
   params,
 }: {
@@ -64,7 +69,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { path } = await params
   const pagina = await trovaPagina(aPath(path))
-  if (!pagina) return {}
+  if (!pagina) return TITOLO_404
 
   return metadatiPagina({
     titolo: pagina.meta?.title || pagina.titolo,
@@ -82,8 +87,6 @@ export default async function PaginaEditoriale({
   const pagina = await trovaPagina(aPath(path))
   if (!pagina) notFound()
 
-  const eroe = typeof pagina.immagineHero === 'object' ? pagina.immagineHero : null
-  const eroeUrl = eroe?.sizes?.hero?.url || eroe?.url || null
   const sezioni = pagina.sezioni ?? []
 
   return (
@@ -96,22 +99,26 @@ export default async function PaginaEditoriale({
         </div>
       </section>
 
-      {eroeUrl ? (
-        <Image
-          className="editoriale__foto"
-          src={eroeUrl}
-          alt={eroe?.alt || ''}
-          width={1600}
-          height={700}
-          sizes="100vw"
-        />
-      ) : null}
+      {/* Lo stesso slot di tutte le altre testate, non un <Image> a parte: cosi'
+          quando la foto manca resta il segnaposto invece di un buco, che e'
+          quello che docs/adr/0012 decide proprio per questa testata. */}
+      <Figura
+        slot={pagina.immagineHero}
+        etichetta="Foto della testata"
+        formato="banda"
+        misura="grande"
+        sizes="100vw"
+      />
 
       <section className="sezione sezione--chiara">
         <div className="contenitore editoriale">
           {sezioni.length > 0 ? (
             sezioni.map((sezione, i) => (
-              <section className="rivela editoriale__sezione" key={sezione.id ?? i}>
+              /* Niente `.rivela` qui: le sezioni di un'informativa non sono un
+                 elenco, e l'entrata allo scroll le lasciava schiarite nella parte
+                 bassa dello schermo invece di scandirle. Il repertorio del
+                 movimento vale dove c'e' qualcosa da scandire. */
+              <section className="editoriale__sezione" key={sezione.id ?? i}>
                 {sezione.titolo ? <h2>{sezione.titolo}</h2> : null}
                 <div className="ricco">
                   <RichText data={sezione.testo} />

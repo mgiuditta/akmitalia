@@ -30,6 +30,16 @@ Sette colonne di testo in 375px non si leggono. Sotto i 768px la tabella tiene s
 numeri e un quadrato nero sui giorni pieni, e l'agenda sotto porta tutto: data, orario,
 titolo, tipo, dove. E' un solo markup con due CSS, non due componenti.
 
+### Il quadrato è un segno, non un link
+
+Il markup faceva del quadrato il titolo dell'evento rimpicciolito: restava un link, e su un
+giorno pieno ce n'erano fino a sei, da 6×6px, tutti nell'ordine di tabulazione - ventidue in
+un settembre. Un bersaglio da 6px non lo prende nessun dito e nessun anello di fuoco lo
+mostra. Sotto i 768px i titoli escono dal DOM reso (`display: none`, quindi anche
+dall'albero di accessibilità e dal tab) e al loro posto c'è **un quadrato per giorno**, non
+uno per evento: dice «qui c'è qualcosa», che è esattamente quello che questo ADR gli aveva
+chiesto di dire. Quello che c'è lo porta l'agenda qui sotto, con i suoi link veri.
+
 ## Il tipo si scrive, non si colora
 
 Le sette categorie del vecchio calendario diventano il campo `tipo`, che compare come

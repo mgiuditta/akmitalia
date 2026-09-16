@@ -30,7 +30,7 @@ import {
  * risponde come a tutti: non gli si insegna niente.
  */
 
-const GRAZIE = 'Grazie: la richiesta e arrivata. Ti ricontattiamo entro pochi giorni.'
+const GRAZIE = 'Grazie: la richiesta è arrivata. Ti ricontattiamo entro pochi giorni.'
 
 export async function inviaRichiesta(
   _prec: StatoRichiesta,
@@ -86,7 +86,7 @@ export async function inviaRichiesta(
         })
       ).docs[0] ?? null)
   if (!errori.sede && !sede) {
-    errori.sede = 'Il centro scelto non e piu disponibile: scegline un altro.'
+    errori.sede = 'Il centro scelto non è più disponibile: scegline un altro.'
   }
 
   let corsoId: number | null = null
@@ -108,7 +108,7 @@ export async function inviaRichiesta(
         corsoId = corso.id
         corsoIndicato = corso.nome
       } else {
-        errori.corso = 'Il percorso scelto non e piu disponibile: scegline un altro.'
+        errori.corso = 'Il percorso scelto non è più disponibile: scegline un altro.'
       }
     }
   }

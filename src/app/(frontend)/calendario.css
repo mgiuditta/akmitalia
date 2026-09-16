@@ -18,7 +18,12 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* «Mese precedente» e «Mese successivo» sono i due controlli della pagina: il
+   bersaglio sta a 44px, non all'altezza di una riga di testo. */
 .calendario__salto {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
   font-size: var(--corpo-caption);
   font-weight: var(--peso-bold);
   text-decoration: none;
@@ -84,9 +89,12 @@
   border-inline-end: 0;
 }
 
+/* Il giorno di un altro mese arretra di peso, non di opacita': #333 al 45% su
+   bianco rende circa #a3a3a3, cioe' 2,5:1 su un corpo da 14px. Il peso leggero
+   lo distingue e il contrasto resta quello dell'inchiostro secondario. */
 .calendario__giorno--fuori .calendario__numero {
   color: var(--colore-ink-secondary);
-  opacity: 0.45;
+  font-weight: var(--peso-light);
 }
 
 .calendario__numero {
@@ -110,17 +118,25 @@
   margin-block-start: var(--spazio-xs);
 }
 
+/* 14px e non 13: e' un dato - luogo, ora, titolo - e la Regola del Dato Nudo
+   non lo lascia scendere sotto la didascalia. */
 .calendario__evento {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
-  font-size: 0.8125rem;
+  font-size: var(--corpo-caption);
   line-height: var(--interlinea-stretta);
   text-decoration: none;
   padding: 2px 4px;
   background: var(--colore-muted);
   color: var(--colore-ink);
+}
+
+/* Due presentazioni nello stesso centro nello stesso giorno si leggevano
+   identiche: l'ora e' quello che le distingue. */
+.calendario__ora {
+  font-variant-numeric: tabular-nums;
 }
 
 .calendario__evento:hover,
@@ -134,6 +150,17 @@
   font-weight: var(--peso-bold);
 }
 
+/*
+ * Il segno del giorno pieno: un quadrato nero e basta, come decide
+ * docs/adr/0014. Non e' un link e non sta nell'ordine di tabulazione - a
+ * settembre sarebbero ventidue bersagli da 6px, sotto ogni soglia - e il titolo
+ * dell'evento lo porta l'agenda qui sotto, che su telefono e' la vista vera.
+ * Sopra i 768px sparisce e tornano i titoli in cella.
+ */
+.calendario__segno {
+  display: none;
+}
+
 /* Su telefono la griglia e' una mappa dei giorni pieni: il testo entra
    nell'agenda sotto, e il quadrato dice solo «qui c'e' qualcosa». */
 @media (max-width: 767px) {
@@ -143,35 +170,22 @@
     text-align: center;
   }
 
-  /* La didascalia serve al lettore di schermo: il titolo del mese sta gia' sopra. */
-.calendario caption {
-  position: absolute;
-  inline-size: 1px;
-  block-size: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-.calendario th {
+  .calendario th {
     text-align: center;
   }
 
+  /* `display: none` e non un'opacita': i titoli escono anche dall'albero di
+     accessibilita' e dal tab, non solo dalla vista. */
   .calendario__eventi {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 3px;
-    margin-block-start: 4px;
+    display: none;
   }
 
-  .calendario__evento {
-    inline-size: 6px;
-    block-size: 6px;
-    padding: 0;
+  .calendario__segno {
+    display: block;
+    inline-size: 8px;
+    block-size: 8px;
+    margin: 4px auto 0;
     background: var(--colore-ink);
-    color: transparent;
-    font-size: 0;
   }
 }
 

@@ -1,8 +1,11 @@
 /*
- * Tutto il movimento del sito sta qui. Il repertorio e' chiuso e sono quattro
- * voci (DESIGN.md, Regola dell'Indice): l'entrata scandita di .rivela, la
- * sequenza a tempo dell'eroe, l'apertura dei details del bivio, e l'ingresso
- * in cascata dei marker di mappa.
+ * Tutto il movimento del sito sta qui, meno la quinta voce del repertorio, che
+ * e' l'apertura del pannello del menu e vive in Menu.tsx perche' e' l'unica
+ * affidata a GSAP (docs/adr/0006).
+ *
+ * Il repertorio e' chiuso (DESIGN.md, Regola dell'Indice): l'entrata scandita
+ * di .rivela, la sequenza a tempo dell'eroe, l'apertura dei details del bivio,
+ * l'ingresso in cascata dei marker di mappa, l'apertura del menu.
  */
 
 /* ---------- coreografia ---------- */
@@ -24,12 +27,22 @@
   }
 }
 
+/*
+ * Il range si chiude a `cover 18%` e non a 26%: con quello un blocco arrivava
+ * all'opacita' piena solo a due terzi di schermo, quindi il testo nella parte
+ * bassa si leggeva schiarito. L'entrata scandisce, non vela.
+ *
+ * `.rivela` sta sugli elenchi - le righe del bivio, i punti della prima volta,
+ * le schede dei centri, l'albo - e non sulla prosa: le sezioni di un'informativa
+ * non sono un elenco, e li' l'entrata non scandiva niente (vedi la rotta
+ * editoriale, che non la usa piu').
+ */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .rivela {
       animation: rivela linear both;
       animation-timeline: view();
-      animation-range: entry 10% cover 26%;
+      animation-range: entry 10% cover 18%;
     }
   }
 }

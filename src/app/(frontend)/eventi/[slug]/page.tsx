@@ -41,6 +41,11 @@ export async function generateStaticParams() {
   return eventi.docs.map((evento) => ({ slug: evento.slug }))
 }
 
+/* Quando la scheda non c'e' la rotta chiama notFound() e rende not-found.tsx:
+   il titolo del documento lo decide comunque questa funzione, e «AKM Italia»
+   su una pagina che dice «questa pagina non c'e'» e' una riga che si contraddice. */
+const TITOLO_404 = { title: 'Pagina non trovata' }
+
 export async function generateMetadata({
   params,
 }: {
@@ -48,7 +53,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const evento = await trovaEvento(slug)
-  if (!evento) return {}
+  if (!evento) return TITOLO_404
 
   const sede = typeof evento.sede === 'object' ? evento.sede : null
   return metadatiPagina({
@@ -64,10 +69,7 @@ export async function generateMetadata({
 
 export default async function PaginaEvento({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const [evento, impostazioni] = await Promise.all([
-    trovaEvento(slug),
-    (await apriPayload()).findGlobal({ slug: 'impostazioni', depth: 1 }),
-  ])
+  const evento = await trovaEvento(slug)
   if (!evento) notFound()
 
   const sede = typeof evento.sede === 'object' ? evento.sede : null
@@ -76,6 +78,13 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
   const quando = orario
     ? `${dataLeggibile(evento.dataInizio, evento.dataFine)}, ${orario}`
     : dataLeggibile(evento.dataInizio, evento.dataFine)
+
+  /* Trentacinque eventi su cinquantasette sono gia' passati, e la scheda li
+     mostrava come se fossero da fare: «in aggiornamento», «Luogo da confermare»
+     e un bottone rosso «Richiedi informazioni» sotto una data dell'anno scorso.
+     Un evento concluso resta in archivio e lo dichiara. Il confronto e' con la
+     fine, dove c'e': uno stage di tre giorni e' in corso anche il secondo. */
+  const concluso = new Date(evento.dataFine || evento.dataInizio).getTime() < Date.now()
 
   /* Un evento datato in un luogo: senza JSON-LD un motore di ricerca deve
      indovinarlo dal testo, e quelli con la data li mostra come tali. */
@@ -115,7 +124,10 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
           <Link className="briciola" href="/eventi">
             Torna al calendario
           </Link>
-          <p className="occhiello">{etichettaTipo(evento.tipo)}</p>
+          <p className="occhiello">
+            {etichettaTipo(evento.tipo)}
+            {concluso ? ' · Concluso' : ''}
+          </p>
           <h1 className="display display--md">{evento.titolo}</h1>
           <p className="testo dato">
             <time dateTime={evento.dataInizio}>{quando}</time>
@@ -123,15 +135,25 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
         </div>
       </section>
 
-      {/* Senza una copertina propria l'evento prende la foto della pagina Eventi:
-          cinquanta schede con lo stesso segnaposto grigio non dicono niente. */}
-      <Figura
-        slot={evento.copertina || impostazioni?.fotoPagine?.eventi}
-        etichetta="Foto dell'evento"
-        formato="banda"
-        misura="grande"
-        sizes="100vw"
-      />
+      {/*
+        La banda c'e' solo se questo evento ha la sua fotografia. Il ripiego sulla
+        foto della pagina Eventi partiva da una ragione giusta - cinquanta schede
+        con lo stesso segnaposto grigio non dicono niente - e arrivava allo stesso
+        posto: cinquantasette schede con la stessa fotografia non dicono niente
+        uguale, e intanto 558px di foto ripetuta spingevano data, luogo e bottone
+        sotto la piega. Un evento non e' una pagina indice: la sua copertina e' un
+        dato, non uno slot di composizione, e un dato che manca non si stampa
+        (docs/adr/0012).
+      */}
+      {evento.copertina ? (
+        <Figura
+          slot={evento.copertina}
+          etichetta="Foto dell'evento"
+          formato="banda"
+          misura="grande"
+          sizes="100vw"
+        />
+      ) : null}
 
       <section className="sezione sezione--chiara">
         <div className="contenitore scheda">
@@ -143,7 +165,11 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
               </div>
             ) : null}
             {!evento.estratto && !evento.descrizione ? (
-              <p className="dato">Il programma di questo evento è in aggiornamento.</p>
+              <p className="dato">
+                {concluso
+                  ? 'Di questo evento restano la data, il tipo e il luogo: il programma non è stato archiviato.'
+                  : 'Il programma di questo evento è in aggiornamento.'}
+              </p>
             ) : null}
           </div>
 
@@ -157,7 +183,12 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
                   {indirizzoLeggibile(sede.indirizzo)}
                 </p>
               ) : (
-                <p className="dato">{evento.luogo || 'Luogo da confermare.'}</p>
+                /* «Da confermare» e' una promessa: su un evento passato non c'e'
+                   piu' niente da confermare, il luogo semplicemente non e' stato
+                   registrato nell'import. */
+                <p className="dato">
+                  {evento.luogo || (concluso ? 'Luogo non registrato.' : 'Luogo da confermare.')}
+                </p>
               )}
             </div>
 
@@ -174,25 +205,50 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
               </div>
             ) : null}
 
+            {/* Il blocco «Quando» ristampava parola per parola la data che sta
+                nella testata, tre centimetri sopra: qui resta l'azione, che e'
+                l'unica cosa che la colonna aveva da aggiungere.
+                Su un evento concluso l'azione non e' iscriversi: e' vedere cosa
+                c'e' adesso. La richiesta parte con il centro gia' scelto, dove
+                l'evento ne aveva uno. */}
             <div className="blocco">
-              <h2>Quando</h2>
-              <p className="dato">{quando}</p>
-              <p>
-                {evento.ctaLink ? (
-                  <a
-                    className="bottone bottone--primario"
-                    href={evento.ctaLink}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    Iscriviti
-                  </a>
-                ) : (
-                  <Link className="bottone bottone--primario" href="/contatti">
-                    Richiedi informazioni
-                  </Link>
-                )}
-              </p>
+              {concluso ? (
+                <>
+                  <h2>Questo evento è concluso</h2>
+                  <p className="dato">
+                    Resta in archivio per chi cerca cos’è successo. Gli appuntamenti aperti
+                    stanno nel calendario.
+                  </p>
+                  <p>
+                    <Link className="bottone bottone--secondario" href="/eventi">
+                      Vedi il calendario
+                    </Link>
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h2>Come si partecipa</h2>
+                  <p>
+                    {evento.ctaLink ? (
+                      <a
+                        className="bottone bottone--primario"
+                        href={evento.ctaLink}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
+                        Iscriviti
+                      </a>
+                    ) : (
+                      <Link
+                        className="bottone bottone--primario"
+                        href={sede ? `/contatti?sede=${encodeURIComponent(sede.slug)}` : '/contatti'}
+                      >
+                        Richiedi informazioni
+                      </Link>
+                    )}
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>

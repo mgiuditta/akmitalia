@@ -17,9 +17,10 @@ import { metadatiPagina } from '@/componenti/seo'
  * Contatti: il cliente li cambia dall'admin. Il set di campi resta codice,
  * perche' sono le colonne della collection `richieste`.
  *
- * Da un percorso si arriva con ?corso=<slug>: lo slug si risolve qui e la
- * select parte gia' sulla voce giusta. Leggere searchParams rende la rotta
- * dinamica, che e' quello che serve perche' la preselezione funzioni.
+ * Da un percorso si arriva con ?corso=<slug>, da un centro o da un evento con
+ * ?sede=<slug>: gli slug si risolvono qui e le select partono gia' sulla voce
+ * giusta. Leggere searchParams rende la rotta dinamica, che e' quello che serve
+ * perche' la preselezione funzioni.
  */
 
 export const revalidate = 60
@@ -27,19 +28,23 @@ export const revalidate = 60
 export const metadata: Metadata = metadatiPagina({
   titolo: 'Richiedi informazioni',
   descrizione:
-    'Chiedi informazioni su corsi e centri di Krav Maga AKM Italia a Milano, in Lombardia e in Canton Ticino: scegli il centro, lascia un recapito e ti ricontattiamo.',
+    'Chiedi informazioni su corsi e centri di Krav Maga AKM Italia a Milano e in Lombardia: scegli il centro, lascia un recapito e ti ricontattiamo.',
   path: '/contatti',
 })
 
+/* Niente Canton Ticino finche' non c'e' un centro in Ticino: le province attive
+   sono Lodi, Milano, Monza e Brianza, Varese, e la select non offre un centro
+   ticinese. Il campo provincia accetta gia' la sigla TI: il giorno che una sede
+   la porta, la frase torna. */
 const INTRO =
-  'Puoi chiedere informazioni su centri e corsi di Krav Maga a Milano, in Lombardia e in Canton Ticino: scegli il centro che ti interessa, lascia un recapito e ti richiama chi tiene le lezioni in quel centro.'
+  'Puoi chiedere informazioni su centri e corsi di Krav Maga a Milano e in Lombardia: scegli il centro che ti interessa, lascia un recapito e ti richiama chi tiene le lezioni in quel centro.'
 
 export default async function PaginaContatti({
   searchParams,
 }: {
-  searchParams: Promise<{ corso?: string }>
+  searchParams: Promise<{ corso?: string; sede?: string }>
 }) {
-  const { corso: slugCorso } = await searchParams
+  const { corso: slugCorso, sede: slugSede } = await searchParams
   const payload = await apriPayload()
 
   const [contatti, sedi, corsi] = await Promise.all([
@@ -49,7 +54,7 @@ export default async function PaginaContatti({
       depth: 0,
       limit: 200,
       sort: 'indirizzo.citta',
-      select: { nome: true, indirizzo: true, palestra: true, mapsUrl: true },
+      select: { nome: true, slug: true, indirizzo: true, palestra: true, mapsUrl: true },
       where: { and: [{ attivo: { equals: true } }, pubblicato] },
     }),
     payload.find({
@@ -63,7 +68,24 @@ export default async function PaginaContatti({
   ])
 
   const modulo = contatti.modulo
-  const privacy = typeof modulo?.paginaPrivacy === 'object' ? modulo.paginaPrivacy : null
+  const scelta = typeof modulo?.paginaPrivacy === 'object' ? modulo.paginaPrivacy : null
+
+  /* Il consenso GDPR senza il link all'informativa e' un consenso che non si
+     puo' leggere. Il campo del global e' il modo giusto di collegarla, ma il
+     ripiego non e' lasciarlo vuoto: se nessuno l'ha scelta, si cerca la pagina
+     pubblicata a /privacy, che `pnpm pagine:legali` crea. */
+  const privacy =
+    scelta ??
+    (
+      await payload.find({
+        collection: 'pagine',
+        depth: 0,
+        limit: 1,
+        select: { path: true },
+        where: { and: [{ path: { equals: '/privacy' } }, pubblicato] },
+      })
+    ).docs[0] ??
+    null
 
   const testiModulo: TestiModulo = {
     nota: modulo?.nota || 'Tutti i campi sono obbligatori, tranne percorso e messaggio.',
@@ -85,6 +107,18 @@ export default async function PaginaContatti({
     ? (corsi.docs.find((c) => c.slug === slugCorso)?.id ?? null)
     : null
 
+  /* Da una scheda centro o da un evento: il centro arriva gia' scelto, cosi' la
+     richiesta che PRODUCT.md misura - quella con la sede selezionata - non
+     dipende da chi ritrova il proprio comune in una select di quindici voci.
+     Uno slug che non e' fra i centri attivi non preseleziona niente e non e' un
+     errore: la select resta sul «Scegli un centro». */
+  const sedeIniziale = slugSede
+    ? (sedi.docs.find((s) => s.slug === slugSede)?.id ?? null)
+    : null
+
+  const recapiti = Boolean(
+    contatti.telefono || contatti.whatsapp || contatti.email || contatti.sedeLegale?.via,
+  )
   const telefono = contatti.telefono?.replace(/\s/g, '')
   const whatsapp = contatti.whatsapp?.replace(/[\s+]/g, '')
   const sede = contatti.sedeLegale
@@ -101,7 +135,9 @@ export default async function PaginaContatti({
         </div>
       </section>
 
-      <section className="sezione sezione--chiara" aria-labelledby="titolo-modulo">
+      {/* L'ancora della CTA in barra quando si e' gia' su questa pagina: li'
+          «Richiedi informazioni» ripeteva l'H1 e portava dove si era gia'. */}
+      <section className="sezione sezione--chiara" id="modulo" aria-labelledby="titolo-modulo">
         <div className="contenitore contatto">
           <div>
             <h2 className="display display--sm titolo-elenco" id="titolo-modulo">
@@ -120,6 +156,7 @@ export default async function PaginaContatti({
               testi={testiModulo}
               opzioni={opzioni}
               corsoIniziale={corsoIniziale}
+              sedeIniziale={sedeIniziale}
               turnstileSiteKey={process.env.TURNSTILE_SITE_KEY || null}
             />
           </div>
@@ -132,6 +169,16 @@ export default async function PaginaContatti({
               formato="ritratto"
               sizes="(min-width: 900px) 30vw, 100vw"
             />
+            {/* AKM non pubblica un recapito per centro (CONTEXT.md, «Docente»), e
+                finche' il global Contatti non e' compilato - cioe' subito dopo
+                un'installazione pulita - qui non c'era niente: un <dl> vuoto e
+                cinquecentocinquanta pixel di bianco. Uno stato vuoto si dichiara. */}
+            {recapiti ? null : (
+              <p className="testo dato">
+                Non pubblichiamo un recapito diretto: la richiesta qui accanto arriva a chi
+                tiene le lezioni nel centro che scegli, e ti risponde quella persona.
+              </p>
+            )}
             <dl className="recapiti">
               {contatti.telefono ? (
                 <div className="recapito">

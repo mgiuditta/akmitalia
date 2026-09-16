@@ -131,7 +131,7 @@ export const Impostazioni: GlobalConfig = {
           label: 'Testo',
           maxLength: 300,
           defaultValue:
-            'Capisci quale percorso risponde al tuo momento: sicurezza quotidiana, crescita dei ragazzi, antiaggressione e formazione tecnica.',
+            'Capisci quale percorso risponde al tuo momento: sicurezza quotidiana, crescita dei ragazzi, antiaggressione.',
         },
       ],
     },

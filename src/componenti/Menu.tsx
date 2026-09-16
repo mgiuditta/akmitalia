@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import Link, { useLinkStatus } from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
@@ -45,6 +45,32 @@ function ordinale(n: number) {
   return String(n + 1).padStart(2, '0')
 }
 
+/* La CTA porta a una rotta sola: quando ci siamo gia', il bottone deve dire
+   un'altra cosa. Il confronto normalizza lo slash finale, che il global puo'
+   avere e il pathname no. */
+const senzaCoda = (p: string) => p.replace(/\/$/, '') || '/'
+
+/*
+ * Il riscontro al tocco. Le rotte dinamiche - la scheda di un centro, quella di
+ * un evento - si rendono a richiesta: chi tocca una voce restava a guardare la
+ * pagina vecchia, ferma, senza sapere se il tocco fosse arrivato.
+ *
+ * Una parola scritta e non uno spinner: il repertorio del movimento e' chiuso e
+ * un cerchio che gira e' un loop, che non ci sta dentro. `useLinkStatus` da' lo
+ * stato vero del <Link> che la contiene, non un finto avanzamento a tempo.
+ *
+ * Perche' qui e non in un `loading.tsx` di rotta, che sarebbe la via di serie:
+ * un confine di Suspense sopra le pagine fa partire lo streaming della
+ * risposta, e una risposta gia' iniziata non puo' piu' cambiare stato HTTP -
+ * ogni URL inesistente uscirebbe 200 invece di 404. Il 404 vero vale piu' di
+ * uno scheletro grigio, e c'e' un test che lo tiene fermo.
+ */
+function Attesa() {
+  const { pending } = useLinkStatus()
+  if (!pending) return null
+  return <span className="menu__attesa">Apro…</span>
+}
+
 export function Menu({
   voci,
   cta,
@@ -58,6 +84,7 @@ export function Menu({
   const gsapRef = useRef<Gsap | null>(null)
   const contesto = useRef<ReturnType<Gsap['context']> | null>(null)
   const percorso = usePathname()
+  const suPagina = senzaCoda(percorso ?? '') === senzaCoda(cta.href)
 
   /* Scaldato a vuoto: al primo tap GSAP e' gia' in cache. Chi ha chiesto meno
      movimento non lo scarica affatto, e per lui il menu resta istantaneo.
@@ -119,10 +146,15 @@ export function Menu({
             { scaleX: 1, duration: 0.7, ease: 'expo.out' },
             '<',
           )
+          /* Solo la traslazione: la rotazione di 6 gradi che i titoli avevano
+             non si spiegava in una frase - non e' gerarchia, non e' sequenza,
+             non e' riscontro a un gesto - e la Regola dell'Indice non la fa
+             entrare. Quello che resta scandisce l'apertura: le voci arrivano
+             una dopo l'altra da sotto la propria maschera. */
           .fromTo(
             testi,
-            { yPercent: 120, rotate: 6 },
-            { yPercent: 0, rotate: 0, duration: 0.7, stagger: 0.05, ease: 'expo.out' },
+            { yPercent: 120 },
+            { yPercent: 0, duration: 0.7, stagger: 0.05, ease: 'expo.out' },
             '<+=0.35',
           )
           .fromTo(
@@ -267,6 +299,7 @@ export function Menu({
                 <span className="menu__maschera">
                   <span className="menu__testo">{voce.testo}</span>
                 </span>
+                <Attesa />
               </Link>
               {voce.dato ? (
                 <span className={voce.vivo ? 'menu__dato stato' : 'menu__dato'}>
@@ -278,8 +311,16 @@ export function Menu({
         </ul>
       </nav>
 
-      <Link className="bottone bottone--primario barra__cta" href={cta.href}>
-        {cta.testo}
+      {/* Sulla pagina che la CTA indica, «Richiedi informazioni» ripeteva parola
+          per parola l'H1 sotto e portava dove si era gia'. Non si nasconde -
+          docs/adr/0008 dice che la CTA resta a ogni larghezza - ma cambia
+          destinazione e parola: porta al modulo, che e' l'unica cosa che su
+          quella pagina resta da fare. */}
+      <Link
+        className="bottone bottone--primario barra__cta"
+        href={suPagina ? '#modulo' : cta.href}
+      >
+        {suPagina ? 'Vai al modulo' : cta.testo}
       </Link>
 
       <button

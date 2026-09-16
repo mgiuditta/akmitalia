@@ -5,9 +5,16 @@ import type { Sedi } from '@/payload-types'
 import { giorniLeggibili, indirizzoLeggibile, nomeIstruttore } from './dati'
 
 /**
- * Una riga dell'elenco centri: nome, indirizzo, orari veri, stato. Il dato sta
- * a corpo pieno e non si nasconde dietro un click, come vuole la Regola del
- * Dato Nudo. Il verde dello stato porta sempre la parola accanto.
+ * Una riga dell'elenco centri: nome, indirizzo, orari veri. Il dato sta a corpo
+ * pieno e non si nasconde dietro un click, come vuole la Regola del Dato Nudo.
+ *
+ * Il quadrato verde di «Attivo in questa stagione» non e' piu' qui. L'elenco
+ * contiene per costruzione i soli centri attivi, quindi quindici righe
+ * portavano lo stesso segno e non distinguevano niente: un dato vivo che sta
+ * ovunque non e' un dato, e' una decorazione. Il verde resta dove separa
+ * davvero - la scheda del centro, che si apre anche per un centro chiuso - e
+ * qui si dichiara solo l'eccezione, cioe' un centro non attivo che finisse in
+ * elenco.
  *
  * `distanza` compare solo dopo che l'utente ha chiesto il centro piu' vicino:
  * fino ad allora la riga non sa dove sia chi legge.
@@ -65,7 +72,9 @@ export function SchedaCentro({
         <p className="dato">Orari in aggiornamento.</p>
       )}
 
-      {centro.attivo ? <p className="stato">Attivo in questa stagione</p> : null}
+      {centro.attivo === false ? (
+        <p className="dato">Non attivo in questa stagione: gli orari sono quelli dell’ultima.</p>
+      ) : null}
     </li>
   )
 }

@@ -84,7 +84,11 @@
   /* Il token nav-link di DESIGN.md: Roboto 16, peso 300. Il segno di hover e'
      una sottolineatura staccata, non un colore: la Regola del Valore. */
   .barra__voce {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    /* 1024 e' anche l'iPad in orizzontale, che e' un dito: il bersaglio non
+       scende sotto i 44px nemmeno dove c'e' un puntatore. */
+    min-block-size: 44px;
     padding-block: var(--spazio-sm);
     font-size: var(--corpo-link);
     font-weight: var(--peso-light);
@@ -238,9 +242,10 @@
 }
 
 /* Il fondo entra in tre tempi: grigio carta, nero, carbone. E' uno stacco di
-   valore, non di colore, ed e' la sola parte spettacolare del sistema. Su un
-   foglio da 620px i tre tempi si vedono davvero; a tutto schermo passavano
-   quasi inosservati.
+   valore, non di colore, e scandisce l'apertura invece di intrattenere: e' la
+   quinta voce del repertorio della Regola dell'Indice, l'unica affidata a GSAP
+   (docs/adr/0006). Su un foglio da 620px i tre tempi si vedono davvero; a tutto
+   schermo passavano quasi inosservati.
 
    L'ultimo tempo e' carbone e non nero, contro quanto scriveva docs/adr/0006:
    il foglio si posa su una pagina nera velata di nero, e un foglio nero non
@@ -368,6 +373,15 @@
 .menu[data-menu='aperto'] .menu__ordinale,
 .menu[data-menu='aperto'] .menu__dato {
   opacity: 1;
+}
+
+/* Il riscontro al tocco: una parola, alla misura dell'etichetta. Non anima
+   niente e non occupa spazio finche' non serve. */
+.menu__attesa {
+  display: block;
+  padding-block-start: var(--spazio-xs);
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
 }
 
 /* flex invece di block cosi' il pallino di .stato resta allineato al testo. */
@@ -554,6 +568,7 @@
   color: var(--colore-on-primary);
   padding-block: clamp(var(--spazio-section-sm), 7vw, var(--spazio-section));
   --riga-locale: var(--colore-ink-secondary);
+  --anello: var(--colore-on-primary);
 }
 
 .pie__filetto {
@@ -606,7 +621,12 @@
   gap: var(--spazio-sm);
 }
 
+/* I link del piede sono controlli isolati, non link dentro una frase: il
+   bersaglio arriva a 44px con l'interlinea, non con il corpo del testo. */
 .pie__link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
   font-size: var(--corpo-caption);
   font-weight: var(--peso-bold);
   text-decoration: none;
@@ -660,6 +680,13 @@
   border-block-start: 1px solid var(--riga-locale);
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--spazio-md) var(--spazio-lg);
   font-size: var(--corpo-caption);
+}
+
+.pie__coda a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
 }

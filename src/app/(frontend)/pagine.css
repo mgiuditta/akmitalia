@@ -26,6 +26,28 @@
   filter: grayscale(1) contrast(1.06);
 }
 
+/* La didascalia sovrapposta in fondo alla foto (DESIGN.md §4): una lastra nera
+   piena, non un velo e non un vetro. E' dove si dichiara che una fotografia e'
+   generata, e si vede senza aprire il codice sorgente. */
+.figura__didascalia {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  max-inline-size: min(100%, 40rem);
+  padding: var(--spazio-xs) var(--spazio-sm-alt);
+  background: var(--colore-surface);
+  color: var(--colore-on-primary);
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+}
+
+/* Sul ritratto dell'albo, che sta a 88px, non ci sta niente di scritto: li' la
+   dichiarazione resta nel testo alternativo, come per il segnaposto
+   (docs/adr/0012, «Il ritratto e' l'eccezione parziale»). */
+.istruttore__foto .figura__didascalia {
+  display: none;
+}
+
 /*
  * Il segnaposto di uno slot vuoto: superficie carbone, la marca in filigrana e
  * scritto sopra che cosa ci va. Non e' un errore e non e' un caricamento in
@@ -67,17 +89,25 @@
 }
 
 /* Il filetto chiude il segnaposto in fondo: e' la stessa firma della barra, e
-   dice che quel rettangolo appartiene al sito e non e' un buco. */
+   dice che quel rettangolo appartiene al sito e non e' un buco.
+   Il tab da 96px e non la banda a tutta larghezza: stesa su un segnaposto largo
+   1400px leggeva come una bandiera, che e' l'errore di stampa contro cui mette
+   in guardia docs/adr/0009.
+   E dentro il riquadro, non sul suo bordo: appoggiato al filo della superficie
+   chiara che segue, la banda centrale bianca si fondeva con la sezione sotto e
+   restavano due trattini staccati, verde e rosso. Qui sta sul carbone, dove il
+   bianco e' bianco. */
 .segnaposto::after {
   content: '';
   position: absolute;
-  inset-inline: 0;
-  inset-block-end: 0;
+  inset-inline-start: var(--spazio-lg);
+  inset-block-end: var(--spazio-lg);
+  inline-size: 96px;
   block-size: 3px;
   background: linear-gradient(
     to right,
     var(--tricolore-verde) 0 33.33%,
-    var(--colore-surface-light) 33.33% 66.67%,
+    var(--filetto-centro, var(--colore-surface-light)) 33.33% 66.67%,
     var(--tricolore-rosso) 66.67% 100%
   );
 }
@@ -173,7 +203,12 @@
   margin-block-start: var(--spazio-md);
 }
 
+/* «Torna ai centri», «Leggi l'informativa»: controlli isolati, quindi il
+   bersaglio arriva a 44px. Il corpo del testo non cambia. */
 .briciola {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
   font-size: var(--corpo-caption);
   font-weight: var(--peso-bold);
   text-decoration: none;
@@ -245,6 +280,9 @@
 }
 
 .filtro {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
   font-size: var(--corpo-caption);
   font-weight: var(--peso-bold);
   text-decoration: none;
@@ -253,10 +291,14 @@
   white-space: nowrap;
 }
 
+/* «Selezionato» non e' un'azione: il rosso dice solo «premi qui» (docs/adr/0005),
+   e qui a distinguere il filtro attivo e' il valore della superficie, che e' il
+   modo del sistema (Regola del Valore). */
 .filtro--attivo {
-  background: var(--colore-azione);
-  border-color: var(--colore-azione);
+  background: var(--colore-ink);
+  border-color: var(--colore-ink);
   color: var(--colore-on-primary);
+  --anello: var(--colore-ink);
 }
 
 /* Su telefono i filtri diventano una riga che scorre: a capo occuperebbero
@@ -528,15 +570,6 @@
   padding-block-start: 0.08em;
 }
 
-/* A tutta larghezza fra testata e testo: e' uno stacco di ritmo, non una
-   figura dentro la colonna. */
-.editoriale__foto {
-  inline-size: 100%;
-  block-size: clamp(200px, 32vw, 420px);
-  object-fit: cover;
-  filter: grayscale(1) contrast(1.05);
-}
-
 /* ---------- istruttori ---------- */
 
 .albo {
@@ -602,6 +635,12 @@
 .vuoto {
   padding-block: var(--spazio-xxl);
   font-size: var(--corpo-caption);
+}
+
+/* Il mese senza eventi sta sopra la griglia: li' e' una riga da leggere prima
+   di sfogliare, sotto era una nota dopo sei righe di celle vuote. */
+.vuoto--mese {
+  padding-block: 0 var(--spazio-lg);
 }
 
 /* ---------- comuni in home ---------- */
@@ -718,8 +757,11 @@
   outline-offset: 2px;
 }
 
+/* Il campo invalido si dichiara con il bordo doppio, non con il rosso: il rosso
+   e' impegnato a dire «premi qui» (docs/adr/0005) e non puo' dire anche
+   «attento». */
 .campo [aria-invalid='true'] {
-  border-color: var(--colore-azione-premuta);
+  border-color: var(--colore-ink);
   border-width: 2px;
 }
 
@@ -735,7 +777,8 @@
   min-block-size: 0;
   margin: 2px 0 0;
   padding: 0;
-  accent-color: var(--colore-azione);
+  /* Spuntato non e' premuto: la casella prende l'inchiostro, non il rosso. */
+  accent-color: var(--colore-ink);
 }
 
 .campo--scelta label {
@@ -770,19 +813,40 @@
   overflow: hidden;
 }
 
-/* Rosso premuto su bianco: 7.28:1. */
+/*
+ * L'errore si dichiara a parole e con un segno, non con la tinta: inchiostro su
+ * bianco (15.3:1) e un quadrato nero con il punto esclamativo, disegnato in CSS
+ * come le barrette del bivio. Nessuna libreria di icone, nessun terzo ruolo del
+ * colore (DESIGN.md §2, docs/adr/0005).
+ */
 .campo__errore,
 .modulo__avviso {
   margin: 0;
   font-size: var(--corpo-caption);
   font-weight: var(--peso-bold);
-  color: var(--colore-azione-premuta);
+  color: var(--colore-ink);
+}
+
+.campo__errore::before,
+.modulo__avviso::before {
+  content: '!';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.4em;
+  block-size: 1.4em;
+  margin-inline-end: var(--spazio-xs);
+  background: var(--colore-ink);
+  color: var(--colore-surface-light);
+  font-weight: var(--peso-bold);
+  line-height: 1;
+  vertical-align: -0.3em;
 }
 
 .modulo__avviso {
   font-size: var(--corpo-testo);
   padding: var(--spazio-sm-alt);
-  border: 2px solid var(--colore-azione-premuta);
+  border: 2px solid var(--colore-ink);
 }
 
 .modulo__avviso:focus-visible {

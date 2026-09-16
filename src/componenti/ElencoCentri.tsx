@@ -220,10 +220,14 @@ export function ElencoCentri({ centri, province }: { centri: Sedi[]; province: s
                 vicino={vicino}
                 etichetta="Mappa dei centri tecnici AKM Italia"
               />
+              {/* Il singolare non era gestito, e la frase si rompeva proprio con il
+                  dato di oggi: «1 centri non hanno ancora le coordinate». */}
               {punti.length < visibili.length ? (
                 <p className="dato mappa__nota">
-                  {visibili.length - punti.length} centri non hanno ancora le coordinate: li
-                  trovi qui sotto con indirizzo e orari.
+                  {visibili.length - punti.length === 1
+                    ? 'Un centro non ha ancora le coordinate: lo trovi'
+                    : `${visibili.length - punti.length} centri non hanno ancora le coordinate: li trovi`}{' '}
+                  qui sotto con indirizzo e orari.
                 </p>
               ) : null}
             </div>

@@ -89,8 +89,11 @@ export const Contatti: GlobalConfig = {
               type: 'text',
               label: 'Messaggio dopo l invio',
               maxLength: 200,
+              /* Con gli accenti: nel momento della conferma una frase senza
+                 accenti si legge come una stringa di sistema, non come una
+                 risposta. Vale per ogni testo che il visitatore vede. */
               defaultValue:
-                'Grazie: la richiesta e arrivata. Ti ricontattiamo entro pochi giorni.',
+                'Grazie: la richiesta è arrivata. Ti ricontattiamo entro pochi giorni.',
             },
           ],
         },

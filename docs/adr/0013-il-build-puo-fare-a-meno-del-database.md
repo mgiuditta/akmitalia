@@ -39,6 +39,14 @@ Una pagina prerenderizzata si serve dalla cache finche' non e' piu' vecchia del 
 dopo un rilascio il guscio senza elenchi resta in circolo per quel tempo: **un minuto per
 le pagine, un'ora per `sitemap.xml` e `opengraph-image`**. Poi si riempiono da sole.
 
+Quel guscio non stampa numeri finti. I conteggi sotto le voci del menu vengono da
+`payload.count()`, che con la bandiera accesa risponde zero: «0 corsi», «0 qualificati» e
+soprattutto «0 attivi» con il quadrato verde di presenza accanto, cioè un dato vivo
+inventato proprio dove il sistema promette un dato vero. Lo zero qui non è un fatto - non
+vuol dire che i centri hanno chiuso, vuol dire che non li abbiamo chiesti - quindi vale la
+regola che il menu applicava già alle voci senza conteggio: **senza dato, niente riga**.
+Le voci restano, il numero torna con il primo accesso che rigenera la pagina.
+
 Scaldare le rotte con un `curl` subito dopo il deploy non serve - a quel punto la cache
 non e' scaduta e la richiesta non rigenera niente - e per questo il post-deployment di
 Coolify non ce l'ha.

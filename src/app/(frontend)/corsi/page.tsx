@@ -26,7 +26,7 @@ export const revalidate = 60
 export const metadata: Metadata = metadatiPagina({
   titolo: 'Percorsi',
   descrizione:
-    'I percorsi AKM Italia: difesa personale per adulti, Krav Maga Kids, antiaggressione, formazione tecnica. A chi si rivolgono e dove si praticano.',
+    'I percorsi AKM Italia: difesa personale per adulti, Krav Maga Kids, antiaggressione. A chi si rivolgono, dove si praticano e in quanti centri.',
   path: '/corsi',
 })
 
@@ -107,13 +107,18 @@ export default async function PaginaCorsi() {
                     <span className="display display--md">{corso.domanda || corso.nome}</span>
                     <span className="percorso__nome">{corso.nome}</span>
                     <span className="testo percorso__sommario">{corso.sommario}</span>
+                    {/* Un percorso che nessun centro attivo tiene non perde la riga
+                        in silenzio: la riga c'e' e dice perche'. Il quadrato verde
+                        resta al dato vivo, cioe' ai centri che lo tengono davvero. */}
                     <span className="percorso__coda">
                       {corso.aChiSiRivolge ? <span>{corso.aChiSiRivolge}</span> : null}
                       {quante > 0 ? (
                         <span className="stato">
                           {quante} {quante === 1 ? 'centro lo tiene' : 'centri lo tengono'}
                         </span>
-                      ) : null}
+                      ) : (
+                        <span>Non in calendario in questa stagione</span>
+                      )}
                     </span>
                   </span>
 
@@ -143,6 +148,32 @@ export default async function PaginaCorsi() {
         </section>
       )}
 
+      {/* La chiusura. L'ultima riga del bivio ha il fondo che ha - dipende dal
+          ruolo di superficie dell'ultimo corso - e quando capitava carbone la
+          pagina finiva contro un piede carbone, separata da una riga #333: due
+          superfici uguali dove doveva esserci il cambio di valore che chiude
+          (Regola del Valore). Una fascia chiara chiude sempre, e porta l'azione
+          che la pagina fin qui non aveva. */}
+      <section className="sezione sezione--chiara" aria-labelledby="titolo-coda-corsi">
+        <div className="contenitore">
+          <span className="filetto" aria-hidden="true" />
+          <h2 className="display display--md passo__titolo" id="titolo-coda-corsi">
+            Non sai quale è il tuo
+          </h2>
+          <p className="testo prima__attacco">
+            Scrivici in due righe cosa cerchi: ti diciamo quale percorso ti riguarda e in quale
+            centro si tiene, senza impegno.
+          </p>
+          <p className="coda-azione">
+            <Link className="bottone bottone--primario" href="/contatti">
+              Richiedi informazioni
+            </Link>
+            <Link className="bottone bottone--secondario" href="/centri">
+              Vedi tutti i centri
+            </Link>
+          </p>
+        </div>
+      </section>
     </>
   )
 }

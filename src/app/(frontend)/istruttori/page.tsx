@@ -57,10 +57,15 @@ export default async function PaginaIstruttori() {
       <section className="sezione sezione--nera testata">
         <div className="contenitore testata__contenuto">
           <h1 className="display display--lg">Le qualifiche si contano</h1>
+          {/* «Almeno quattro anni di percorso e un esame di abilitazione» era un
+              numero presentato come fatto, senza riscontro in `data/`, in `docs/`
+              ne' in PRODUCT.md. Qui sotto ogni riga dell'albo porta la qualifica
+              e il grado di una persona con nome e cognome: quella e' la prova che
+              il sito ha davvero. */}
           <p className="testo testata__testo">
-            I docenti sono diplomati dopo almeno quattro anni di percorso e un esame di abilitazione
-            all’insegnamento, tesserati e assicurati CSEN. Le qualifiche AKM sono riconosciute da
-            CSEN-CONI, F.E.K.D.A. e P.T.D.
+            I docenti sono istruttori qualificati, tesserati e assicurati CSEN: qui sotto ognuno
+            con nome, qualifica e grado. Le qualifiche AKM sono riconosciute da CSEN-CONI,
+            F.E.K.D.A. e P.T.D.
           </p>
         </div>
       </section>
@@ -128,13 +133,19 @@ export default async function PaginaIstruttori() {
                       </ul>
                     ) : null}
 
+                    {/* Il nome per esteso e non il solo comune: chi insegna in tre
+                        centri di Milano aveva tre link scritti «Milano», uguali fra
+                        loro e diversi di destinazione (DESIGN.md §7). E un centro
+                        che ha chiuso la stagione lo dice qui, non solo nella sua
+                        scheda: da qui si clicca. */}
                     {sedi.length > 0 ? (
                       <p className="dato">
                         Insegna a{' '}
                         {sedi.map((sede, i) => (
                           <React.Fragment key={sede.id}>
                             {i > 0 ? ', ' : ''}
-                            <Link href={`/centri/${sede.slug}`}>{sede.indirizzo?.citta}</Link>
+                            <Link href={`/centri/${sede.slug}`}>{sede.nome}</Link>
+                            {sede.attivo === false ? ' (non attivo)' : ''}
                           </React.Fragment>
                         ))}
                       </p>

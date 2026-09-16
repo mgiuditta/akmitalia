@@ -33,16 +33,27 @@ export type ConteggiBarra = {
   istruttori: number
 }
 
-/* Il dato sotto ogni voce e' un conteggio reale, non un sottotitolo scritto a
-   mano: «presenza prima del marchio». Il verde sta solo sul dato vivo. */
+/*
+ * Il dato sotto ogni voce e' un conteggio reale, non un sottotitolo scritto a
+ * mano: «presenza prima del marchio». Il verde sta solo sul dato vivo.
+ *
+ * Lo zero non e' un dato: e' quello che risponde il guscio prerenderizzato di
+ * un build senza database (docs/adr/0013) nel minuto che precede la prima
+ * rigenerazione. «0 attivi» col quadrato verde di presenza sarebbe un dato vivo
+ * inventato, e un centro chiuso non e' la stessa cosa di un centro che non
+ * sappiamo. Senza dato, niente riga: e' la regola che il menu applicava gia'
+ * alle voci senza conteggio.
+ */
 function dati(c: ConteggiBarra): Record<string, Pick<VoceMenu, 'dato' | 'vivo'>> {
-  return {
-    '/corsi': { dato: `${c.corsi} ${c.corsi === 1 ? 'corso' : 'corsi'}` },
-    '/centri': { dato: `${c.centri} attivi`, vivo: true },
-    '/istruttori': {
+  const righe: Record<string, Pick<VoceMenu, 'dato' | 'vivo'>> = {}
+  if (c.corsi > 0) righe['/corsi'] = { dato: `${c.corsi} ${c.corsi === 1 ? 'corso' : 'corsi'}` }
+  if (c.centri > 0) righe['/centri'] = { dato: `${c.centri} attivi`, vivo: true }
+  if (c.istruttori > 0) {
+    righe['/istruttori'] = {
       dato: `${c.istruttori} ${c.istruttori === 1 ? 'qualificato' : 'qualificati'}`,
-    },
+    }
   }
+  return righe
 }
 
 const TRICOLORE = ['verde', 'bianco', 'rosso'] as const

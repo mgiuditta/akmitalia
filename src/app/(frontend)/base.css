@@ -46,10 +46,19 @@ a {
   color: inherit;
 }
 
-/* Il focus e' bianco su scuro e inchiostro su chiaro: l'outline di sistema
-   sparisce su nero puro. */
+/*
+ * Il focus e' bianco su scuro e inchiostro su chiaro. `currentColor` non basta:
+ * l'etichetta di un bottone primario e' bianca, quindi l'anello usciva bianco e
+ * cadeva 3px fuori dal bottone, cioe' sul bianco della sezione. L'anello segue
+ * il valore della superficie su cui sta, non il colore dell'elemento: e' la
+ * Regola del Valore applicata anche allo stato di fuoco.
+ */
+:root {
+  --anello: var(--colore-on-primary);
+}
+
 :focus-visible {
-  outline: 2px solid currentColor;
+  outline: 2px solid var(--anello);
   outline-offset: 3px;
 }
 
@@ -87,24 +96,28 @@ ol {
   background: var(--colore-surface);
   color: var(--colore-on-primary);
   --riga-locale: var(--colore-ink-secondary);
+  --anello: var(--colore-on-primary);
 }
 
 .sezione--carbone {
   background: var(--colore-surface-alt);
   color: var(--colore-on-primary);
   --riga-locale: var(--colore-ink-secondary);
+  --anello: var(--colore-on-primary);
 }
 
 .sezione--chiara {
   background: var(--colore-surface-light);
   color: var(--colore-ink);
   --riga-locale: var(--colore-ink);
+  --anello: var(--colore-ink);
 }
 
 .sezione--grigia {
   background: var(--colore-muted);
   color: var(--colore-ink);
   --riga-locale: var(--colore-ink);
+  --anello: var(--colore-ink);
 }
 
 /* Anton si compone in maiuscolo. Con interlinea 1 gli accenti maiuscoli toccano

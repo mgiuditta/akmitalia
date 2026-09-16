@@ -65,6 +65,7 @@ export function Figura({
 }) {
   const url = urlMedia(slot, misura)
   const alt = typeof slot === 'object' && slot ? slot.alt || '' : ''
+  const didascalia = typeof slot === 'object' && slot ? slot.didascalia || '' : ''
   const ritaglio = RITAGLIO[formato]
 
   if (!url) {
@@ -86,7 +87,7 @@ export function Figura({
   }
 
   return (
-    <div className={`figura${classe ? ` ${classe}` : ''}`} style={{ aspectRatio: ritaglio }}>
+    <figure className={`figura${classe ? ` ${classe}` : ''}`} style={{ aspectRatio: ritaglio }}>
       <Image
         className="figura__foto"
         src={url}
@@ -95,6 +96,14 @@ export function Figura({
         sizes={sizes}
         priority={priorita}
       />
-    </div>
+      {/* La didascalia si vede. Le fotografie di partenza sono generate
+          (docs/adr/0012) e finora lo dicevano solo nel testo alternativo, cioe'
+          a chi non le vede: sotto «Le qualifiche si contano» un istruttore
+          generato si legge come un maestro dell'albo, e chi guarda ha diritto di
+          sapere cos'e' che sta guardando quanto chi ascolta. Sta sovrapposta in
+          fondo alla foto, che e' dove DESIGN.md §4 mette le didascalie, su una
+          lastra piena: nessun velo, nessun vetro. */}
+      {didascalia ? <figcaption className="figura__didascalia">{didascalia}</figcaption> : null}
+    </figure>
   )
 }

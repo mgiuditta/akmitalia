@@ -104,10 +104,10 @@ export function valida(
   const errori: ErroriRichiesta = {}
 
   if (!v.cognome) errori.cognome = 'Scrivi il tuo cognome.'
-  else if (v.cognome.length > 80) errori.cognome = 'Il cognome puo avere al massimo 80 caratteri.'
+  else if (v.cognome.length > 80) errori.cognome = 'Il cognome può avere al massimo 80 caratteri.'
 
   if (!v.nome) errori.nome = 'Scrivi il tuo nome.'
-  else if (v.nome.length > 80) errori.nome = 'Il nome puo avere al massimo 80 caratteri.'
+  else if (v.nome.length > 80) errori.nome = 'Il nome può avere al massimo 80 caratteri.'
 
   if (!v.email || v.email.length > 120 || !EMAIL.test(v.email)) {
     errori.email = 'Scrivi un indirizzo email valido, ad esempio nome@dominio.it.'
@@ -125,11 +125,11 @@ export function valida(
   if (!/^\d+$/.test(v.sede)) errori.sede = 'Scegli il centro tecnico che ti interessa.'
 
   if (opzioni.percorso && v.corso && !/^\d+$/.test(v.corso) && !opzioni.altreVoci.includes(v.corso)) {
-    errori.corso = 'Scegli una voce dall elenco.'
+    errori.corso = 'Scegli una voce dall’elenco.'
   }
 
   if (opzioni.messaggio && v.messaggio.length > 2000) {
-    errori.messaggio = 'Il messaggio puo avere al massimo 2000 caratteri.'
+    errori.messaggio = 'Il messaggio può avere al massimo 2000 caratteri.'
   }
 
   if (v.consenso !== 'on') {

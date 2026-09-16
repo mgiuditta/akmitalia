@@ -45,8 +45,14 @@ const PRIMA_VOLTA_DI_SERIE = [
   },
 ]
 
+/* Niente numeri senza fonte: «almeno quattro anni di percorso e un esame di
+   abilitazione» era un fatto presentato come tale e non ha riscontro in `data/`,
+   in `docs/` ne' in PRODUCT.md, che nomina solo gli enti. Resta quello che il
+   sito puo' dimostrare: il tesseramento e i riconoscimenti, e le qualifiche di
+   ogni persona, che stanno scritte nell'albo una per una. Quando il cliente
+   conferma il percorso di diploma, la frase torna con il suo numero. */
 const QUALIFICHE_DI_SERIE =
-  'I docenti sono diplomati dopo almeno quattro anni di percorso e un esame di abilitazione all’insegnamento, tesserati e assicurati CSEN. Le qualifiche AKM sono riconosciute da CSEN-CONI, F.E.K.D.A. e P.T.D.'
+  'I docenti sono istruttori qualificati, tesserati e assicurati CSEN: nome, qualifica e grado di ognuno stanno nell’albo. Le qualifiche AKM sono riconosciute da CSEN-CONI, F.E.K.D.A. e P.T.D.'
 
 export default async function Home() {
   const payload = await apriPayload()
@@ -122,9 +128,14 @@ export default async function Home() {
   const riga =
     testi?.testo ||
     `${centri.length > 0 ? `${centri.length} centri tecnici attivi, lezioni` : 'Lezioni'} settimanali tutto l’anno, istruttori con nome e cognome.`
+  /* L'ancora esiste solo se il bivio ha almeno una riga: senza percorsi -
+     succede nel minuto di guscio senza elenchi di docs/adr/0013, e su un
+     database appena migrato - il bottone principale non portava da nessuna
+     parte. Allora punta all'indice dei percorsi, che e' una rotta vera. */
+  const hrefPrimaria = testi?.ctaPrimariaHref || '#percorsi'
   const primaria = {
     testo: testi?.ctaPrimariaEtichetta || 'Scegli il tuo percorso',
-    href: testi?.ctaPrimariaHref || '#percorsi',
+    href: hrefPrimaria.startsWith('#') && percorsi.length === 0 ? '/corsi' : hrefPrimaria,
   }
   const secondaria = {
     testo: testi?.ctaSecondariaEtichetta || 'Trova un centro',
@@ -145,6 +156,12 @@ export default async function Home() {
               sizes="100vw"
             />
             <div className="eroe__velo" />
+            {/* Anche l'eroe dichiara la sua fotografia: e' generata come le altre
+                (docs/adr/0012), e qui e' la prima cosa che si vede. Sta in basso
+                a destra e non a sinistra, dove ci sono il titolo e i due inviti. */}
+            {eroe?.didascalia ? (
+              <p className="eroe__didascalia">{eroe.didascalia}</p>
+            ) : null}
           </>
         ) : null}
 
@@ -153,13 +170,25 @@ export default async function Home() {
           <h1 className="display display--eroe eroe__titolo">{titolo}</h1>
           <p className="testo">{riga}</p>
           <div className="eroe__coda">
-            {/* Un'ancora in pagina resta <a>: next/link su #percorsi rifarebbe la rotta. */}
+            {/*
+              I due inviti dell'eroe sono secondari, non primari. Nella prima
+              schermata il rosso e' uno solo ed e' la CTA in barra, che porta
+              alla richiesta: l'unico esito misurabile del sito e l'unico
+              bottone che docs/adr/0008 non lascia nascondere. A 390px il titolo
+              resta a 48px e due masse rosse pesavano piu' del display, che e'
+              quello che deve dare il saluto; docs/adr/0005 lo dice gia' come
+              rimedio: ridurre quanti bottoni primari stanno nella stessa
+              schermata. Questi due non sono l'azione della pagina, sono il
+              primo bivio: portano a scegliere, non a convertire.
+
+              Un'ancora in pagina resta <a>: next/link su #percorsi rifarebbe la rotta.
+            */}
             {primaria.href.startsWith('#') ? (
-              <a className="bottone bottone--primario" href={primaria.href}>
+              <a className="bottone bottone--secondario" href={primaria.href}>
                 {primaria.testo}
               </a>
             ) : (
-              <Link className="bottone bottone--primario" href={primaria.href}>
+              <Link className="bottone bottone--secondario" href={primaria.href}>
                 {primaria.testo}
               </Link>
             )}
@@ -183,6 +212,12 @@ export default async function Home() {
                 {bivio.titolo}
               </h2>
               <p className="testo">{bivio.testo}</p>
+              {/* Il rimando all'indice sta nell'intestazione del bivio: da solo
+                  si prendeva una fascia intera - 220px di padding a 1440 - per
+                  una riga da 14px, che e' spazio avanzato, non struttura. */}
+              <Link className="briciola" href="/corsi">
+                Tutti i percorsi
+              </Link>
             </div>
           </section>
 
@@ -247,13 +282,6 @@ export default async function Home() {
             })}
           </ol>
 
-          <section className="sezione sezione--nera">
-            <p className="contenitore">
-              <Link className="briciola" href="/corsi">
-                Tutti i percorsi
-              </Link>
-            </p>
-          </section>
         </>
       ) : null}
 
@@ -374,7 +402,14 @@ export default async function Home() {
           della barra: un intento, una parola. */}
       <section className="sezione sezione--chiara" aria-labelledby="titolo-passo">
         <div className="contenitore">
-          <h2 className="display display--md" id="titolo-passo">
+          {/* A 390px le tre sezioni finali collassavano sulla stessa composizione:
+              display-md, paragrafo, elenco o bottone a sinistra, e cambiava solo
+              il fondo. Le prime due hanno una forma propria - i punti con i
+              filetti, i numerali in Anton - questa no: la chiusura si prende il
+              filetto e il corpo grande, cosi' il ritmo torna a farsi anche con
+              la scala e non con il solo fondo (RHYTHM 2). */}
+          <span className="filetto" aria-hidden="true" />
+          <h2 className="display display--lg passo__titolo" id="titolo-passo">
             {passo.titolo}
           </h2>
           <p className="testo prima__attacco">{passo.testo}</p>

@@ -45,6 +45,11 @@ export async function generateStaticParams() {
   return corsi.docs.map((corso) => ({ slug: corso.slug }))
 }
 
+/* Quando la scheda non c'e' la rotta chiama notFound() e rende not-found.tsx:
+   il titolo del documento lo decide comunque questa funzione, e «AKM Italia»
+   su una pagina che dice «questa pagina non c'e'» e' una riga che si contraddice. */
+const TITOLO_404 = { title: 'Pagina non trovata' }
+
 export async function generateMetadata({
   params,
 }: {
@@ -52,7 +57,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const corso = await trovaCorso(slug)
-  if (!corso) return {}
+  if (!corso) return TITOLO_404
   return metadatiPagina({
     titolo: corso.nome,
     descrizione: corso.sommario,
@@ -118,6 +123,11 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
       chiave: 'descrizione',
       nodo: (
         <div className="contenitore corso__discorso">
+          {/* Il blocco apriva con una schermata intera di Roboto 300 su carbone e
+              il primo appiglio era un h2 da 22px a meta' altezza: nessun punto
+              focale, e una sezione che apre sottovoce e' fuori registro a
+              ENERGY 3. Il titolo che mancava e' quello che il blocco fa. */}
+          <h2 className="display display--sm titolo-elenco">In che cosa consiste</h2>
           {corso.descrizione ? (
             <div className="ricco">
               <RichText data={corso.descrizione} />

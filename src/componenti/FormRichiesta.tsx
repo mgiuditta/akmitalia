@@ -63,6 +63,8 @@ type Props = {
   opzioni: OpzioniModulo
   /** Il percorso preselezionato quando si arriva da /contatti?corso=<slug>. */
   corsoIniziale?: number | null
+  /** Il centro preselezionato quando si arriva da /contatti?sede=<slug>. */
+  sedeIniziale?: number | null
   /** La site key di Turnstile. Senza, il modulo ha solo il filtro invisibile. */
   turnstileSiteKey?: string | null
 }
@@ -90,12 +92,16 @@ function Modulo({
   testi,
   opzioni,
   corsoIniziale,
+  sedeIniziale,
   turnstileSiteKey,
   altra,
 }: Props & { altra: () => void }) {
   const [stato, invia, inCorso] = useActionState(inviaRichiesta, STATO_INIZIALE)
   const [t, setT] = useState('')
-  const [idSede, setIdSede] = useState('')
+  /* Arrivando da una scheda centro il centro e' gia' scelto, e con lui la nota
+     che ne stampa l'indirizzo: la preselezione deve vedersi anche li', non solo
+     nella select. */
+  const [idSede, setIdSede] = useState(sedeIniziale ? String(sedeIniziale) : '')
   const avviso = useRef<HTMLDivElement>(null)
   const turnstile = useRef<HTMLDivElement>(null)
   const idTurnstile = useRef<string | null>(null)
@@ -150,6 +156,7 @@ function Modulo({
      l'utente aveva scelto, non lo slug arrivato dalla URL. */
   const iniziale: Partial<Record<CampoRichiesta, string>> = {
     corso: corsoIniziale ? String(corsoIniziale) : '',
+    sede: sedeIniziale ? String(sedeIniziale) : '',
   }
 
   const campo = (nome: CampoRichiesta) => ({

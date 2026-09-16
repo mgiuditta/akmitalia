@@ -39,6 +39,22 @@
   z-index: -1;
 }
 
+/* Stessa lastra piena della didascalia di .figura, dall'altra parte: qui sotto
+   a sinistra ci sono il display e i due inviti. */
+.eroe__didascalia {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  z-index: 1;
+  max-inline-size: min(100%, 26rem);
+  padding: var(--spazio-xs) var(--spazio-sm-alt);
+  background: var(--colore-surface);
+  color: var(--colore-on-primary);
+  font-size: var(--corpo-caption);
+  font-weight: var(--peso-bold);
+  text-align: end;
+}
+
 .eroe__contenuto {
   width: 100%;
   padding-block: clamp(var(--spazio-xxl), 7vw, var(--spazio-section));
@@ -78,6 +94,13 @@
   padding-block-end: 0;
 }
 
+/* Su /corsi fra la testata e il bivio c'e' una banda fotografica, non la prima
+   riga: senza questo il conteggio restava a dieci pixel dalla foto. Il padding a
+   zero vale dove il blocco successivo e' davvero il seguito del titolo. */
+.testata.bivio__testa {
+  padding-block-end: clamp(var(--spazio-xl), 4vw, var(--spazio-section-sm));
+}
+
 /* Stesso stacco della testata di pagina: sotto un display l'aria e' proporzionale
    al corpo che la apre, non un 16px fisso. Vedi .testata__contenuto. */
 .bivio__intestazione {
@@ -98,24 +121,28 @@
   background: var(--colore-surface);
   color: var(--colore-on-primary);
   --riga-locale: var(--colore-ink-secondary);
+  --anello: var(--colore-on-primary);
 }
 
 .percorso--carbone {
   background: var(--colore-surface-alt);
   color: var(--colore-on-primary);
   --riga-locale: var(--colore-ink-secondary);
+  --anello: var(--colore-on-primary);
 }
 
 .percorso--bianco {
   background: var(--colore-surface-light);
   color: var(--colore-ink);
   --riga-locale: var(--colore-ink);
+  --anello: var(--colore-ink);
 }
 
 .percorso--grigio {
   background: var(--colore-muted);
   color: var(--colore-ink);
   --riga-locale: var(--colore-ink);
+  --anello: var(--colore-ink);
 }
 
 .percorso__testa {
@@ -343,6 +370,10 @@
 
 .centro {
   display: grid;
+  /* Senza `start` le righe della scheda si distribuivano sull'altezza della
+     vicina di griglia: con una che ha cinque orari e una che ne ha uno, lo
+     spazio in piu' si apriva fra nome, indirizzo e orari. */
+  align-content: start;
   gap: var(--spazio-sm);
   padding-block: var(--spazio-lg);
   border-block-start: 1px solid var(--riga-locale);
@@ -404,6 +435,9 @@
 }
 
 .centro__maps {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
   font-size: var(--corpo-caption);
   font-weight: var(--peso-bold);
   text-decoration: underline;
@@ -445,6 +479,12 @@
   font-size: var(--corpo-heading-lg);
   font-weight: var(--peso-bold);
   line-height: var(--interlinea-stretta);
+}
+
+/* La chiusura della home: il filetto apre la sezione e il display porta la
+   scala, cosi' l'ultima fascia non ripete la composizione delle due sopra. */
+.passo__titolo {
+  margin-block-start: var(--spazio-lg);
 }
 
 /* ---------- prove ---------- */

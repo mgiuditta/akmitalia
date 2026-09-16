@@ -45,6 +45,31 @@ test.describe('Menu telefono', () => {
   })
 })
 
+/* La CTA non si nasconde mai (docs/adr/0008), ma sulla pagina che indica
+   ripeteva l'H1 sotto e portava dove si era gia': li' cambia parola e porta al
+   modulo. Voce 39 dell'audit antislop 001. */
+test.describe('La CTA sulla propria pagina', () => {
+  test.use({ viewport: { width: 1440, height: 900 } })
+
+  test('su /contatti porta al modulo invece di ripetere l’H1', async ({ page }) => {
+    await page.goto('http://localhost:3000/contatti')
+
+    const header = page.locator('header')
+    await expect(header.getByRole('link', { name: 'Richiedi informazioni' })).toHaveCount(0)
+    const cta = header.getByRole('link', { name: 'Vai al modulo' })
+    await expect(cta).toBeVisible()
+    await expect(cta).toHaveAttribute('href', '#modulo')
+    await expect(page.locator('#modulo')).toBeVisible()
+  })
+
+  test('altrove resta la richiesta', async ({ page }) => {
+    await page.goto('http://localhost:3000/centri')
+    await expect(
+      page.locator('header').getByRole('link', { name: 'Richiedi informazioni' }),
+    ).toBeVisible()
+  })
+})
+
 test.describe('Barra desktop', () => {
   test.use({ viewport: { width: 1440, height: 900 } })
 

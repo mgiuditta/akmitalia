@@ -7,8 +7,9 @@
  * AKM non ha un archivio fotografico utilizzabile: le immagini del vecchio sito
  * sono compresse, a colori e con i volti riconoscibili di persone che non hanno
  * firmato nulla. Finche' il cliente non fa un servizio in sala, queste sono
- * fotografie generate, e il fatto che siano generate sta scritto qui e nel testo
- * alternativo di ciascuna, non nascosto.
+ * fotografie generate, e il fatto che siano generate sta scritto qui, nella
+ * didascalia di ciascuna - che il sito stampa sopra la foto, visibile - e nel
+ * testo alternativo. Non nascosto, e non solo per chi non vede.
  *
  * I prompt stanno nel codice per due motivi: sono il solo modo di rifare la
  * stessa immagine, e dicono che cosa la fotografia deve mostrare - una palestra
@@ -27,6 +28,12 @@ import config from '@payload-config'
 import sharp from 'sharp'
 
 const CARTELLA = path.resolve(process.cwd(), 'data/immagini')
+
+/* Detto sulla foto, non solo nel testo alternativo: chi guarda una sala piena di
+   gente sotto «Le qualifiche si contano» deve sapere che quelle persone non sono
+   state in nessuna sala. Sparisce da sola il giorno che il cliente carica le sue
+   fotografie, perche' la didascalia e' un campo del file, non del posto. */
+const DIDASCALIA = 'Immagine generata: non ritrae una lezione o persone reali.'
 const MODELLO = process.env.NANOBANANA_MODEL || 'gemini-2.5-flash-image'
 
 /* Il registro visivo, uguale per tutte: e' il trattamento di DESIGN.md portato
@@ -157,13 +164,25 @@ for (const scatto of SCATTI) {
 
   if (gia.docs[0]) {
     idPerNome.set(scatto.nome, gia.docs[0].id)
-    console.log(`= ${filename} gia' in Media`)
+    /* La didascalia si riscrive anche su un media gia' caricato: e' la
+       dichiarazione che la foto e' generata, e le immagini caricate prima che
+       il campo esistesse non ce l'hanno. */
+    if (gia.docs[0].didascalia !== DIDASCALIA) {
+      await payload.update({
+        collection: 'media',
+        id: gia.docs[0].id,
+        data: { didascalia: DIDASCALIA },
+      })
+      console.log(`~ ${filename} gia' in Media, didascalia aggiornata`)
+    } else {
+      console.log(`= ${filename} gia' in Media`)
+    }
     continue
   }
 
   const creato = await payload.create({
     collection: 'media',
-    data: { alt: scatto.alt },
+    data: { alt: scatto.alt, didascalia: DIDASCALIA },
     filePath: file,
   })
   idPerNome.set(scatto.nome, creato.id)

@@ -106,8 +106,10 @@ const contenuti = {
     cadenza: 'Una lezione alla settimana, in giorno fisso.',
     ingresso:
       'Si entra durante la stagione. La prima lezione si concorda con la o il docente del centro, e si può venire accompagnate.',
+    /* Niente numeri senza fonte: il percorso di diploma non ha riscontro in
+       `data/` ne' in PRODUCT.md. Resta quello che l'albo dimostra riga per riga. */
     prova:
-      'I docenti sono diplomati dopo almeno quattro anni di percorso e un esame di abilitazione all’insegnamento, tesserati e assicurati CSEN.',
+      'I docenti sono istruttori qualificati, tesserati e assicurati CSEN: nome, qualifica e grado di ognuno stanno nell’albo.',
     descrizione: ricco([
       p(
         'Il corso è riservato alle donne perché il gruppo cambia la lezione: si fanno domande che davanti a una sala mista non si fanno, e si prova senza avere addosso lo sguardo di nessuno.',

@@ -40,6 +40,20 @@ cliente fa un servizio in sala, si sostituiscono dall'admin senza toccare il cod
 
 L'unica fotografia vera del gruppo e' quella di `/contatti`, che era gia' in libreria.
 
+## La copertina di un evento non è uno slot di composizione
+
+Le cinquantasette schede evento fanno eccezione, e per la stessa ragione per cui la
+regola esiste. Senza una copertina propria la scheda prendeva la fotografia della pagina
+Eventi, per non mostrare cinquanta segnaposti grigi uguali: il risultato erano cinquanta
+schede con la stessa fotografia, che non dicono niente uguale, e 558px di banda che
+spingevano la data, il luogo e il bottone sotto la piega.
+
+La copertina di un evento è **un dato di quel documento**, non un posto che la
+composizione prevede: come il telefono di un centro, se manca non esiste, e non si
+stampa niente. Senza copertina la scheda passa dalla testata alla scheda, e nessuno si
+accorge che manca qualcosa. Restano slot dichiarati i nove della lista qui sopra, che
+sono pagine, non record: lì il segnaposto continua a dire al cliente quale campo aprire.
+
 ## Cosa non cambia
 
 Il monocromo. Ogni fotografia entra nel sistema come valore e non come colore, filtrata in

@@ -120,17 +120,19 @@ export function Mappa({
      * cade sulle coordinate, il quadrato le sta sopra. Prima il segno era
      * centrato sul punto e a zoom alto indicava l'isolato, non l'indirizzo.
      *
-     * Il nodo e' 28x28: bersaglio da dito e area di focus visibile. Il marker
-     * del centro piu' vicino porta il nome del comune scritto accanto, perche'
-     * la Regola dell'Etichetta non ammette un valore che parli da solo.
+     * Il nodo e' 44x44, quasi tutto trasparente: e' il bersaglio minimo da dito,
+     * non la misura del segno, che resta una targhetta da 14px in fondo al nodo
+     * (il disegno sta in mappa.css). Il marker del centro piu' vicino porta il
+     * nome del comune scritto accanto, perche' la Regola dell'Etichetta non
+     * ammette un valore che parli da solo.
      */
     const icona = (punto: PuntoMappa, primo: boolean) =>
       L.divIcon({
         className: `mappa__segno${primo ? ' mappa__segno--vicino' : ''}`,
         html: primo ? `<span class="mappa__etichetta">${fuga(punto.citta)}</span>` : '',
-        iconSize: [28, 28],
-        iconAnchor: [14, 28],
-        popupAnchor: [0, -28],
+        iconSize: [44, 44],
+        iconAnchor: [22, 44],
+        popupAnchor: [0, -30],
       })
 
     punti.forEach((punto, i) => {

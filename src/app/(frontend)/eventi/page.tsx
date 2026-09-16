@@ -15,6 +15,7 @@ import {
   mesePrecedente,
   meseSuccessivo,
   nomeMese,
+  orarioLeggibile,
 } from '@/componenti/calendario'
 import { doveEvento, pubblicato } from '@/componenti/dati'
 import { Figura } from '@/componenti/Figura'
@@ -136,6 +137,22 @@ export default async function PaginaEventi({
             </Link>
           </nav>
 
+          {/* Il mese vuoto lo dice prima della griglia, non dopo cinque righe di
+              celle vuote: sotto la piega il messaggio e il rimando al prossimo
+              mese non li vedeva nessuno. */}
+          {eventi.docs.length === 0 ? (
+            <p className="testo vuoto vuoto--mese">
+              Nessun evento a {nomeMese(mese)}.{' '}
+              {meseProssimo ? (
+                <Link href={`/eventi?mese=${chiaveMese(meseProssimo)}`}>
+                  Il prossimo è a {nomeMese(meseProssimo)}.
+                </Link>
+              ) : chiaveMese(meseCorrente()) !== questoMese ? (
+                <Link href="/eventi">Torna al mese corrente.</Link>
+              ) : null}
+            </p>
+          ) : null}
+
           <table className="calendario">
             <caption>Calendario di {nomeMese(mese)}</caption>
             <thead>
@@ -163,21 +180,35 @@ export default async function PaginaEventi({
                       <td className={classi} key={giorno}>
                         <span className="calendario__numero">{Number(giorno.slice(8))}</span>
                         {del.length > 0 ? (
-                          <div className="calendario__eventi">
-                            {del.map((evento) => (
-                              <Link
-                                className="calendario__evento"
-                                href={`/eventi/${evento.slug}`}
-                                key={evento.id}
-                              >
-                                {/* In cella il posto viene prima del titolo: a settembre
-                                    dieci celle dicono «Presentazione», e a distinguerle
-                                    e' il centro. */}
-                                <b className="calendario__dove">{doveEvento(evento)}</b>
-                                {evento.titolo}
-                              </Link>
-                            ))}
-                          </div>
+                          <>
+                            <div className="calendario__eventi">
+                              {del.map((evento) => {
+                                const ora = orarioLeggibile(evento.dataInizio, evento.dataFine)
+                                return (
+                                  <Link
+                                    className="calendario__evento"
+                                    href={`/eventi/${evento.slug}`}
+                                    key={evento.id}
+                                  >
+                                    {/* In cella il posto viene prima del titolo: a settembre
+                                        dieci celle dicono «Presentazione», e a distinguerle
+                                        e' il centro. L'ora distingue le due dello stesso
+                                        centro nello stesso giorno, che si leggevano uguali. */}
+                                    <b className="calendario__dove">{doveEvento(evento)}</b>
+                                    {ora ? (
+                                      <span className="calendario__ora">{ora} </span>
+                                    ) : null}
+                                    {evento.titolo}
+                                  </Link>
+                                )
+                              })}
+                            </div>
+                            {/* Sotto i 768px al posto dei titoli resta il quadrato di
+                                docs/adr/0014: un segno, non un link da 6px moltiplicato
+                                per gli eventi del giorno. Quello che c'e' lo dice
+                                l'agenda qui sotto, che su telefono e' la vista vera. */}
+                            <span className="calendario__segno" aria-hidden="true" />
+                          </>
                         ) : null}
                       </td>
                     )
@@ -187,20 +218,7 @@ export default async function PaginaEventi({
             </tbody>
           </table>
 
-          {eventi.docs.length > 0 ? (
-            <AgendaEventi eventi={eventi.docs} />
-          ) : (
-            <p className="testo vuoto">
-              Nessun evento a {nomeMese(mese)}.{' '}
-              {meseProssimo ? (
-                <Link href={`/eventi?mese=${chiaveMese(meseProssimo)}`}>
-                  Il prossimo è a {nomeMese(meseProssimo)}.
-                </Link>
-              ) : chiaveMese(meseCorrente()) !== questoMese ? (
-                <Link href="/eventi">Torna al mese corrente.</Link>
-              ) : null}
-            </p>
-          )}
+          {eventi.docs.length > 0 ? <AgendaEventi eventi={eventi.docs} /> : null}
         </div>
       </section>
     </>
