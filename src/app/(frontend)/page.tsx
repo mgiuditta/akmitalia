@@ -5,6 +5,7 @@ import React from 'react'
 import { apriPayload } from '@/componenti/payload'
 import { idDisciplina, ordinale, provinciaEstesa, pubblicato, testiBivio } from '@/componenti/dati'
 import { Figura } from '@/componenti/Figura'
+import { VideoEroe } from '@/componenti/VideoEroe'
 
 /**
  * Home: orienta prima di convertire. Eroe, bivio dei percorsi, dove si pratica,
@@ -117,6 +118,9 @@ export default async function Home() {
 
   const eroe = typeof impostazioni?.immagineHero === 'object' ? impostazioni.immagineHero : null
   const eroeUrl = eroe?.sizes?.hero?.url || eroe?.url || null
+  const video = typeof impostazioni?.videoHero === 'object' ? impostazioni.videoHero : null
+  const videoUrl = video?.url || null
+  const didascalia = (videoUrl ? video?.didascalia : eroe?.didascalia) || null
 
   /* Il copy dell'eroe sta in Impostazioni > eroe, con i valori di serie come
      ripiego: un campo svuotato dall'admin non lascia un buco in home. */
@@ -146,24 +150,23 @@ export default async function Home() {
     <>
       <section className="eroe" id="top">
         {eroeUrl ? (
-          <>
-            <Image
-              className="eroe__foto"
-              src={eroeUrl}
-              alt={eroe?.alt || ''}
-              fill
-              priority
-              sizes="100vw"
-            />
-            <div className="eroe__velo" />
-            {/* Anche l'eroe dichiara la sua fotografia: e' generata come le altre
-                (docs/adr/0012), e qui e' la prima cosa che si vede. Sta in basso
-                a destra e non a sinistra, dove ci sono il titolo e i due inviti. */}
-            {eroe?.didascalia ? (
-              <p className="eroe__didascalia">{eroe.didascalia}</p>
-            ) : null}
-          </>
+          <Image
+            className="eroe__foto"
+            src={eroeUrl}
+            alt={eroe?.alt || ''}
+            fill
+            priority
+            sizes="100vw"
+          />
         ) : null}
+        {videoUrl ? <VideoEroe src={videoUrl} /> : null}
+        {eroeUrl || videoUrl ? <div className="eroe__velo" /> : null}
+        {/* Anche l'eroe dichiara la sua fotografia: e' generata come le altre
+            (docs/adr/0012), e qui e' la prima cosa che si vede. Sta in basso
+            a destra e non a sinistra, dove ci sono il titolo e i due inviti.
+            Col video acceso la didascalia e' quella del video: dice cosa si
+            vede, e cosa si vede non e' piu' la fotografia. */}
+        {didascalia ? <p className="eroe__didascalia">{didascalia}</p> : null}
 
         <div className="contenitore eroe__contenuto">
           <p className="occhiello">{occhiello}</p>

@@ -4,6 +4,7 @@ import * as migration_20260902_142340_slot_immagine from './20260902_142340_slot
 import * as migration_20260902_180253_bivio_passo_altre_voci from './20260902_180253_bivio_passo_altre_voci';
 import * as migration_20260902_181923_eventi_calendario from './20260902_181923_eventi_calendario';
 import * as migration_20260916_224500_bivio_tre_momenti from './20260916_224500_bivio_tre_momenti';
+import * as migration_20260917_175638_video_eroe from './20260917_175638_video_eroe';
 
 export const migrations = [
   {
@@ -29,11 +30,16 @@ export const migrations = [
   {
     up: migration_20260902_181923_eventi_calendario.up,
     down: migration_20260902_181923_eventi_calendario.down,
-    name: '20260902_181923_eventi_calendario'
+    name: '20260902_181923_eventi_calendario',
   },
   {
     up: migration_20260916_224500_bivio_tre_momenti.up,
     down: migration_20260916_224500_bivio_tre_momenti.down,
-    name: '20260916_224500_bivio_tre_momenti'
+    name: '20260916_224500_bivio_tre_momenti',
+  },
+  {
+    up: migration_20260917_175638_video_eroe.up,
+    down: migration_20260917_175638_video_eroe.down,
+    name: '20260917_175638_video_eroe'
   },
 ];

@@ -34,14 +34,41 @@ export const Impostazioni: GlobalConfig = {
       },
     },
     {
-      name: 'immagineHero',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Immagine in cima alla home',
-      admin: {
-        description:
-          'Una sola foto, mostrata in monocromo sotto il titolo. Orizzontale, almeno 1600px di lato lungo, con spazio a destra: il titolo occupa la meta sinistra. Senza immagine la home resta tipografica su nero.',
-      },
+      /* Un collapsible non cambia la forma dei dati: `immagineHero` resta al
+         primo livello del global, come prima. La guida e' un campo `ui`, che
+         non salva niente: sta qui perche' chi carica il video la legga nel
+         momento in cui lo carica, non in un documento a parte. */
+      type: 'collapsible',
+      label: 'Sfondo in cima alla home: foto o video',
+      fields: [
+        {
+          name: 'guidaSfondo',
+          type: 'ui',
+          admin: { components: { Field: '/componenti/admin/GuidaSfondo#GuidaSfondo' } },
+        },
+        {
+          name: 'immagineHero',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Foto in cima alla home',
+          filterOptions: { mimeType: { contains: 'image/' } },
+          admin: {
+            description:
+              'Orizzontale, almeno 1920x1080, con il soggetto a destra: il titolo occupa la meta sinistra. Mostrata in bianco e nero. Con un video caricato fa da copertina. Senza foto e senza video la home resta tipografica su nero.',
+          },
+        },
+        {
+          name: 'videoHero',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Video in cima alla home',
+          filterOptions: { mimeType: { equals: 'video/mp4' } },
+          admin: {
+            description:
+              'Facoltativo. MP4, 1920x1080, 10-15 secondi, senza audio, al massimo 12 MB, senza scritte ne loghi. Parte da solo, muto e in loop, e il visitatore lo puo fermare. Vuoto: resta la foto.',
+          },
+        },
+      ],
     },
     {
       name: 'eroe',

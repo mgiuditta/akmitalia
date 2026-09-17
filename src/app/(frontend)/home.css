@@ -30,6 +30,29 @@
   z-index: -2;
 }
 
+/* Il video copre la foto solo quando ha davvero un fotogramma da mostrare: prima
+   di partire un <video> senza poster e' un rettangolo vuoto, e la foto sotto
+   sparirebbe per niente. Stesso monocromo e stesso taglio da .eroe__foto. */
+.eroe__video {
+  opacity: 0;
+  transition: opacity var(--durata-rivela) var(--curva);
+}
+
+.eroe__video[data-visibile] {
+  opacity: 1;
+}
+
+/* In alto a destra e non in basso: in basso, sotto i 520px, i due inviti
+   dell'eroe prendono tutta la larghezza. Sopra il velo, sotto il contenuto. */
+.eroe__pausa {
+  position: absolute;
+  inset-block-start: var(--spazio-lg);
+  inset-inline-end: var(--margine-pagina);
+  min-block-size: 44px;
+  padding: var(--spazio-sm) var(--spazio-md);
+  font-size: var(--corpo-caption);
+}
+
 /* Velo di leggibilita', non un gradiente di marca: esiste solo perche' il titolo
    bianco deve reggere AA sopra una fotografia, e non e' un token riutilizzabile. */
 .eroe__velo {

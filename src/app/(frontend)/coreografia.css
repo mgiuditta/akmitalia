@@ -5,7 +5,9 @@
  *
  * Il repertorio e' chiuso (DESIGN.md, Regola dell'Indice): l'entrata scandita
  * di .rivela, la sequenza a tempo dell'eroe, l'apertura dei details del bivio,
- * l'ingresso in cascata dei marker di mappa, l'apertura del menu.
+ * l'ingresso in cascata dei marker di mappa, l'apertura del menu. La sesta, il
+ * video dell'eroe, e' contenuto e non coreografia: sta in home.css e in
+ * VideoEroe.tsx (docs/adr/0015).
  */
 
 /* ---------- coreografia ---------- */

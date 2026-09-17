@@ -234,7 +234,7 @@ export interface Pagine {
 export interface Media {
   id: number;
   /**
-   * Descrive l immagine a chi non la vede. Obbligatorio.
+   * Descrive l immagine a chi non la vede. Obbligatorio. Per un video di sfondo basta dire cosa mostra, per esempio «Allenamento in sala».
    */
   alt: string;
   didascalia?: string | null;
@@ -1400,9 +1400,13 @@ export interface Impostazioni {
    */
   ogImage?: (number | null) | Media;
   /**
-   * Una sola foto, mostrata in monocromo sotto il titolo. Orizzontale, almeno 1600px di lato lungo, con spazio a destra: il titolo occupa la meta sinistra. Senza immagine la home resta tipografica su nero.
+   * Orizzontale, almeno 1920x1080, con il soggetto a destra: il titolo occupa la meta sinistra. Mostrata in bianco e nero. Con un video caricato fa da copertina. Senza foto e senza video la home resta tipografica su nero.
    */
   immagineHero?: (number | null) | Media;
+  /**
+   * Facoltativo. MP4, 1920x1080, 10-15 secondi, senza audio, al massimo 12 MB, senza scritte ne loghi. Parte da solo, muto e in loop, e il visitatore lo puo fermare. Vuoto: resta la foto.
+   */
+  videoHero?: (number | null) | Media;
   /**
    * Occhiello, titolo, riga di testo e i due bottoni dell eroe.
    */
@@ -1573,6 +1577,7 @@ export interface ImpostazioniSelect<T extends boolean = true> {
   logo?: T;
   ogImage?: T;
   immagineHero?: T;
+  videoHero?: T;
   eroe?:
     | T
     | {
