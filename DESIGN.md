@@ -86,7 +86,7 @@ Il colore **non identifica mai una categoria**: la Regola del Valore continua a 
 
 ## 3. Typography
 
-**Display Font:** **Anton** (OFL 1.1, self-hostata, `pnpm font:scarica`). Sostituto libero di Kenyan Coffee, che è commerciale (Yellow Design Studio) e non licenziabile qui. Grottesca condensata pesantissima, un peso solo, che rende come il 700 dell'originale.
+**Display Font:** **Anton** (OFL 1.1, self-hostata, `pnpm fonts:download`). Sostituto libero di Kenyan Coffee, che è commerciale (Yellow Design Studio) e non licenziabile qui. Grottesca condensata pesantissima, un peso solo, che rende come il 700 dell'originale.
 **Body Font:** **Roboto** (Apache 2.0, self-hostata, file variabile). Pesi 300, 400, 700.
 **Label/Mono Font:** Roboto in peso 700 a corpo piccolo. Nessuna mono nel sistema.
 

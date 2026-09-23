@@ -7,7 +7,7 @@
  * modifica dall'editor dell'admin.
  */
 
-const testo = (t: string) => ({
+const text = (t: string) => ({
   type: 'text',
   text: t,
   detail: 0,
@@ -19,7 +19,7 @@ const testo = (t: string) => ({
 
 export const p = (t: string) => ({
   type: 'paragraph',
-  children: [testo(t)],
+  children: [text(t)],
   direction: 'ltr' as const,
   format: '' as const,
   indent: 0,
@@ -27,15 +27,15 @@ export const p = (t: string) => ({
   version: 1,
 })
 
-export const ul = (voci: string[]) => ({
+export const ul = (items: string[]) => ({
   type: 'list',
   listType: 'bullet',
   tag: 'ul',
   start: 1,
-  children: voci.map((v, i) => ({
+  children: items.map((v, i) => ({
     type: 'listitem',
     value: i + 1,
-    children: [testo(v)],
+    children: [text(v)],
     direction: 'ltr' as const,
     format: '' as const,
     indent: 0,
@@ -48,11 +48,11 @@ export const ul = (voci: string[]) => ({
 })
 
 /** L'albero completo, gia' nella forma che il campo richText si aspetta. */
-export const ricco = (blocchi: unknown[]) =>
+export const rich = (blocks: unknown[]) =>
   ({
     root: {
       type: 'root',
-      children: blocchi,
+      children: blocks,
       direction: 'ltr',
       format: '',
       indent: 0,

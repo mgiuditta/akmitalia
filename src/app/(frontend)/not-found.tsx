@@ -20,7 +20,7 @@ import React from 'react'
    generateMetadata della rotta che ha chiamato notFound(); il `noindex` lo
    inietta Next da solo su una risposta 404. */
 
-export default function NonTrovata() {
+export default function NotFoundPage() {
   return (
     <>
       <section className="section section--black masthead">

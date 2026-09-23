@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 import React from 'react'
 
-import { FormRichiesta, type TestiModulo } from '@/componenti/FormRichiesta'
-import { indirizzoLeggibile, pubblicato } from '@/componenti/dati'
-import { apriPayload } from '@/componenti/payload'
-import { altreVoci, type OpzioniModulo } from './validazione'
-import { Figura } from '@/componenti/Figura'
-import { metadatiPagina } from '@/componenti/seo'
+import { RequestForm, type FormTexts } from '@/components/RequestForm'
+import { readableAddress, published } from '@/components/data'
+import { openPayload } from '@/components/payload'
+import { extraItems, type FormOptions } from './validation'
+import { Figure } from '@/components/Figure'
+import { pageMetadata } from '@/components/seo'
 
 /**
  * La pagina del form: l'unico esito misurabile del sito (PRODUCT.md). Un
@@ -25,7 +25,7 @@ import { metadatiPagina } from '@/componenti/seo'
 
 export const revalidate = 60
 
-export const metadata: Metadata = metadatiPagina({
+export const metadata: Metadata = pageMetadata({
   titolo: 'Richiedi informazioni',
   descrizione:
     'Chiedi informazioni su corsi e centri di Krav Maga AKM Italia a Milano e in Lombardia: scegli il centro, lascia un recapito e ti ricontattiamo.',
@@ -39,15 +39,15 @@ export const metadata: Metadata = metadatiPagina({
 const INTRO =
   'Puoi chiedere informazioni su centri e corsi di Krav Maga a Milano e in Lombardia: scegli il centro che ti interessa, lascia un recapito e ti richiama chi tiene le lezioni in quel centro.'
 
-export default async function PaginaContatti({
+export default async function ContactPage({
   searchParams,
 }: {
   searchParams: Promise<{ corso?: string; sede?: string }>
 }) {
-  const { corso: slugCorso, sede: slugSede } = await searchParams
-  const payload = await apriPayload()
+  const { corso: courseSlug, sede: centerSlug } = await searchParams
+  const payload = await openPayload()
 
-  const [contatti, sedi, corsi] = await Promise.all([
+  const [contacts, centers, courses] = await Promise.all([
     payload.findGlobal({ slug: 'contatti', depth: 1 }),
     payload.find({
       collection: 'sedi',
@@ -55,7 +55,7 @@ export default async function PaginaContatti({
       limit: 200,
       sort: 'indirizzo.citta',
       select: { nome: true, slug: true, indirizzo: true, palestra: true, mapsUrl: true },
-      where: { and: [{ attivo: { equals: true } }, pubblicato] },
+      where: { and: [{ attivo: { equals: true } }, published] },
     }),
     payload.find({
       collection: 'corsi',
@@ -63,48 +63,48 @@ export default async function PaginaContatti({
       limit: 50,
       sort: 'ordine',
       select: { nome: true, slug: true },
-      where: pubblicato,
+      where: published,
     }),
   ])
 
-  const modulo = contatti.modulo
-  const scelta = typeof modulo?.paginaPrivacy === 'object' ? modulo.paginaPrivacy : null
+  const form = contacts.modulo
+  const choice = typeof form?.paginaPrivacy === 'object' ? form.paginaPrivacy : null
 
   /* Il consenso GDPR senza il link all'informativa e' un consenso che non si
      puo' leggere. Il campo del global e' il modo giusto di collegarla, ma il
      ripiego non e' lasciarlo vuoto: se nessuno l'ha scelta, si cerca la pagina
-     pubblicata a /privacy, che `pnpm pagine:legali` crea. */
+     pubblicata a /privacy, che `pnpm pages:legal` crea. */
   const privacy =
-    scelta ??
+    choice ??
     (
       await payload.find({
         collection: 'pagine',
         depth: 0,
         limit: 1,
         select: { path: true },
-        where: { and: [{ path: { equals: '/privacy' } }, pubblicato] },
+        where: { and: [{ path: { equals: '/privacy' } }, published] },
       })
     ).docs[0] ??
     null
 
-  const testiModulo: TestiModulo = {
-    nota: modulo?.nota || 'Tutti i campi sono obbligatori, tranne percorso e messaggio.',
+  const formTexts: FormTexts = {
+    nota: form?.nota || 'Tutti i campi sono obbligatori, tranne percorso e messaggio.',
     etichettaConsenso:
-      modulo?.etichettaConsenso ||
+      form?.etichettaConsenso ||
       'Autorizzo il trattamento dei dati personali secondo il Regolamento UE 2016/679, per essere ricontattato da AKM Italia.',
-    etichettaInvio: modulo?.etichettaInvio || 'Invia la richiesta',
+    etichettaInvio: form?.etichettaInvio || 'Invia la richiesta',
     privacy: privacy?.path ? { etichetta: 'Leggi l’informativa', href: privacy.path } : null,
   }
 
-  const opzioni: OpzioniModulo = {
-    dataNascita: modulo?.chiediDataNascita !== false,
-    percorso: modulo?.chiediPercorso !== false,
-    messaggio: modulo?.chiediMessaggio !== false,
-    altreVoci: altreVoci(modulo),
+  const options: FormOptions = {
+    dataNascita: form?.chiediDataNascita !== false,
+    pathway: form?.chiediPercorso !== false,
+    messaggio: form?.chiediMessaggio !== false,
+    altreVoci: extraItems(form),
   }
 
-  const corsoIniziale = slugCorso
-    ? (corsi.docs.find((c) => c.slug === slugCorso)?.id ?? null)
+  const initialCourse = courseSlug
+    ? (courses.docs.find((c) => c.slug === courseSlug)?.id ?? null)
     : null
 
   /* Da una scheda centro o da un evento: il centro arriva gia' scelto, cosi' la
@@ -112,17 +112,17 @@ export default async function PaginaContatti({
      dipende da chi ritrova il proprio comune in una select di quindici voci.
      Uno slug che non e' fra i centri attivi non preseleziona niente e non e' un
      errore: la select resta sul «Scegli un centro». */
-  const sedeIniziale = slugSede
-    ? (sedi.docs.find((s) => s.slug === slugSede)?.id ?? null)
+  const initialCenter = centerSlug
+    ? (centers.docs.find((s) => s.slug === centerSlug)?.id ?? null)
     : null
 
-  const recapiti = Boolean(
-    contatti.telefono || contatti.whatsapp || contatti.email || contatti.sedeLegale?.via,
+  const channels = Boolean(
+    contacts.telefono || contacts.whatsapp || contacts.email || contacts.sedeLegale?.via,
   )
-  const telefono = contatti.telefono?.replace(/\s/g, '')
-  const whatsapp = contatti.whatsapp?.replace(/[\s+]/g, '')
-  const sede = contatti.sedeLegale
-  const indirizzo = [sede?.via, [sede?.cap, sede?.citta].filter(Boolean).join(' '), sede?.provincia]
+  const phone = contacts.telefono?.replace(/\s/g, '')
+  const whatsapp = contacts.whatsapp?.replace(/[\s+]/g, '')
+  const center = contacts.sedeLegale
+  const address = [center?.via, [center?.cap, center?.citta].filter(Boolean).join(' '), center?.provincia]
     .filter(Boolean)
     .join(', ')
 
@@ -131,7 +131,7 @@ export default async function PaginaContatti({
       <section className="section section--black masthead">
         <div className="container masthead__content">
           <h1 className="display display--lg">Richiedi informazioni</h1>
-          <p className="text masthead__text">{contatti.introRichieste || INTRO}</p>
+          <p className="text masthead__text">{contacts.introRichieste || INTRO}</p>
         </div>
       </section>
 
@@ -143,73 +143,73 @@ export default async function PaginaContatti({
             <h2 className="display display--sm list-title" id="form-title">
               Scrivici
             </h2>
-            <FormRichiesta
-              sedi={sedi.docs.map((s) => ({
+            <RequestForm
+              sedi={centers.docs.map((s) => ({
                 id: s.id,
                 nome: s.nome,
                 citta: s.indirizzo?.citta ?? '',
-                indirizzo: indirizzoLeggibile(s.indirizzo),
+                indirizzo: readableAddress(s.indirizzo),
                 palestra: s.palestra ?? null,
                 mapsUrl: s.mapsUrl ?? null,
               }))}
-              corsi={corsi.docs.map((c) => ({ id: c.id, nome: c.nome }))}
-              testi={testiModulo}
-              opzioni={opzioni}
-              corsoIniziale={corsoIniziale}
-              sedeIniziale={sedeIniziale}
+              corsi={courses.docs.map((c) => ({ id: c.id, nome: c.nome }))}
+              texts={formTexts}
+              options={options}
+              initialCourse={initialCourse}
+              initialCenter={initialCenter}
               turnstileSiteKey={process.env.TURNSTILE_SITE_KEY || null}
             />
           </div>
 
           <aside className="contact__channels" aria-label="Recapiti">
-            <Figura
-              classe="contact__photo"
-              slot={contatti.immagineContatti}
-              etichetta="Foto della pagina contatti"
-              formato="ritratto"
+            <Figure
+              className="contact__photo"
+              slot={contacts.immagineContatti}
+              label="Foto della pagina contatti"
+              format="portrait"
               sizes="(min-width: 900px) 30vw, 100vw"
             />
             {/* AKM non pubblica un recapito per centro (CONTEXT.md, «Docente»), e
                 finche' il global Contatti non e' compilato - cioe' subito dopo
                 un'installazione pulita - qui non c'era niente: un <dl> vuoto e
                 cinquecentocinquanta pixel di bianco. Uno stato vuoto si dichiara. */}
-            {recapiti ? null : (
+            {channels ? null : (
               <p className="text detail">
                 Non pubblichiamo un recapito diretto: la richiesta qui accanto arriva a chi
                 tiene le lezioni nel centro che scegli, e ti risponde quella persona.
               </p>
             )}
             <dl className="channels">
-              {contatti.telefono ? (
+              {contacts.telefono ? (
                 <div className="channel">
                   <dt>Telefono</dt>
                   <dd>
-                    <a href={`tel:${telefono}`}>{contatti.telefono}</a>
+                    <a href={`tel:${phone}`}>{contacts.telefono}</a>
                   </dd>
                 </div>
               ) : null}
-              {contatti.whatsapp ? (
+              {contacts.whatsapp ? (
                 <div className="channel">
                   <dt>WhatsApp</dt>
                   <dd>
                     <a href={`https://wa.me/${whatsapp}`} rel="noopener">
-                      {contatti.whatsapp}
+                      {contacts.whatsapp}
                     </a>
                   </dd>
                 </div>
               ) : null}
-              {contatti.email ? (
+              {contacts.email ? (
                 <div className="channel">
                   <dt>Email</dt>
                   <dd>
-                    <a href={`mailto:${contatti.email}`}>{contatti.email}</a>
+                    <a href={`mailto:${contacts.email}`}>{contacts.email}</a>
                   </dd>
                 </div>
               ) : null}
-              {indirizzo ? (
+              {address ? (
                 <div className="channel">
                   <dt>Sede legale</dt>
-                  <dd>{indirizzo}</dd>
+                  <dd>{address}</dd>
                 </div>
               ) : null}
             </dl>

@@ -2,10 +2,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
-import { apriPayload } from '@/componenti/payload'
-import { classeSuperficie, idDisciplina, ordinale, provinciaEstesa, pubblicato, testiBivio } from '@/componenti/dati'
-import { Figura } from '@/componenti/Figura'
-import { VideoEroe } from '@/componenti/VideoEroe'
+import { openPayload } from '@/components/payload'
+import { surfaceClass, disciplineId, ordinal, provinceName, published, forkTexts } from '@/components/data'
+import { Figure } from '@/components/Figure'
+import { HeroVideo } from '@/components/HeroVideo'
 
 /**
  * Home: orienta prima di convertire. Eroe, bivio dei percorsi, dove si pratica,
@@ -23,7 +23,7 @@ import { VideoEroe } from '@/componenti/VideoEroe'
    stagione, non di secondo, e cosi' una modifica dall'admin si vede senza un rebuild. */
 export const revalidate = 60
 
-const PRIMA_VOLTA_DI_SERIE = [
+const DEFAULT_FIRST_TIME = [
   {
     titolo: 'Non serve essere allenati',
     testo:
@@ -52,20 +52,20 @@ const PRIMA_VOLTA_DI_SERIE = [
    sito puo' dimostrare: il tesseramento e i riconoscimenti, e le qualifiche di
    ogni persona, che stanno scritte nell'albo una per una. Quando il cliente
    conferma il percorso di diploma, la frase torna con il suo numero. */
-const QUALIFICHE_DI_SERIE =
+const DEFAULT_QUALIFICATIONS =
   'I docenti sono istruttori qualificati, tesserati e assicurati CSEN: nome, qualifica e grado di ognuno stanno nell’albo. Le qualifiche AKM sono riconosciute da CSEN-CONI, F.E.K.D.A. e P.T.D.'
 
 export default async function Home() {
-  const payload = await apriPayload()
+  const payload = await openPayload()
 
-  const [impostazioni, corsi, sedi, istruttori] = await Promise.all([
+  const [settings, courses, centersFound, instructors] = await Promise.all([
     payload.findGlobal({ slug: 'impostazioni', depth: 1 }),
     payload.find({
       collection: 'corsi',
       depth: 0,
       limit: 20,
       sort: 'ordine',
-      where: { and: [{ inBivio: { equals: true } }, pubblicato] },
+      where: { and: [{ inBivio: { equals: true } }, published] },
     }),
     payload.find({
       collection: 'sedi',
@@ -73,105 +73,105 @@ export default async function Home() {
       limit: 200,
       sort: 'indirizzo.citta',
       select: { nome: true, slug: true, indirizzo: true, orari: true },
-      where: { and: [{ attivo: { equals: true } }, pubblicato] },
+      where: { and: [{ attivo: { equals: true } }, published] },
     }),
-    payload.count({ collection: 'istruttori', where: pubblicato }),
+    payload.count({ collection: 'istruttori', where: published }),
   ])
 
-  const percorsi = corsi.docs
-  const centri = sedi.docs
+  const pathways = courses.docs
+  const centers = centersFound.docs
 
   // Quante sedi tengono un dato corso: la prova che un percorso non e' un'astrazione.
-  const sediPerCorso = new Map<number, number>()
-  for (const centro of centri) {
-    const idCorsi = new Set(
-      (centro.orari ?? [])
-        .map((o) => idDisciplina(o.disciplina))
+  const centersByCourse = new Map<number, number>()
+  for (const center of centers) {
+    const courseIds = new Set(
+      (center.orari ?? [])
+        .map((o) => disciplineId(o.disciplina))
         .filter((id): id is number => id !== null),
     )
-    for (const id of idCorsi) sediPerCorso.set(id, (sediPerCorso.get(id) ?? 0) + 1)
+    for (const id of courseIds) centersByCourse.set(id, (centersByCourse.get(id) ?? 0) + 1)
   }
 
   // In home bastano i primi comuni in ordine alfabetico: l'elenco vero sta in /centri.
-  const comuni = [
-    ...new Set(centri.map((c) => c.indirizzo?.citta).filter((c): c is string => Boolean(c))),
+  const towns = [
+    ...new Set(centers.map((c) => c.indirizzo?.citta).filter((c): c is string => Boolean(c))),
   ]
     .sort()
     .slice(0, 8)
 
-  const province = new Set(
-    centri.map((c) => c.indirizzo?.provincia).filter((p): p is string => Boolean(p)),
+  const provinces = new Set(
+    centers.map((c) => c.indirizzo?.provincia).filter((p): p is string => Boolean(p)),
   )
 
-  const primaVolta = impostazioni?.home?.primaVolta?.length
-    ? impostazioni.home.primaVolta
-    : PRIMA_VOLTA_DI_SERIE
-  const qualifiche = impostazioni?.home?.testoQualifiche || QUALIFICHE_DI_SERIE
-  const bivio = testiBivio(impostazioni)
-  const passo = {
-    titolo: impostazioni?.home?.passoTitolo || 'Prossimo passo',
+  const firstTime = settings?.home?.primaVolta?.length
+    ? settings.home.primaVolta
+    : DEFAULT_FIRST_TIME
+  const qualifications = settings?.home?.testoQualifiche || DEFAULT_QUALIFICATIONS
+  const fork = forkTexts(settings)
+  const step = {
+    titolo: settings?.home?.passoTitolo || 'Prossimo passo',
     testo:
-      impostazioni?.home?.passoTesto ||
+      settings?.home?.passoTesto ||
       'Vuoi capire se AKM fa per te? Scrivici: ti orientiamo sul corso e sulla sede più adatti al tuo obiettivo.',
-    bottone: impostazioni?.home?.passoBottone || 'Richiedi informazioni',
+    bottone: settings?.home?.passoBottone || 'Richiedi informazioni',
   }
 
-  const eroe = typeof impostazioni?.immagineHero === 'object' ? impostazioni.immagineHero : null
-  const eroeUrl = eroe?.sizes?.hero?.url || eroe?.url || null
-  const video = typeof impostazioni?.videoHero === 'object' ? impostazioni.videoHero : null
+  const hero = typeof settings?.immagineHero === 'object' ? settings.immagineHero : null
+  const heroUrl = hero?.sizes?.hero?.url || hero?.url || null
+  const video = typeof settings?.videoHero === 'object' ? settings.videoHero : null
   const videoUrl = video?.url || null
-  const didascalia = (videoUrl ? video?.didascalia : eroe?.didascalia) || null
+  const caption = (videoUrl ? video?.didascalia : hero?.didascalia) || null
 
   /* Il copy dell'eroe sta in Impostazioni > eroe, con i valori di serie come
      ripiego: un campo svuotato dall'admin non lascia un buco in home. */
-  const testi = impostazioni?.eroe
-  const occhiello = testi?.occhiello || 'Krav Maga · Milano, Monza e Brianza, Lodi, Varese'
-  const titolo = testi?.titolo || 'Difendersi si impara'
+  const texts = settings?.eroe
+  const eyebrow = texts?.occhiello || 'Krav Maga · Milano, Monza e Brianza, Lodi, Varese'
+  const title = texts?.titolo || 'Difendersi si impara'
   // Sotto le 20 parole: la coda «prima scegli il percorso, poi la sede»
   // ripeteva a parole quello che i due bottoni qui sotto gia' fanno.
-  const riga =
-    testi?.testo ||
-    `${centri.length > 0 ? `${centri.length} centri tecnici attivi, lezioni` : 'Lezioni'} settimanali tutto l’anno, istruttori con nome e cognome.`
+  const row =
+    texts?.testo ||
+    `${centers.length > 0 ? `${centers.length} centri tecnici attivi, lezioni` : 'Lezioni'} settimanali tutto l’anno, istruttori con nome e cognome.`
   /* L'ancora esiste solo se il bivio ha almeno una riga: senza percorsi -
      succede nel minuto di guscio senza elenchi di docs/adr/0013, e su un
      database appena migrato - il bottone principale non portava da nessuna
      parte. Allora punta all'indice dei percorsi, che e' una rotta vera. */
-  const hrefPrimaria = testi?.ctaPrimariaHref || '#percorsi'
-  const primaria = {
-    testo: testi?.ctaPrimariaEtichetta || 'Scegli il tuo percorso',
-    href: hrefPrimaria.startsWith('#') && percorsi.length === 0 ? '/corsi' : hrefPrimaria,
+  const primaryHref = texts?.ctaPrimariaHref || '#percorsi'
+  const primary = {
+    testo: texts?.ctaPrimariaEtichetta || 'Scegli il tuo percorso',
+    href: primaryHref.startsWith('#') && pathways.length === 0 ? '/corsi' : primaryHref,
   }
-  const secondaria = {
-    testo: testi?.ctaSecondariaEtichetta || 'Trova un centro',
-    href: testi?.ctaSecondariaHref || '/centri',
+  const secondary = {
+    testo: texts?.ctaSecondariaEtichetta || 'Trova un centro',
+    href: texts?.ctaSecondariaHref || '/centri',
   }
 
   return (
     <>
       <section className="hero" id="top">
-        {eroeUrl ? (
+        {heroUrl ? (
           <Image
             className="hero__photo"
-            src={eroeUrl}
-            alt={eroe?.alt || ''}
+            src={heroUrl}
+            alt={hero?.alt || ''}
             fill
             priority
             sizes="100vw"
           />
         ) : null}
-        {videoUrl ? <VideoEroe src={videoUrl} /> : null}
-        {eroeUrl || videoUrl ? <div className="hero__scrim" /> : null}
+        {videoUrl ? <HeroVideo src={videoUrl} /> : null}
+        {heroUrl || videoUrl ? <div className="hero__scrim" /> : null}
         {/* Anche l'eroe dichiara la sua fotografia: e' generata come le altre
             (docs/adr/0012), e qui e' la prima cosa che si vede. Sta in basso
             a destra e non a sinistra, dove ci sono il titolo e i due inviti.
             Col video acceso la didascalia e' quella del video: dice cosa si
             vede, e cosa si vede non e' piu' la fotografia. */}
-        {didascalia ? <p className="hero__caption">{didascalia}</p> : null}
+        {caption ? <p className="hero__caption">{caption}</p> : null}
 
         <div className="container hero__content">
-          <p className="eyebrow">{occhiello}</p>
-          <h1 className="display display--hero hero__title">{titolo}</h1>
-          <p className="text">{riga}</p>
+          <p className="eyebrow">{eyebrow}</p>
+          <h1 className="display display--hero hero__title">{title}</h1>
+          <p className="text">{row}</p>
           <div className="hero__tail">
             {/*
               I due inviti dell'eroe sono secondari, non primari. Nella prima
@@ -186,23 +186,23 @@ export default async function Home() {
 
               Un'ancora in pagina resta <a>: next/link su #percorsi rifarebbe la rotta.
             */}
-            {primaria.href.startsWith('#') ? (
-              <a className="button button--secondary" href={primaria.href}>
-                {primaria.testo}
+            {primary.href.startsWith('#') ? (
+              <a className="button button--secondary" href={primary.href}>
+                {primary.testo}
               </a>
             ) : (
-              <Link className="button button--secondary" href={primaria.href}>
-                {primaria.testo}
+              <Link className="button button--secondary" href={primary.href}>
+                {primary.testo}
               </Link>
             )}
-            <Link className="button button--secondary" href={secondaria.href}>
-              {secondaria.testo}
+            <Link className="button button--secondary" href={secondary.href}>
+              {secondary.testo}
             </Link>
           </div>
         </div>
       </section>
 
-      {percorsi.length > 0 ? (
+      {pathways.length > 0 ? (
         <>
           <section
             className="section section--black fork__head"
@@ -210,11 +210,11 @@ export default async function Home() {
             aria-labelledby="paths-title"
           >
             <div className="container fork__heading">
-              <p className="eyebrow">{bivio.occhiello}</p>
+              <p className="eyebrow">{fork.occhiello}</p>
               <h2 className="display display--md" id="paths-title">
-                {bivio.titolo}
+                {fork.titolo}
               </h2>
-              <p className="text">{bivio.testo}</p>
+              <p className="text">{fork.testo}</p>
               {/* Il rimando all'indice sta nell'intestazione del bivio: da solo
                   si prendeva una fascia intera - 220px di padding a 1440 - per
                   una riga da 14px, che e' spazio avanzato, non struttura. */}
@@ -225,54 +225,54 @@ export default async function Home() {
           </section>
 
           <ol className="fork">
-            {percorsi.map((corso, i) => {
-                            const quante = sediPerCorso.get(corso.id) ?? 0
+            {pathways.map((course, i) => {
+                            const howMany = centersByCourse.get(course.id) ?? 0
 
               return (
-                <li key={corso.id} className={`reveal path ${classeSuperficie(corso.superficie)}`}>
+                <li key={course.id} className={`reveal path ${surfaceClass(course.superficie)}`}>
                   <details>
                     <summary className="container path__head">
                       <span className="path__index" aria-hidden="true">
-                        {ordinale(i + 1)}
+                        {ordinal(i + 1)}
                       </span>
                       <span className="path__question">
-                        <span className="display display--md">{corso.domanda || corso.nome}</span>
-                        <span className="path__name">{corso.nome}</span>
+                        <span className="display display--md">{course.domanda || course.nome}</span>
+                        <span className="path__name">{course.nome}</span>
                       </span>
                       <span className="path__mark" aria-hidden="true" />
                     </summary>
 
                     <div className="container path__body">
                       <div>
-                        <p className="text">{corso.sommario}</p>
-                        {corso.prova ? (
-                          <p className="text detail path__trial">{corso.prova}</p>
+                        <p className="text">{course.sommario}</p>
+                        {course.prova ? (
+                          <p className="text detail path__trial">{course.prova}</p>
                         ) : null}
                         <p className="path__action">
-                          <Link className="button button--primary" href={`/corsi/${corso.slug}`}>
+                          <Link className="button button--primary" href={`/corsi/${course.slug}`}>
                             Vedi il percorso
                           </Link>
                         </p>
                       </div>
 
                       <dl className="path__facts">
-                        {corso.aChiSiRivolge ? (
+                        {course.aChiSiRivolge ? (
                           <div className="path__fact">
                             <dt>A chi si rivolge</dt>
-                            <dd>{corso.aChiSiRivolge}</dd>
+                            <dd>{course.aChiSiRivolge}</dd>
                           </div>
                         ) : null}
-                        {corso.durata ? (
+                        {course.durata ? (
                           <div className="path__fact">
                             <dt>Come funziona</dt>
-                            <dd>{corso.durata}</dd>
+                            <dd>{course.durata}</dd>
                           </div>
                         ) : null}
-                        {quante > 0 ? (
+                        {howMany > 0 ? (
                           <div className="path__fact">
                             <dt>Centri che lo tengono</dt>
                             <dd>
-                              {quante} su {centri.length}
+                              {howMany} su {centers.length}
                             </dd>
                           </div>
                         ) : null}
@@ -292,8 +292,8 @@ export default async function Home() {
           <div className="centers__heading">
             <span className="rule" aria-hidden="true" />
             <h2 className="display display--md" id="centers-title">
-              {centri.length > 0
-                ? `${centri.length} centri in ${province.size} province`
+              {centers.length > 0
+                ? `${centers.length} centri in ${provinces.size} province`
                 : 'I centri tecnici'}
             </h2>
             <p className="text">
@@ -302,16 +302,16 @@ export default async function Home() {
             </p>
           </div>
 
-          {comuni.length > 0 ? (
+          {towns.length > 0 ? (
             <ul className="towns">
-              {comuni.map((comune) => (
-                <li className="town" key={comune}>
-                  {comune}
+              {towns.map((town) => (
+                <li className="town" key={town}>
+                  {town}
                 </li>
               ))}
-              {centri.length > comuni.length ? (
+              {centers.length > towns.length ? (
                 <li className="town town--rest">
-                  e altri {centri.length - comuni.length}
+                  e altri {centers.length - towns.length}
                 </li>
               ) : null}
             </ul>
@@ -332,11 +332,11 @@ export default async function Home() {
 
       {/* La sala prima del racconto della prima sera: chi non e' mai entrato in
           una palestra vuole vederla, non leggerla. */}
-      <Figura
-        slot={impostazioni?.home?.immagineIngresso}
-        etichetta="Foto di «Cosa succede quando entri»"
-        formato="banda"
-        misura="grande"
+      <Figure
+        slot={settings?.home?.immagineIngresso}
+        label="Foto di «Cosa succede quando entri»"
+        format="band"
+        measure="grande"
         sizes="100vw"
       />
 
@@ -353,10 +353,10 @@ export default async function Home() {
           </div>
 
           <div className="first__points">
-            {primaVolta.map((punto) => (
-              <div key={punto.titolo} className="reveal first__point">
-                <h3>{punto.titolo}</h3>
-                <p className="text">{punto.testo}</p>
+            {firstTime.map((point) => (
+              <div key={point.titolo} className="reveal first__point">
+                <h3>{point.titolo}</h3>
+                <p className="text">{point.testo}</p>
               </div>
             ))}
           </div>
@@ -369,28 +369,28 @@ export default async function Home() {
             <h2 className="display display--md" id="trials-title">
               Le qualifiche si contano
             </h2>
-            <p className="text first__lead">{qualifiche}</p>
+            <p className="text first__lead">{qualifications}</p>
           </div>
 
           {/* Un numero a zero non e' una prova: la riga sparisce invece di dichiarare il vuoto. */}
           <dl className="trials__numbers">
-            {centri.length > 0 ? (
+            {centers.length > 0 ? (
               <div className="trial">
-                <dt className="trial__value">{centri.length}</dt>
+                <dt className="trial__value">{centers.length}</dt>
                 <dd className="trial__item">centri tecnici attivi in questa stagione</dd>
               </div>
             ) : null}
-            {istruttori.totalDocs > 0 ? (
+            {instructors.totalDocs > 0 ? (
               <div className="trial">
-                <dt className="trial__value">{istruttori.totalDocs}</dt>
+                <dt className="trial__value">{instructors.totalDocs}</dt>
                 <dd className="trial__item">istruttori e maestri con nome, cognome e qualifica</dd>
               </div>
             ) : null}
-            {province.size > 0 ? (
+            {provinces.size > 0 ? (
               <div className="trial">
-                <dt className="trial__value">{province.size}</dt>
+                <dt className="trial__value">{provinces.size}</dt>
                 <dd className="trial__item">
-                  province coperte: {[...province].map(provinciaEstesa).sort().join(', ')}
+                  province coperte: {[...provinces].map(provinceName).sort().join(', ')}
                 </dd>
               </div>
             ) : null}
@@ -412,12 +412,12 @@ export default async function Home() {
               la scala e non con il solo fondo (RHYTHM 2). */}
           <span className="rule" aria-hidden="true" />
           <h2 className="display display--lg step__title" id="step-title">
-            {passo.titolo}
+            {step.titolo}
           </h2>
-          <p className="text first__lead">{passo.testo}</p>
+          <p className="text first__lead">{step.testo}</p>
           <p className="tail-action">
             <Link className="button button--primary" href="/contatti">
-              {passo.bottone}
+              {step.bottone}
             </Link>
           </p>
         </div>

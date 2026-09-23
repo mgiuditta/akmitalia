@@ -2,24 +2,24 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
 
-import { apriPayload } from '@/componenti/payload'
-import { AgendaEventi } from '@/componenti/AgendaEventi'
+import { openPayload } from '@/components/payload'
+import { EventAgenda } from '@/components/EventAgenda'
 import {
-  chiaveGiorno,
-  chiaveMese,
-  giorniDiUnEvento,
-  griglia,
-  intervalloMese,
-  meseCorrente,
-  meseDaParam,
-  mesePrecedente,
-  meseSuccessivo,
-  nomeMese,
-  orarioLeggibile,
-} from '@/componenti/calendario'
-import { doveEvento, pubblicato } from '@/componenti/dati'
-import { Figura } from '@/componenti/Figura'
-import { metadatiPagina } from '@/componenti/seo'
+  dayKey,
+  monthKey,
+  eventDays,
+  grid,
+  monthRange,
+  currentMonth,
+  monthFromParam,
+  previousMonth,
+  nextMonth,
+  monthName,
+  readableSlot,
+} from '@/components/calendar'
+import { eventPlace, published } from '@/components/data'
+import { Figure } from '@/components/Figure'
+import { pageMetadata } from '@/components/seo'
 
 /**
  * Il calendario: una griglia del mese resa dal server, con `?mese=2026-09`
@@ -30,26 +30,26 @@ import { metadatiPagina } from '@/componenti/seo'
 
 export const revalidate = 60
 
-const GIORNI = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom']
+const DAYS = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom']
 
-export const metadata: Metadata = metadatiPagina({
+export const metadata: Metadata = pageMetadata({
   titolo: 'Eventi',
   descrizione:
     'Stage, esami, presentazioni e feste di AKM Italia, mese per mese: data, orario e centro di ogni evento della stagione.',
   path: '/eventi',
 })
 
-export default async function PaginaEventi({
+export default async function EventsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ mese?: string }>
+  searchParams: Promise<{ month?: string }>
 }) {
-  const { mese: param } = await searchParams
-  const mese = meseDaParam(param)
-  const { inizio, fine } = intervalloMese(mese)
-  const payload = await apriPayload()
+  const { month: param } = await searchParams
+  const month = monthFromParam(param)
+  const { start, end } = monthRange(month)
+  const payload = await openPayload()
 
-  const [eventi, impostazioni] = await Promise.all([
+  const [events, settings] = await Promise.all([
     payload.find({
       collection: 'eventi',
       depth: 1,
@@ -57,12 +57,12 @@ export default async function PaginaEventi({
       sort: 'dataInizio',
       where: {
         and: [
-          pubblicato,
-          { dataInizio: { less_than: fine.toISOString() } },
+          published,
+          { dataInizio: { less_than: end.toISOString() } },
           {
             or: [
-              { dataFine: { greater_than_equal: inizio.toISOString() } },
-              { dataInizio: { greater_than_equal: inizio.toISOString() } },
+              { dataFine: { greater_than_equal: start.toISOString() } },
+              { dataInizio: { greater_than_equal: start.toISOString() } },
             ],
           },
         ],
@@ -73,31 +73,31 @@ export default async function PaginaEventi({
 
   /* Un mese vuoto non lascia il visitatore a sfogliare a vuoto: gli dice
      qual e' il prossimo mese con qualcosa dentro. */
-  const prossimo =
-    eventi.docs.length === 0
+  const next =
+    events.docs.length === 0
       ? await payload.find({
           collection: 'eventi',
           depth: 0,
           limit: 1,
           sort: 'dataInizio',
           select: { dataInizio: true },
-          where: { and: [pubblicato, { dataInizio: { greater_than_equal: fine.toISOString() } }] },
+          where: { and: [published, { dataInizio: { greater_than_equal: end.toISOString() } }] },
         })
       : null
-  const meseProssimo = prossimo?.docs[0]
-    ? meseDaParam(chiaveGiorno(prossimo.docs[0].dataInizio).slice(0, 7))
+  const upcomingMonth = next?.docs[0]
+    ? monthFromParam(dayKey(next.docs[0].dataInizio).slice(0, 7))
     : null
 
-  const perGiorno = new Map<string, typeof eventi.docs>()
-  for (const evento of eventi.docs) {
-    for (const giorno of giorniDiUnEvento(evento.dataInizio, evento.dataFine)) {
-      perGiorno.set(giorno, [...(perGiorno.get(giorno) ?? []), evento])
+  const byDay = new Map<string, typeof events.docs>()
+  for (const event of events.docs) {
+    for (const day of eventDays(event.dataInizio, event.dataFine)) {
+      byDay.set(day, [...(byDay.get(day) ?? []), event])
     }
   }
 
-  const oggi = chiaveGiorno(new Date())
-  const questoMese = chiaveMese(mese)
-  const settimane = griglia(mese)
+  const today = dayKey(new Date())
+  const thisMonth = monthKey(month)
+  const weeks = grid(month)
 
   return (
     <>
@@ -111,27 +111,27 @@ export default async function PaginaEventi({
         </div>
       </section>
 
-      <Figura
-        slot={impostazioni?.fotoPagine?.eventi}
-        etichetta="Foto della pagina Eventi"
-        formato="banda"
-        misura="grande"
+      <Figure
+        slot={settings?.fotoPagine?.eventi}
+        label="Foto della pagina Eventi"
+        format="band"
+        measure="grande"
         sizes="100vw"
-        priorita
+        priority
       />
 
       <section className="section section--light" aria-labelledby="month-title">
         <div className="container">
           <nav className="calendar__months" aria-label="Cambia mese">
-            <Link className="calendar__jump" href={`/eventi?mese=${chiaveMese(mesePrecedente(mese))}`}>
+            <Link className="calendar__jump" href={`/eventi?mese=${monthKey(previousMonth(month))}`}>
               Mese precedente
             </Link>
             <h2 className="display display--sm" id="month-title">
-              {nomeMese(mese)}
+              {monthName(month)}
             </h2>
             <Link
               className="calendar__jump calendar__jump--next"
-              href={`/eventi?mese=${chiaveMese(meseSuccessivo(mese))}`}
+              href={`/eventi?mese=${monthKey(nextMonth(month))}`}
             >
               Mese successivo
             </Link>
@@ -140,24 +140,24 @@ export default async function PaginaEventi({
           {/* Il mese vuoto lo dice prima della griglia, non dopo cinque righe di
               celle vuote: sotto la piega il messaggio e il rimando al prossimo
               mese non li vedeva nessuno. */}
-          {eventi.docs.length === 0 ? (
+          {events.docs.length === 0 ? (
             <p className="text empty empty--month">
-              Nessun evento a {nomeMese(mese)}.{' '}
-              {meseProssimo ? (
-                <Link href={`/eventi?mese=${chiaveMese(meseProssimo)}`}>
-                  Il prossimo è a {nomeMese(meseProssimo)}.
+              Nessun evento a {monthName(month)}.{' '}
+              {upcomingMonth ? (
+                <Link href={`/eventi?mese=${monthKey(upcomingMonth)}`}>
+                  Il prossimo è a {monthName(upcomingMonth)}.
                 </Link>
-              ) : chiaveMese(meseCorrente()) !== questoMese ? (
+              ) : monthKey(currentMonth()) !== thisMonth ? (
                 <Link href="/eventi">Torna al mese corrente.</Link>
               ) : null}
             </p>
           ) : null}
 
           <table className="calendar">
-            <caption>Calendario di {nomeMese(mese)}</caption>
+            <caption>Calendario di {monthName(month)}</caption>
             <thead>
               <tr>
-                {GIORNI.map((g) => (
+                {DAYS.map((g) => (
                   <th key={g} scope="col">
                     {g}
                   </th>
@@ -165,40 +165,40 @@ export default async function PaginaEventi({
               </tr>
             </thead>
             <tbody>
-              {settimane.map((settimana) => (
-                <tr key={settimana[0]}>
-                  {settimana.map((giorno) => {
-                    const del = perGiorno.get(giorno) ?? []
-                    const classi = [
+              {weeks.map((week) => (
+                <tr key={week[0]}>
+                  {week.map((day) => {
+                    const dayEvents = byDay.get(day) ?? []
+                    const classes = [
                       'calendar__day',
-                      giorno.slice(0, 7) !== questoMese ? 'calendar__day--outside' : '',
-                      giorno === oggi ? 'calendar__day--today' : '',
+                      day.slice(0, 7) !== thisMonth ? 'calendar__day--outside' : '',
+                      day === today ? 'calendar__day--today' : '',
                     ]
                       .filter(Boolean)
                       .join(' ')
                     return (
-                      <td className={classi} key={giorno}>
-                        <span className="calendar__number">{Number(giorno.slice(8))}</span>
-                        {del.length > 0 ? (
+                      <td className={classes} key={day}>
+                        <span className="calendar__number">{Number(day.slice(8))}</span>
+                        {dayEvents.length > 0 ? (
                           <>
                             <div className="calendar__events">
-                              {del.map((evento) => {
-                                const ora = orarioLeggibile(evento.dataInizio, evento.dataFine)
+                              {dayEvents.map((event) => {
+                                const time = readableSlot(event.dataInizio, event.dataFine)
                                 return (
                                   <Link
                                     className="calendar__event"
-                                    href={`/eventi/${evento.slug}`}
-                                    key={evento.id}
+                                    href={`/eventi/${event.slug}`}
+                                    key={event.id}
                                   >
                                     {/* In cella il posto viene prima del titolo: a settembre
                                         dieci celle dicono «Presentazione», e a distinguerle
                                         e' il centro. L'ora distingue le due dello stesso
                                         centro nello stesso giorno, che si leggevano uguali. */}
-                                    <b className="calendar__place">{doveEvento(evento)}</b>
-                                    {ora ? (
-                                      <span className="calendar__time">{ora} </span>
+                                    <b className="calendar__place">{eventPlace(event)}</b>
+                                    {time ? (
+                                      <span className="calendar__time">{time} </span>
                                     ) : null}
-                                    {evento.titolo}
+                                    {event.titolo}
                                   </Link>
                                 )
                               })}
@@ -218,7 +218,7 @@ export default async function PaginaEventi({
             </tbody>
           </table>
 
-          {eventi.docs.length > 0 ? <AgendaEventi eventi={eventi.docs} /> : null}
+          {events.docs.length > 0 ? <EventAgenda events={events.docs} /> : null}
         </div>
       </section>
     </>

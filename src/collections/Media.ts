@@ -14,14 +14,14 @@ import { legacyField } from '../fields/legacy'
  * sta la radice del progetto. La cwd invece e' la radice sia con `next dev` sia
  * nel container. `MEDIA_DIR` resta la via d'uscita se il volume sta altrove.
  */
-const cartellaMedia = process.env.MEDIA_DIR || path.resolve(process.cwd(), 'media')
+const mediaDir = process.env.MEDIA_DIR || path.resolve(process.cwd(), 'media')
 
 /*
  * Un video in cima alla home si scarica su ogni visita, anche dal telefono.
  * Il tetto e' largo (a 1080p per 15 secondi ne bastano 8) ma ferma chi carica
  * lo spot da 200 MB cosi' com'e' uscito dal montaggio.
  */
-export const MB_MASSIMI_VIDEO = 12
+export const MAX_VIDEO_MB = 12
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -38,10 +38,10 @@ export const Media: CollectionConfig = {
       // Qui Payload ha gia' letto il file: tipo e peso stanno in `data`, sia
       // dall'admin sia dalla Local API. Il file non e' ancora su disco.
       ({ data }) => {
-        const peso = data?.filesize ?? 0
-        if (data?.mimeType?.startsWith('video/') && peso > MB_MASSIMI_VIDEO * 1024 * 1024) {
+        const weight = data?.filesize ?? 0
+        if (data?.mimeType?.startsWith('video/') && weight > MAX_VIDEO_MB * 1024 * 1024) {
           throw new APIError(
-            `Il video pesa ${Math.round(peso / 1024 / 1024)} MB: il massimo e' ${MB_MASSIMI_VIDEO}. Riesportalo a 1920x1080, senza audio, 10-15 secondi.`,
+            `Il video pesa ${Math.round(weight / 1024 / 1024)} MB: il massimo e' ${MAX_VIDEO_MB}. Riesportalo a 1920x1080, senza audio, 10-15 secondi.`,
             400,
             null,
             true,
@@ -65,7 +65,7 @@ export const Media: CollectionConfig = {
     legacyField(),
   ],
   upload: {
-    staticDir: cartellaMedia,
+    staticDir: mediaDir,
     focalPoint: true,
     // Il video e' solo MP4: H.264 lo leggono tutti i browser, Safari compreso.
     mimeTypes: ['image/*', 'application/pdf', 'video/mp4'],

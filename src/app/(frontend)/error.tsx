@@ -17,7 +17,7 @@ import React, { useEffect } from 'react'
  * l'azione della pagina: l'azione resta scrivere.
  */
 
-export default function Errore({
+export default function ErrorPage({
   error,
   retry,
 }: {

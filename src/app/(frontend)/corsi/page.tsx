@@ -3,10 +3,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
-import { apriPayload } from '@/componenti/payload'
-import { classeSuperficie, idDisciplina, ordinale, pubblicato, testiBivio } from '@/componenti/dati'
-import { Figura } from '@/componenti/Figura'
-import { metadatiPagina } from '@/componenti/seo'
+import { openPayload } from '@/components/payload'
+import { surfaceClass, disciplineId, ordinal, published, forkTexts } from '@/components/data'
+import { Figure } from '@/components/Figure'
+import { pageMetadata } from '@/components/seo'
 
 /**
  * L'indice dei percorsi. Un percorso e' un corso marcato, non una collection
@@ -23,97 +23,97 @@ import { metadatiPagina } from '@/componenti/seo'
 
 export const revalidate = 60
 
-export const metadata: Metadata = metadatiPagina({
+export const metadata: Metadata = pageMetadata({
   titolo: 'Percorsi',
   descrizione:
     'I percorsi AKM Italia: difesa personale per adulti, Krav Maga Kids, antiaggressione. A chi si rivolgono, dove si praticano e in quanti centri.',
   path: '/corsi',
 })
 
-export default async function PaginaCorsi() {
-  const payload = await apriPayload()
+export default async function CoursesPage() {
+  const payload = await openPayload()
 
-  const [corsi, sedi, impostazioni] = await Promise.all([
+  const [courses, centers, settings] = await Promise.all([
     payload.find({
       collection: 'corsi',
       depth: 1,
       limit: 50,
       sort: 'ordine',
-      where: pubblicato,
+      where: published,
     }),
     payload.find({
       collection: 'sedi',
       depth: 0,
       limit: 200,
       select: { orari: true },
-      where: { and: [{ attivo: { equals: true } }, pubblicato] },
+      where: { and: [{ attivo: { equals: true } }, published] },
     }),
     payload.findGlobal({ slug: 'impostazioni', depth: 1 }),
   ])
 
   // Quante sedi tengono un dato corso: la prova che un percorso non e' un'astrazione.
-  const sediPerCorso = new Map<number, number>()
-  for (const centro of sedi.docs) {
-    const idCorsi = new Set(
-      (centro.orari ?? [])
-        .map((o) => idDisciplina(o.disciplina))
+  const centersByCourse = new Map<number, number>()
+  for (const center of centers.docs) {
+    const courseIds = new Set(
+      (center.orari ?? [])
+        .map((o) => disciplineId(o.disciplina))
         .filter((id): id is number => id !== null),
     )
-    for (const id of idCorsi) sediPerCorso.set(id, (sediPerCorso.get(id) ?? 0) + 1)
+    for (const id of courseIds) centersByCourse.set(id, (centersByCourse.get(id) ?? 0) + 1)
   }
 
-  const bivio = testiBivio(impostazioni)
+  const fork = forkTexts(settings)
 
   return (
     <>
       <section className="section section--black masthead fork__head">
         <div className="container masthead__content">
-          <h1 className="display display--lg">{bivio.titolo}</h1>
-          <p className="text masthead__text">{bivio.testo}</p>
+          <h1 className="display display--lg">{fork.titolo}</h1>
+          <p className="text masthead__text">{fork.testo}</p>
           {/* Il conteggio sta qui e non in una sezione sua: una fascia intera per
               una riga di titolo era un blocco vuoto fra due blocchi pieni. */}
-          {corsi.docs.length > 0 ? (
-            <p className="detail">{corsi.docs.length} percorsi, in ordine di lettura.</p>
+          {courses.docs.length > 0 ? (
+            <p className="detail">{courses.docs.length} percorsi, in ordine di lettura.</p>
           ) : null}
         </div>
       </section>
 
-      {/* `priorita`: su queste pagine la banda e' l'LCP, la testata sopra e'
+      {/* `priority`: su queste pagine la banda e' l'LCP, la testata sopra e'
           tipografica e non ha niente da caricare. */}
-      <Figura
-        slot={impostazioni?.fotoPagine?.corsi}
-        etichetta="Foto della pagina Percorsi"
-        formato="banda"
-        misura="grande"
+      <Figure
+        slot={settings?.fotoPagine?.corsi}
+        label="Foto della pagina Percorsi"
+        format="band"
+        measure="grande"
         sizes="100vw"
-        priorita
+        priority
       />
 
-      {corsi.docs.length > 0 ? (
+      {courses.docs.length > 0 ? (
         <ol className="fork" aria-label="I percorsi">
-          {corsi.docs.map((corso, i) => {
-                        const quante = sediPerCorso.get(corso.id) ?? 0
-            const segno = typeof corso.immagine === 'object' ? corso.immagine : null
+          {courses.docs.map((course, i) => {
+                        const howMany = centersByCourse.get(course.id) ?? 0
+            const mark = typeof course.immagine === 'object' ? course.immagine : null
 
             return (
-              <li className={`reveal path ${classeSuperficie(corso.superficie)}`} key={corso.id}>
-                <Link className="container path__row" href={`/corsi/${corso.slug}`}>
+              <li className={`reveal path ${surfaceClass(course.superficie)}`} key={course.id}>
+                <Link className="container path__row" href={`/corsi/${course.slug}`}>
                   <span className="path__index" aria-hidden="true">
-                    {ordinale(i + 1)}
+                    {ordinal(i + 1)}
                   </span>
 
                   <span className="path__question">
-                    <span className="display display--md">{corso.domanda || corso.nome}</span>
-                    <span className="path__name">{corso.nome}</span>
-                    <span className="text path__summary">{corso.sommario}</span>
+                    <span className="display display--md">{course.domanda || course.nome}</span>
+                    <span className="path__name">{course.nome}</span>
+                    <span className="text path__summary">{course.sommario}</span>
                     {/* Un percorso che nessun centro attivo tiene non perde la riga
                         in silenzio: la riga c'e' e dice perche'. Il quadrato verde
                         resta al dato vivo, cioe' ai centri che lo tengono davvero. */}
                     <span className="path__tail">
-                      {corso.aChiSiRivolge ? <span>{corso.aChiSiRivolge}</span> : null}
-                      {quante > 0 ? (
+                      {course.aChiSiRivolge ? <span>{course.aChiSiRivolge}</span> : null}
+                      {howMany > 0 ? (
                         <span className="status">
-                          {quante} {quante === 1 ? 'centro lo tiene' : 'centri lo tengono'}
+                          {howMany} {howMany === 1 ? 'centro lo tiene' : 'centri lo tengono'}
                         </span>
                       ) : (
                         <span>Non in calendario in questa stagione</span>
@@ -123,10 +123,10 @@ export default async function PaginaCorsi() {
 
                   {/* Il segno e' inchiostro su trasparente: sulle superfici scure
                       si inverte, non si nasconde. */}
-                  {segno?.url ? (
+                  {mark?.url ? (
                     <Image
                       className="path__mark-logo"
-                      src={segno.url}
+                      src={mark.url}
                       alt=""
                       width={96}
                       height={96}

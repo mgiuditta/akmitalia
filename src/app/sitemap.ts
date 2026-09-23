@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 
-import { apriPayload } from '@/componenti/payload'
-import { pubblicato, sitoUrl } from '@/componenti/dati'
+import { openPayload } from '@/components/payload'
+import { published, siteUrl } from '@/components/data'
 
 /**
  * La sitemap elenca le stesse rotte che il sito espone, niente di piu': le
@@ -16,60 +16,60 @@ import { pubblicato, sitoUrl } from '@/componenti/dati'
 export const revalidate = 3600
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = sitoUrl()
-  const payload = await apriPayload()
+  const base = siteUrl()
+  const payload = await openPayload()
 
-  const [corsi, sedi, pagine, eventi] = await Promise.all([
+  const [courses, centers, pages, events] = await Promise.all([
     payload.find({
       collection: 'corsi',
       depth: 0,
       limit: 100,
       select: { slug: true, updatedAt: true },
-      where: pubblicato,
+      where: published,
     }),
     payload.find({
       collection: 'sedi',
       depth: 0,
       limit: 300,
       select: { slug: true, updatedAt: true },
-      where: { and: [{ attivo: { equals: true } }, pubblicato] },
+      where: { and: [{ attivo: { equals: true } }, published] },
     }),
     payload.find({
       collection: 'pagine',
       depth: 0,
       limit: 500,
       select: { path: true, updatedAt: true },
-      where: pubblicato,
+      where: published,
     }),
     payload.find({
       collection: 'eventi',
       depth: 0,
       limit: 500,
       select: { slug: true, updatedAt: true },
-      where: pubblicato,
+      where: published,
     }),
   ])
 
-  const fisse = ['', '/corsi', '/centri', '/istruttori', '/eventi', '/contatti'].map((rotta) => ({
-    url: `${base}${rotta}`,
+  const fixed = ['', '/corsi', '/centri', '/istruttori', '/eventi', '/contatti'].map((route) => ({
+    url: `${base}${route}`,
     lastModified: new Date(),
   }))
 
   return [
-    ...fisse,
-    ...corsi.docs.map((c) => ({
+    ...fixed,
+    ...courses.docs.map((c) => ({
       url: `${base}/corsi/${c.slug}`,
       lastModified: c.updatedAt ? new Date(c.updatedAt) : undefined,
     })),
-    ...sedi.docs.map((s) => ({
+    ...centers.docs.map((s) => ({
       url: `${base}/centri/${s.slug}`,
       lastModified: s.updatedAt ? new Date(s.updatedAt) : undefined,
     })),
-    ...eventi.docs.map((e) => ({
+    ...events.docs.map((e) => ({
       url: `${base}/eventi/${e.slug}`,
       lastModified: e.updatedAt ? new Date(e.updatedAt) : undefined,
     })),
-    ...pagine.docs
+    ...pages.docs
       .filter((p): p is typeof p & { path: string } => Boolean(p.path))
       .map((p) => ({
         url: `${base}${p.path}`,

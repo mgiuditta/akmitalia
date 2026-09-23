@@ -14,18 +14,18 @@ test.describe('Frontend', () => {
     page,
   }) => {
     await page.goto('http://localhost:3000/centri')
-    const filtri = page.getByRole('navigation', { name: 'Filtra per provincia' })
-    const filtro = filtri.getByRole('link', { name: /^MI \(/ })
-    test.skip((await filtro.count()) === 0, 'Nessun centro in provincia di Milano nel database')
+    const filters = page.getByRole('navigation', { name: 'Filtra per provincia' })
+    const filter = filters.getByRole('link', { name: /^MI \(/ })
+    test.skip((await filter.count()) === 0, 'Nessun centro in provincia di Milano nel database')
 
     await page.evaluate(() => {
-      ;(window as unknown as { __vivo: number }).__vivo = 1
+      ;(window as unknown as { __live: number }).__live = 1
     })
-    await filtro.click()
+    await filter.click()
 
     await expect(page).toHaveURL(/\/centri\?provincia=MI$/)
     await expect(page.locator('#list-title')).toHaveText('Centri in provincia di MI')
-    expect(await page.evaluate(() => (window as unknown as { __vivo?: number }).__vivo)).toBe(1)
+    expect(await page.evaluate(() => (window as unknown as { __live?: number }).__live)).toBe(1)
 
     await page.goBack()
     await expect(page).toHaveURL(/\/centri$/)

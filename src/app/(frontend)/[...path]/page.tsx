@@ -3,10 +3,10 @@ import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import React from 'react'
 
-import { apriPayload } from '@/componenti/payload'
-import { pubblicato } from '@/componenti/dati'
-import { Figura } from '@/componenti/Figura'
-import { metadatiPagina } from '@/componenti/seo'
+import { openPayload } from '@/components/payload'
+import { published } from '@/components/data'
+import { Figure } from '@/components/Figure'
+import { pageMetadata } from '@/components/seo'
 
 /**
  * Tutte le pagine editoriali passano da qui: privacy, cookie, chi siamo e le
@@ -25,34 +25,34 @@ import { metadatiPagina } from '@/componenti/seo'
 
 export const revalidate = 60
 
-async function trovaPagina(path: string) {
-  const payload = await apriPayload()
-  const pagine = await payload.find({
+async function findPage(path: string) {
+  const payload = await openPayload()
+  const pages = await payload.find({
     collection: 'pagine',
     depth: 1,
     limit: 1,
-    where: { and: [{ path: { equals: path } }, pubblicato] },
+    where: { and: [{ path: { equals: path } }, published] },
   })
-  return pagine.docs[0] ?? null
+  return pages.docs[0] ?? null
 }
 
 /** Il `path` a database ha lo slash davanti, i segmenti della rotta no. */
-function aPath(segmenti: string[]) {
-  return `/${segmenti.map(decodeURIComponent).join('/')}`
+function aPath(segments: string[]) {
+  return `/${segments.map(decodeURIComponent).join('/')}`
 }
 
 export async function generateStaticParams() {
-  const payload = await apriPayload()
-  const pagine = await payload.find({
+  const payload = await openPayload()
+  const pages = await payload.find({
     collection: 'pagine',
     depth: 0,
     limit: 500,
     select: { path: true },
-    where: pubblicato,
+    where: published,
   })
 
-  return pagine.docs
-    .map((pagina) => pagina.path)
+  return pages.docs
+    .map((page) => page.path)
     .filter((path): path is string => Boolean(path))
     .map((path) => ({ path: path.replace(/^\//, '').split('/') }))
 }
@@ -60,7 +60,7 @@ export async function generateStaticParams() {
 /* Quando la scheda non c'e' la rotta chiama notFound() e rende not-found.tsx:
    il titolo del documento lo decide comunque questa funzione, e «AKM Italia»
    su una pagina che dice «questa pagina non c'e'» e' una riga che si contraddice. */
-const TITOLO_404 = { title: 'Pagina non trovata' }
+const TITLE_404 = { title: 'Pagina non trovata' }
 
 export async function generateMetadata({
   params,
@@ -68,60 +68,60 @@ export async function generateMetadata({
   params: Promise<{ path: string[] }>
 }): Promise<Metadata> {
   const { path } = await params
-  const pagina = await trovaPagina(aPath(path))
-  if (!pagina) return TITOLO_404
+  const page = await findPage(aPath(path))
+  if (!page) return TITLE_404
 
-  return metadatiPagina({
-    titolo: pagina.meta?.title || pagina.titolo,
-    descrizione: pagina.meta?.description || pagina.sommario || '',
-    path: pagina.path ?? '/',
+  return pageMetadata({
+    titolo: page.meta?.title || page.titolo,
+    descrizione: page.meta?.description || page.sommario || '',
+    path: page.path ?? '/',
   })
 }
 
-export default async function PaginaEditoriale({
+export default async function EditorialPage({
   params,
 }: {
   params: Promise<{ path: string[] }>
 }) {
   const { path } = await params
-  const pagina = await trovaPagina(aPath(path))
-  if (!pagina) notFound()
+  const page = await findPage(aPath(path))
+  if (!page) notFound()
 
-  const sezioni = pagina.sezioni ?? []
+  const sections = page.sezioni ?? []
 
   return (
     <>
       <section className="section section--black masthead">
         <div className="container masthead__content">
-          {pagina.occhiello ? <p className="eyebrow">{pagina.occhiello}</p> : null}
-          <h1 className="display display--lg">{pagina.titolo}</h1>
-          {pagina.sommario ? <p className="text masthead__text">{pagina.sommario}</p> : null}
+          {page.occhiello ? <p className="eyebrow">{page.occhiello}</p> : null}
+          <h1 className="display display--lg">{page.titolo}</h1>
+          {page.sommario ? <p className="text masthead__text">{page.sommario}</p> : null}
         </div>
       </section>
 
       {/* Lo stesso slot di tutte le altre testate, non un <Image> a parte: cosi'
           quando la foto manca resta il segnaposto invece di un buco, che e'
           quello che docs/adr/0012 decide proprio per questa testata. */}
-      <Figura
-        slot={pagina.immagineHero}
-        etichetta="Foto della testata"
-        formato="banda"
-        misura="grande"
+      <Figure
+        slot={page.immagineHero}
+        label="Foto della testata"
+        format="band"
+        measure="grande"
         sizes="100vw"
       />
 
       <section className="section section--light">
         <div className="container editorial">
-          {sezioni.length > 0 ? (
-            sezioni.map((sezione, i) => (
+          {sections.length > 0 ? (
+            sections.map((section, i) => (
               /* Niente `.rivela` qui: le sezioni di un'informativa non sono un
                  elenco, e l'entrata allo scroll le lasciava schiarite nella parte
                  bassa dello schermo invece di scandirle. Il repertorio del
                  movimento vale dove c'e' qualcosa da scandire. */
-              <section className="editorial__section" key={sezione.id ?? i}>
-                {sezione.titolo ? <h2>{sezione.titolo}</h2> : null}
+              <section className="editorial__section" key={section.id ?? i}>
+                {section.titolo ? <h2>{section.titolo}</h2> : null}
                 <div className="rich">
-                  <RichText data={sezione.testo} />
+                  <RichText data={section.testo} />
                 </div>
               </section>
             ))

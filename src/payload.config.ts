@@ -9,18 +9,18 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
-import { Corsi } from './collections/Corsi'
-import { Eventi } from './collections/Eventi'
-import { Istruttori } from './collections/Istruttori'
+import { Courses } from './collections/Courses'
+import { Events } from './collections/Events'
+import { Instructors } from './collections/Instructors'
 import { Media } from './collections/Media'
 import { News } from './collections/News'
-import { Pagine } from './collections/Pagine'
-import { Richieste } from './collections/Richieste'
-import { Sedi } from './collections/Sedi'
-import { Utenti } from './collections/Utenti'
-import { Contatti } from './globals/Contatti'
-import { Impostazioni } from './globals/Impostazioni'
-import { Navigazione } from './globals/Navigazione'
+import { Pages } from './collections/Pages'
+import { Requests } from './collections/Requests'
+import { Centers } from './collections/Centers'
+import { Users } from './collections/Users'
+import { Contacts } from './globals/Contacts'
+import { Settings } from './globals/Settings'
+import { Navigation } from './globals/Navigation'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -32,15 +32,15 @@ const dirname = path.dirname(filename)
  * nodemailerAdapter() a vuoto perche' al boot contatterebbe Ethereal, e in
  * sviluppo offline il sito non partirebbe.
  */
-const portaSmtp = Number(process.env.SMTP_PORT || 587)
+const smtpPort = Number(process.env.SMTP_PORT || 587)
 const email = process.env.SMTP_HOST
   ? nodemailerAdapter({
       defaultFromAddress: process.env.SMTP_FROM || 'noreply@akm-italia.eu',
       defaultFromName: 'AKM Italia',
       transportOptions: {
         host: process.env.SMTP_HOST,
-        port: portaSmtp,
-        secure: portaSmtp === 465,
+        port: smtpPort,
+        secure: smtpPort === 465,
         auth: process.env.SMTP_USER
           ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
           : undefined,
@@ -49,11 +49,11 @@ const email = process.env.SMTP_HOST
   : undefined
 
 /** Le collezioni con una pagina pubblica: prendono i campi SEO e possono essere destinazione di un redirect. */
-const collezioniPubbliche = ['pagine', 'news', 'eventi', 'corsi', 'sedi', 'istruttori'] as const
+const publicCollections = ['pagine', 'news', 'eventi', 'corsi', 'sedi', 'istruttori'] as const
 
 export default buildConfig({
   admin: {
-    user: Utenti.slug,
+    user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
     meta: { titleSuffix: ' — AKM Italia' },
   },
@@ -81,8 +81,8 @@ export default buildConfig({
       },
     },
   },
-  collections: [Pagine, News, Eventi, Corsi, Sedi, Istruttori, Richieste, Media, Utenti],
-  globals: [Contatti, Impostazioni, Navigazione],
+  collections: [Pages, News, Events, Courses, Centers, Instructors, Requests, Media, Users],
+  globals: [Contacts, Settings, Navigation],
   editor: lexicalEditor(),
   email,
   secret: process.env.PAYLOAD_SECRET || '',
@@ -96,7 +96,7 @@ export default buildConfig({
   }),
   plugins: [
     seoPlugin({
-      collections: [...collezioniPubbliche],
+      collections: [...publicCollections],
       uploadsCollection: 'media',
       tabbedUI: true,
       generateTitle: ({ doc }: { doc: Record<string, unknown> }) =>
@@ -107,7 +107,7 @@ export default buildConfig({
     // I 314 redirect dal vecchio sito: gestiti dall admin, con relationship alla
     // destinazione cosi reggono i cambi di slug futuri.
     redirectsPlugin({
-      collections: [...collezioniPubbliche],
+      collections: [...publicCollections],
       overrides: {
         admin: { group: 'Sistema' },
       },

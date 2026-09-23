@@ -42,7 +42,7 @@ ENV DATABASE_URL=$DATABASE_URL
 # La via d'uscita per chi costruisce dove il database non si raggiunge: su
 # Coolify il container di build non sta sulla rete dei servizi. A 1, Payload
 # risponde vuoto al solo build e le pagine si riempiono al primo accesso.
-# Vedi src/componenti/payload.ts e docs/adr/0013.
+# Vedi src/components/payload.ts e docs/adr/0013.
 ARG BUILD_SENZA_DB
 ENV BUILD_SENZA_DB=$BUILD_SENZA_DB
 ENV PAYLOAD_SECRET=build

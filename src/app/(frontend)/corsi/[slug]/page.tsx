@@ -5,9 +5,9 @@ import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import React from 'react'
 
-import { apriPayload } from '@/componenti/payload'
-import { giorniLeggibili, idDisciplina, indirizzoLeggibile, pubblicato } from '@/componenti/dati'
-import { metadatiPagina } from '@/componenti/seo'
+import { openPayload } from '@/components/payload'
+import { readableDays, disciplineId, readableAddress, published } from '@/components/data'
+import { pageMetadata } from '@/components/seo'
 
 /**
  * La pagina di un percorso. Orienta, spiega, e finisce dove finisce ogni
@@ -22,33 +22,33 @@ import { metadatiPagina } from '@/componenti/seo'
 
 export const revalidate = 60
 
-async function trovaCorso(slug: string) {
-  const payload = await apriPayload()
-  const corsi = await payload.find({
+async function findCourse(slug: string) {
+  const payload = await openPayload()
+  const courses = await payload.find({
     collection: 'corsi',
     depth: 1,
     limit: 1,
-    where: { and: [{ slug: { equals: slug } }, pubblicato] },
+    where: { and: [{ slug: { equals: slug } }, published] },
   })
-  return corsi.docs[0] ?? null
+  return courses.docs[0] ?? null
 }
 
 export async function generateStaticParams() {
-  const payload = await apriPayload()
-  const corsi = await payload.find({
+  const payload = await openPayload()
+  const courses = await payload.find({
     collection: 'corsi',
     depth: 0,
     limit: 50,
     select: { slug: true },
-    where: pubblicato,
+    where: published,
   })
-  return corsi.docs.map((corso) => ({ slug: corso.slug }))
+  return courses.docs.map((course) => ({ slug: course.slug }))
 }
 
 /* Quando la scheda non c'e' la rotta chiama notFound() e rende not-found.tsx:
    il titolo del documento lo decide comunque questa funzione, e «AKM Italia»
    su una pagina che dice «questa pagina non c'e'» e' una riga che si contraddice. */
-const TITOLO_404 = { title: 'Pagina non trovata' }
+const TITLE_404 = { title: 'Pagina non trovata' }
 
 export async function generateMetadata({
   params,
@@ -56,60 +56,60 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const corso = await trovaCorso(slug)
-  if (!corso) return TITOLO_404
-  return metadatiPagina({
-    titolo: corso.nome,
-    descrizione: corso.sommario,
-    path: `/corsi/${corso.slug}`,
+  const course = await findCourse(slug)
+  if (!course) return TITLE_404
+  return pageMetadata({
+    titolo: course.nome,
+    descrizione: course.sommario,
+    path: `/corsi/${course.slug}`,
   })
 }
 
-export default async function PaginaCorso({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CoursePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const corso = await trovaCorso(slug)
-  if (!corso) notFound()
+  const course = await findCourse(slug)
+  if (!course) notFound()
 
-  const payload = await apriPayload()
-  const sedi = await payload.find({
+  const payload = await openPayload()
+  const found = await payload.find({
     collection: 'sedi',
     depth: 2,
     limit: 200,
     sort: 'indirizzo.citta',
     where: {
-      and: [{ attivo: { equals: true } }, { 'orari.disciplina': { equals: corso.id } }, pubblicato],
+      and: [{ attivo: { equals: true } }, { 'orari.disciplina': { equals: course.id } }, published],
     },
   })
 
-  const centri = sedi.docs
-  const segno = typeof corso.immagine === 'object' ? corso.immagine : null
-  const segnoUrl = segno?.sizes?.thumbnail?.url || segno?.url || null
+  const centers = found.docs
+  const mark = typeof course.immagine === 'object' ? course.immagine : null
+  const markUrl = mark?.sizes?.thumbnail?.url || mark?.url || null
 
-  const comeFunziona = [
-    { voce: 'Come funziona', dato: corso.durata },
-    { voce: 'Cadenza', dato: corso.cadenza },
-    { voce: 'Come si entra', dato: corso.ingresso },
-  ].filter((r): r is { voce: string; dato: string } => Boolean(r.dato))
+  const howItWorks = [
+    { item: 'Come funziona', detail: course.durata },
+    { item: 'Cadenza', detail: course.cadenza },
+    { item: 'Come si entra', detail: course.ingresso },
+  ].filter((r): r is { item: string; detail: string } => Boolean(r.detail))
 
-  const focus = corso.focus ?? []
-  const risultati = corso.risultati ?? []
-  const adattoA = corso.adattoA ?? []
+  const focus = course.focus ?? []
+  const results = course.risultati ?? []
+  const suitableFor = course.adattoA ?? []
 
   /* Un blocco per campo compilato. L'ordine e' fisso, la superficie no: si
      alterna su quelli che esistono davvero. */
-  const blocchi: { chiave: string; nodo: React.ReactNode }[] = []
+  const blocks: { key: string; node: React.ReactNode }[] = []
 
-  if (comeFunziona.length > 0) {
-    blocchi.push({
-      chiave: 'come',
-      nodo: (
+  if (howItWorks.length > 0) {
+    blocks.push({
+      key: 'come',
+      node: (
         <div className="container">
           <h2 className="display display--sm list-title">Come si pratica</h2>
           <dl className="course__details">
-            {comeFunziona.map((riga) => (
-              <div className="course__detail" key={riga.voce}>
-                <dt>{riga.voce}</dt>
-                <dd>{riga.dato}</dd>
+            {howItWorks.map((row) => (
+              <div className="course__detail" key={row.item}>
+                <dt>{row.item}</dt>
+                <dd>{row.detail}</dd>
               </div>
             ))}
           </dl>
@@ -118,19 +118,19 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
     })
   }
 
-  if (corso.descrizione || focus.length > 0) {
-    blocchi.push({
-      chiave: 'descrizione',
-      nodo: (
+  if (course.descrizione || focus.length > 0) {
+    blocks.push({
+      key: 'descrizione',
+      node: (
         <div className="container course__prose">
           {/* Il blocco apriva con una schermata intera di Roboto 300 su carbone e
               il primo appiglio era un h2 da 22px a meta' altezza: nessun punto
               focale, e una sezione che apre sottovoce e' fuori registro a
               ENERGY 3. Il titolo che mancava e' quello che il blocco fa. */}
           <h2 className="display display--sm list-title">In che cosa consiste</h2>
-          {corso.descrizione ? (
+          {course.descrizione ? (
             <div className="rich">
-              <RichText data={corso.descrizione} />
+              <RichText data={course.descrizione} />
             </div>
           ) : null}
 
@@ -153,14 +153,14 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
     })
   }
 
-  if (risultati.length > 0) {
-    blocchi.push({
-      chiave: 'risultati',
-      nodo: (
+  if (results.length > 0) {
+    blocks.push({
+      key: 'risultati',
+      node: (
         <div className="container">
           <h2 className="display display--sm list-title">Cosa ti porti a casa</h2>
           <ol className="numbered">
-            {risultati.map((v, i) => (
+            {results.map((v, i) => (
               <li className="reveal numbered-item" key={v.id ?? v.voce}>
                 <span className="numbered-item__index" aria-hidden="true">
                   {String(i + 1).padStart(2, '0')}
@@ -174,14 +174,14 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
     })
   }
 
-  if (adattoA.length > 0) {
-    blocchi.push({
-      chiave: 'adatto',
-      nodo: (
+  if (suitableFor.length > 0) {
+    blocks.push({
+      key: 'adatto',
+      node: (
         <div className="container">
           <h2 className="display display--sm list-title">Questo percorso è per te se</h2>
           <ul className="list__items list__items--wide">
-            {adattoA.map((v) => (
+            {suitableFor.map((v) => (
               <li key={v.id ?? v.voce}>{v.voce}</li>
             ))}
           </ul>
@@ -195,10 +195,10 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
       <section className="section section--black masthead masthead--path">
         {/* Il segno e' inchiostro su trasparente: sul nero va invertito, come la
             fotografia dell'eroe entra nel sistema come valore e non come colore. */}
-        {segnoUrl ? (
+        {markUrl ? (
           <Image
             className="masthead__mark"
-            src={segnoUrl}
+            src={markUrl}
             alt=""
             width={400}
             height={400}
@@ -211,26 +211,26 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
           <Link className="breadcrumb" href="/corsi">
             Torna ai percorsi
           </Link>
-          <p className="eyebrow">{corso.occhiello || 'Percorso'}</p>
-          <h1 className="display display--lg">{corso.domanda || corso.nome}</h1>
-          <p className="text masthead__text">{corso.sommario}</p>
+          <p className="eyebrow">{course.occhiello || 'Percorso'}</p>
+          <h1 className="display display--lg">{course.domanda || course.nome}</h1>
+          <p className="text masthead__text">{course.sommario}</p>
 
           <dl className="masthead__facts">
             <div>
               <dt>Il corso</dt>
-              <dd>{corso.nome}</dd>
+              <dd>{course.nome}</dd>
             </div>
-            {corso.aChiSiRivolge ? (
+            {course.aChiSiRivolge ? (
               <div>
                 <dt>A chi si rivolge</dt>
-                <dd>{corso.aChiSiRivolge}</dd>
+                <dd>{course.aChiSiRivolge}</dd>
               </div>
             ) : null}
-            {centri.length > 0 ? (
+            {centers.length > 0 ? (
               <div>
                 <dt>Dove si pratica</dt>
                 <dd>
-                  {centri.length} {centri.length === 1 ? 'centro' : 'centri'}
+                  {centers.length} {centers.length === 1 ? 'centro' : 'centri'}
                 </dd>
               </div>
             ) : null}
@@ -239,29 +239,29 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
           <p className="masthead__action">
             <Link
               className="button button--primary"
-              href={`/contatti?corso=${encodeURIComponent(corso.slug)}`}
+              href={`/contatti?corso=${encodeURIComponent(course.slug)}`}
             >
-              {corso.azione || 'Chiedi una prova'}
+              {course.azione || 'Chiedi una prova'}
             </Link>
           </p>
         </div>
       </section>
 
-      {blocchi.map((blocco, i) => (
+      {blocks.map((block, i) => (
         <section
           className={`section section--${i % 2 === 0 ? 'light' : 'charcoal'}`}
-          key={blocco.chiave}
+          key={block.key}
         >
-          {blocco.nodo}
+          {block.node}
         </section>
       ))}
 
       {/* La prova sta da sola sul nero e a corpo grande: e' la riga che dimostra
           il percorso, non una nota in coda a una colonna. */}
-      {corso.prova ? (
+      {course.prova ? (
         <section className="section section--black">
           <div className="container">
-            <p className="course__trial">{corso.prova}</p>
+            <p className="course__trial">{course.prova}</p>
           </div>
         </section>
       ) : null}
@@ -274,32 +274,32 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
               Dove si pratica
             </h2>
             <p className="text">
-              {centri.length > 0
-                ? `${centri.length} ${centri.length === 1 ? 'centro tiene' : 'centri tengono'} questo percorso. Gli orari qui sotto sono solo quelli di ${corso.nome}.`
+              {centers.length > 0
+                ? `${centers.length} ${centers.length === 1 ? 'centro tiene' : 'centri tengono'} questo percorso. Gli orari qui sotto sono solo quelli di ${course.nome}.`
                 : 'Questo percorso non è ancora in calendario in nessun centro. Scrivici e ti diciamo quando parte.'}
             </p>
           </div>
 
-          {centri.length > 0 ? (
+          {centers.length > 0 ? (
             <ul className="centers__list">
-              {centri.map((sede) => {
-                const suoi = (sede.orari ?? []).filter((o) => idDisciplina(o.disciplina) === corso.id)
+              {centers.map((center) => {
+                const own = (center.orari ?? []).filter((o) => disciplineId(o.disciplina) === course.id)
 
                 return (
-                  <li className="reveal center" key={sede.id}>
+                  <li className="reveal center" key={center.id}>
                     <h3 className="center__name">
-                      <Link className="center__link" href={`/centri/${sede.slug}`}>
-                        {sede.nome}
+                      <Link className="center__link" href={`/centri/${center.slug}`}>
+                        {center.nome}
                       </Link>
                     </h3>
-                    <p className="center__address">{indirizzoLeggibile(sede.indirizzo)}</p>
+                    <p className="center__address">{readableAddress(center.indirizzo)}</p>
                     <div className="center__schedule">
-                      {suoi.map((orario) => (
-                        <div className="center__slot" key={orario.id}>
-                          <span className="center__days">{giorniLeggibili(orario.giorni)}</span>
+                      {own.map((slot) => (
+                        <div className="center__slot" key={slot.id}>
+                          <span className="center__days">{readableDays(slot.giorni)}</span>
                           <span>
-                            {orario.oraInizio}-{orario.oraFine}
-                            {orario.note ? ` · ${orario.note}` : ''}
+                            {slot.oraInizio}-{slot.oraFine}
+                            {slot.note ? ` · ${slot.note}` : ''}
                           </span>
                         </div>
                       ))}
@@ -315,9 +315,9 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
           <p className="tail-action">
             <Link
               className="button button--primary"
-              href={`/contatti?corso=${encodeURIComponent(corso.slug)}`}
+              href={`/contatti?corso=${encodeURIComponent(course.slug)}`}
             >
-              {corso.azione || 'Chiedi una prova'}
+              {course.azione || 'Chiedi una prova'}
             </Link>
             <Link className="button button--secondary" href="/centri">
               Vedi tutti i centri

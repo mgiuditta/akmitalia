@@ -2,10 +2,10 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
 
-import { apriPayload } from '@/componenti/payload'
-import { pubblicato } from '@/componenti/dati'
-import { Figura } from '@/componenti/Figura'
-import { metadatiPagina } from '@/componenti/seo'
+import { openPayload } from '@/components/payload'
+import { published } from '@/components/data'
+import { Figure } from '@/components/Figure'
+import { pageMetadata } from '@/components/seo'
 
 /**
  * L'albo. Le credenziali sono prove, non decorazioni: nome, ruolo, grado e
@@ -18,19 +18,19 @@ import { metadatiPagina } from '@/componenti/seo'
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
-  const payload = await apriPayload()
-  const quanti = (await payload.count({ collection: 'istruttori', where: pubblicato })).totalDocs
+  const payload = await openPayload()
+  const total = (await payload.count({ collection: 'istruttori', where: published })).totalDocs
 
-  return metadatiPagina({
+  return pageMetadata({
     titolo: 'Istruttori',
-    descrizione: quanti
-      ? `${quanti} istruttori e maestri AKM Italia: nome, qualifica, grado e centro dove insegnano. Qualifiche riconosciute CSEN-CONI, F.E.K.D.A. e P.T.D.`
+    descrizione: total
+      ? `${total} istruttori e maestri AKM Italia: nome, qualifica, grado e centro dove insegnano. Qualifiche riconosciute CSEN-CONI, F.E.K.D.A. e P.T.D.`
       : 'Gli istruttori e i maestri AKM Italia: nome, qualifica, grado e centro dove insegnano. Qualifiche riconosciute CSEN-CONI, F.E.K.D.A. e P.T.D.',
     path: '/istruttori',
   })
 }
 
-const QUALIFICHE: Record<string, string> = {
+const QUALIFICATIONS: Record<string, string> = {
   istruttore: 'Istruttore',
   trainer: 'Trainer',
   maestro: 'Maestro',
@@ -38,16 +38,16 @@ const QUALIFICHE: Record<string, string> = {
   presidente: 'Presidente',
 }
 
-export default async function PaginaIstruttori() {
-  const payload = await apriPayload()
+export default async function InstructorsPage() {
+  const payload = await openPayload()
 
-  const [istruttori, impostazioni] = await Promise.all([
+  const [instructors, settings] = await Promise.all([
     payload.find({
       collection: 'istruttori',
       depth: 1,
       limit: 100,
       sort: 'ordine',
-      where: pubblicato,
+      where: published,
     }),
     payload.findGlobal({ slug: 'impostazioni', depth: 1 }),
   ])
@@ -70,64 +70,64 @@ export default async function PaginaIstruttori() {
         </div>
       </section>
 
-      {/* `priorita`: su queste pagine la banda e' l'LCP, la testata sopra e'
+      {/* `priority`: su queste pagine la banda e' l'LCP, la testata sopra e'
           tipografica e non ha niente da caricare. */}
-      <Figura
-        slot={impostazioni?.fotoPagine?.istruttori}
-        etichetta="Foto della pagina Istruttori"
-        formato="banda"
-        misura="grande"
+      <Figure
+        slot={settings?.fotoPagine?.istruttori}
+        label="Foto della pagina Istruttori"
+        format="band"
+        measure="grande"
         sizes="100vw"
-        priorita
+        priority
       />
 
       <section className="section section--light" aria-labelledby="directory-title">
         <div className="container">
           <h2 className="display display--sm list-title" id="directory-title">
-            {istruttori.docs.length > 0
-              ? `${istruttori.docs.length} istruttori e maestri`
+            {instructors.docs.length > 0
+              ? `${instructors.docs.length} istruttori e maestri`
               : 'L’albo'}
           </h2>
 
-          {istruttori.docs.length > 0 ? (
+          {instructors.docs.length > 0 ? (
             <ul className="directory">
-              {istruttori.docs.map((istruttore) => {
-                const sedi = (istruttore.sedi?.docs ?? []).filter(
+              {instructors.docs.map((instructor) => {
+                const centers = (instructor.sedi?.docs ?? []).filter(
                   (s): s is Exclude<typeof s, number> => typeof s === 'object' && s !== null,
                 )
 
                 return (
-                  <li className="reveal instructor" key={istruttore.id}>
+                  <li className="reveal instructor" key={instructor.id}>
                     {/* Il ritratto non sparisce quando manca: la griglia della
                         scheda lo prevede, e un segnaposto dice al cliente che
                         li' va caricata una foto. */}
-                    <Figura
-                      classe="instructor__photo"
-                      slot={istruttore.foto}
-                      etichetta="Ritratto"
-                      formato="quadro"
-                      misura="piccola"
+                    <Figure
+                      className="instructor__photo"
+                      slot={instructor.foto}
+                      label="Ritratto"
+                      format="square"
+                      measure="piccola"
                       sizes="88px"
                     />
 
-                    <h3 className="instructor__name">{istruttore.nome}</h3>
-                    {istruttore.ruolo ? (
-                      <p className="instructor__role">{istruttore.ruolo}</p>
+                    <h3 className="instructor__name">{instructor.nome}</h3>
+                    {instructor.ruolo ? (
+                      <p className="instructor__role">{instructor.ruolo}</p>
                     ) : null}
 
                     <p className="detail">
                       {[
-                        istruttore.qualifica ? QUALIFICHE[istruttore.qualifica] : null,
-                        istruttore.grado,
-                        istruttore.livello,
+                        instructor.qualifica ? QUALIFICATIONS[instructor.qualifica] : null,
+                        instructor.grado,
+                        instructor.livello,
                       ]
                         .filter(Boolean)
                         .join(' · ')}
                     </p>
 
-                    {(istruttore.credenziali ?? []).length > 0 ? (
+                    {(instructor.credenziali ?? []).length > 0 ? (
                       <ul className="instructor__items">
-                        {(istruttore.credenziali ?? []).map((c) => (
+                        {(instructor.credenziali ?? []).map((c) => (
                           <li key={c.id ?? c.voce}>{c.voce}</li>
                         ))}
                       </ul>
@@ -138,14 +138,14 @@ export default async function PaginaIstruttori() {
                         loro e diversi di destinazione (DESIGN.md §7). E un centro
                         che ha chiuso la stagione lo dice qui, non solo nella sua
                         scheda: da qui si clicca. */}
-                    {sedi.length > 0 ? (
+                    {centers.length > 0 ? (
                       <p className="detail">
                         Insegna a{' '}
-                        {sedi.map((sede, i) => (
-                          <React.Fragment key={sede.id}>
+                        {centers.map((center, i) => (
+                          <React.Fragment key={center.id}>
                             {i > 0 ? ', ' : ''}
-                            <Link href={`/centri/${sede.slug}`}>{sede.nome}</Link>
-                            {sede.attivo === false ? ' (non attivo)' : ''}
+                            <Link href={`/centri/${center.slug}`}>{center.nome}</Link>
+                            {center.attivo === false ? ' (non attivo)' : ''}
                           </React.Fragment>
                         ))}
                       </p>

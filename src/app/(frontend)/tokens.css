@@ -2,7 +2,7 @@
  * Token del sistema di DESIGN.md, importato da Fenriz (docs/adr/0004).
  * Un solo tema, dark-first: non esiste un blocco di token per la modalita' chiara,
  * le sezioni chiare sono uno stacco di ritmo, non una modalita' alternativa.
- * I file di font si scaricano con `pnpm font:scarica` e non stanno nel repo.
+ * I file di font si scaricano con `pnpm fonts:download` e non stanno nel repo.
  */
 
 @font-face {

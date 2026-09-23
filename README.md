@@ -35,15 +35,15 @@ vedi «Migration» qui sotto.
 | `pnpm build` / `pnpm start` | Build e avvio in produzione. |
 | `pnpm test` | Test di integrazione (Vitest) più end-to-end (Playwright). |
 | `pnpm generate:types` | Riscrive `src/payload-types.ts` dopo un cambio di collection o global. Va rilanciato ogni volta. |
-| `pnpm font:scarica` | Riscarica i caratteri in `public/font`. Ci sono già nel repo — Anton è OFL 1.1 e Roboto Apache 2.0, e il build ne ha bisogno: serve solo per aggiornarli. |
-| `pnpm media:scarica` | Scarica in `data/wp-media` le immagini del vecchio sito. |
-| `pnpm importa:centri` | Importa corsi, istruttori e sedi da `data/centri-tecnici.json`. Rieseguibile: fa upsert per slug. |
-| `pnpm sedi:geocodifica` | Riempie le coordinate delle sedi che non ce l'hanno. |
-| `pnpm pagine:legali` | Crea `/privacy` e `/cookie` con il testo di partenza. |
-| `pnpm contenuti:corsi` | Riempie i tre percorsi con descrizione, focus, risultati e adatto a. |
-| `pnpm importa:eventi` | Importa gli eventi dal 2024 in poi dal calendario del vecchio sito WordPress (API REST di The Events Calendar). Rieseguibile: fa upsert per slug. Gli eventi senza un centro riconosciuto finiscono in `luogo` e in un elenco a fine script, da assegnare dall'admin. |
-| `pnpm immagini:editoriali` | Genera le fotografie editoriali in bianco e nero (serve `GEMINI_API_KEY`), le carica in Media e le assegna agli slot. Rieseguibile: non rigenera quello che sta gia' in `data/immagini`. |
-| `pnpm semina` | I sei comandi qui sopra in fila, per popolare un database appena migrato. Non applica le migration: quelle sono a parte. |
+| `pnpm fonts:download` | Riscarica i caratteri in `public/font`. Ci sono già nel repo — Anton è OFL 1.1 e Roboto Apache 2.0, e il build ne ha bisogno: serve solo per aggiornarli. |
+| `pnpm media:download` | Scarica in `data/wp-media` le immagini del vecchio sito. |
+| `pnpm import:centers` | Importa corsi, istruttori e sedi da `data/centri-tecnici.json`. Rieseguibile: fa upsert per slug. |
+| `pnpm centers:geocode` | Riempie le coordinate delle sedi che non ce l'hanno. |
+| `pnpm pages:legal` | Crea `/privacy` e `/cookie` con il testo di partenza. |
+| `pnpm courses:content` | Riempie i tre percorsi con descrizione, focus, risultati e adatto a. |
+| `pnpm import:events` | Importa gli eventi dal 2024 in poi dal calendario del vecchio sito WordPress (API REST di The Events Calendar). Rieseguibile: fa upsert per slug. Gli eventi senza un centro riconosciuto finiscono in `luogo` e in un elenco a fine script, da assegnare dall'admin. |
+| `pnpm images:editorial` | Genera le fotografie editoriali in bianco e nero (serve `GEMINI_API_KEY`), le carica in Media e le assegna agli slot. Rieseguibile: non rigenera quello che sta gia' in `data/immagini`. |
+| `pnpm seed` | I sei comandi qui sopra in fila, per popolare un database appena migrato. Non applica le migration: quelle sono a parte. |
 
 Gli ultimi quattro sono punti di partenza, non fonti di verità: da lì in poi il contenuto si
 modifica dall'admin, e rilanciarli sovrascrive quello che il cliente ha cambiato.
@@ -119,7 +119,7 @@ sono niente.
 Cambia in tre punti: il database non pubblica nessuna porta, l'unica porta instradata è
 quella che Coolify dà al servizio `app`, e `migrate` non sta più in un profilo — l'app
 parte solo dopo che è uscito con zero, quindi **le migration si applicano da sole a ogni
-rilascio**. I contenuti no: `pnpm semina` si lancia a mano, dentro `migrate`.
+rilascio**. I contenuti no: `pnpm seed` si lancia a mano, dentro `migrate`.
 
 Il build passa `BUILD_SENZA_DB=1`, perché il container che costruisce l'immagine non sta
 sulla rete dei servizi e il database non lo raggiunge. Il perché sta in `docs/adr/0013`.
@@ -141,7 +141,7 @@ sulla rete dei servizi e il database non lo raggiunge. Il perché sta in `docs/a
 
    ```sh
    cd /data/coolify/applications/<uuid>   # l'uuid della risorsa, sta nella URL
-   docker compose run --rm migrate pnpm semina
+   docker compose run --rm migrate pnpm seed
    ```
 
    Il file lì dentro si chiama `docker-compose.yaml` e non è il nostro: Coolify
@@ -155,7 +155,7 @@ sulla rete dei servizi e il database non lo raggiunge. Il perché sta in `docs/a
    (`formazione@akm-italia.eu`), quindi il modulo funziona da subito, ma su un sito di
    prova va messa una casella di prova.
 
-`semina` è un punto di partenza, non una sorgente: rilanciarlo sovrascrive quello che il
+`seed` è un punto di partenza, non una sorgente: rilanciarlo sovrascrive quello che il
 cliente ha cambiato dall'admin. Per questo non parte da solo.
 
 ### Cosa aspettarsi subito dopo un deploy

@@ -4,11 +4,11 @@ import { notFound } from 'next/navigation'
 import React from 'react'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 
-import { apriPayload } from '@/componenti/payload'
-import { dataLeggibile, orarioLeggibile } from '@/componenti/calendario'
-import { etichettaTipo, indirizzoLeggibile, jsonLd, pubblicato, sitoUrl } from '@/componenti/dati'
-import { Figura } from '@/componenti/Figura'
-import { metadatiPagina } from '@/componenti/seo'
+import { openPayload } from '@/components/payload'
+import { readableDate, readableSlot } from '@/components/calendar'
+import { typeLabel, readableAddress, jsonLd, published, siteUrl } from '@/components/data'
+import { Figure } from '@/components/Figure'
+import { pageMetadata } from '@/components/seo'
 
 /**
  * La scheda di un evento: quando, dove, di che cosa si tratta e come
@@ -18,33 +18,33 @@ import { metadatiPagina } from '@/componenti/seo'
 
 export const revalidate = 60
 
-async function trovaEvento(slug: string) {
-  const payload = await apriPayload()
-  const eventi = await payload.find({
+async function findEvent(slug: string) {
+  const payload = await openPayload()
+  const events = await payload.find({
     collection: 'eventi',
     depth: 2,
     limit: 1,
-    where: { and: [{ slug: { equals: slug } }, pubblicato] },
+    where: { and: [{ slug: { equals: slug } }, published] },
   })
-  return eventi.docs[0] ?? null
+  return events.docs[0] ?? null
 }
 
 export async function generateStaticParams() {
-  const payload = await apriPayload()
-  const eventi = await payload.find({
+  const payload = await openPayload()
+  const events = await payload.find({
     collection: 'eventi',
     depth: 0,
     limit: 500,
     select: { slug: true },
-    where: pubblicato,
+    where: published,
   })
-  return eventi.docs.map((evento) => ({ slug: evento.slug }))
+  return events.docs.map((event) => ({ slug: event.slug }))
 }
 
 /* Quando la scheda non c'e' la rotta chiama notFound() e rende not-found.tsx:
    il titolo del documento lo decide comunque questa funzione, e «AKM Italia»
    su una pagina che dice «questa pagina non c'e'» e' una riga che si contraddice. */
-const TITOLO_404 = { title: 'Pagina non trovata' }
+const TITLE_404 = { title: 'Pagina non trovata' }
 
 export async function generateMetadata({
   params,
@@ -52,67 +52,67 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const evento = await trovaEvento(slug)
-  if (!evento) return TITOLO_404
+  const event = await findEvent(slug)
+  if (!event) return TITLE_404
 
-  const sede = typeof evento.sede === 'object' ? evento.sede : null
-  return metadatiPagina({
-    titolo: evento.titolo,
+  const center = typeof event.sede === 'object' ? event.sede : null
+  return pageMetadata({
+    titolo: event.titolo,
     descrizione:
-      evento.estratto ||
-      `${etichettaTipo(evento.tipo)} AKM Italia, ${dataLeggibile(evento.dataInizio, evento.dataFine)}${
-        sede ? ` a ${sede.indirizzo?.citta ?? sede.nome}` : evento.luogo ? `, ${evento.luogo}` : ''
+      event.estratto ||
+      `${typeLabel(event.tipo)} AKM Italia, ${readableDate(event.dataInizio, event.dataFine)}${
+        center ? ` a ${center.indirizzo?.citta ?? center.nome}` : event.luogo ? `, ${event.luogo}` : ''
       }.`,
-    path: `/eventi/${evento.slug}`,
+    path: `/eventi/${event.slug}`,
   })
 }
 
-export default async function PaginaEvento({ params }: { params: Promise<{ slug: string }> }) {
+export default async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const evento = await trovaEvento(slug)
-  if (!evento) notFound()
+  const event = await findEvent(slug)
+  if (!event) notFound()
 
-  const sede = typeof evento.sede === 'object' ? evento.sede : null
-  const corsi = (evento.corsi ?? []).filter((c) => typeof c === 'object')
-  const orario = orarioLeggibile(evento.dataInizio, evento.dataFine)
-  const quando = orario
-    ? `${dataLeggibile(evento.dataInizio, evento.dataFine)}, ${orario}`
-    : dataLeggibile(evento.dataInizio, evento.dataFine)
+  const center = typeof event.sede === 'object' ? event.sede : null
+  const courses = (event.corsi ?? []).filter((c) => typeof c === 'object')
+  const slot = readableSlot(event.dataInizio, event.dataFine)
+  const when = slot
+    ? `${readableDate(event.dataInizio, event.dataFine)}, ${slot}`
+    : readableDate(event.dataInizio, event.dataFine)
 
   /* Trentacinque eventi su cinquantasette sono gia' passati, e la scheda li
      mostrava come se fossero da fare: «in aggiornamento», «Luogo da confermare»
      e un bottone rosso «Richiedi informazioni» sotto una data dell'anno scorso.
      Un evento concluso resta in archivio e lo dichiara. Il confronto e' con la
      fine, dove c'e': uno stage di tre giorni e' in corso anche il secondo. */
-  const concluso = new Date(evento.dataFine || evento.dataInizio).getTime() < Date.now()
+  const ended = new Date(event.dataFine || event.dataInizio).getTime() < Date.now()
 
   /* Un evento datato in un luogo: senza JSON-LD un motore di ricerca deve
      indovinarlo dal testo, e quelli con la data li mostra come tali. */
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Event',
-    name: evento.titolo,
-    url: `${sitoUrl()}/eventi/${evento.slug}`,
-    startDate: evento.dataInizio,
-    endDate: evento.dataFine || undefined,
-    description: evento.estratto || undefined,
-    organizer: { '@type': 'SportsOrganization', name: 'AKM Italia', url: sitoUrl() },
-    location: sede
+    name: event.titolo,
+    url: `${siteUrl()}/eventi/${event.slug}`,
+    startDate: event.dataInizio,
+    endDate: event.dataFine || undefined,
+    description: event.estratto || undefined,
+    organizer: { '@type': 'SportsOrganization', name: 'AKM Italia', url: siteUrl() },
+    location: center
       ? {
           '@type': 'Place',
-          name: sede.nome,
-          url: `${sitoUrl()}/centri/${sede.slug}`,
+          name: center.nome,
+          url: `${siteUrl()}/centri/${center.slug}`,
           address: {
             '@type': 'PostalAddress',
-            streetAddress: sede.indirizzo?.via || undefined,
-            postalCode: sede.indirizzo?.cap || undefined,
-            addressLocality: sede.indirizzo?.citta || undefined,
-            addressRegion: sede.indirizzo?.provincia || undefined,
+            streetAddress: center.indirizzo?.via || undefined,
+            postalCode: center.indirizzo?.cap || undefined,
+            addressLocality: center.indirizzo?.citta || undefined,
+            addressRegion: center.indirizzo?.provincia || undefined,
             addressCountry: 'IT',
           },
         }
-      : evento.luogo
-        ? { '@type': 'Place', name: evento.luogo }
+      : event.luogo
+        ? { '@type': 'Place', name: event.luogo }
         : undefined,
   }
 
@@ -125,12 +125,12 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
             Torna al calendario
           </Link>
           <p className="eyebrow">
-            {etichettaTipo(evento.tipo)}
-            {concluso ? ' · Concluso' : ''}
+            {typeLabel(event.tipo)}
+            {ended ? ' · Concluso' : ''}
           </p>
-          <h1 className="display display--md">{evento.titolo}</h1>
+          <h1 className="display display--md">{event.titolo}</h1>
           <p className="text detail">
-            <time dateTime={evento.dataInizio}>{quando}</time>
+            <time dateTime={event.dataInizio}>{when}</time>
           </p>
         </div>
       </section>
@@ -145,12 +145,12 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
         dato, non uno slot di composizione, e un dato che manca non si stampa
         (docs/adr/0012).
       */}
-      {evento.copertina ? (
-        <Figura
-          slot={evento.copertina}
-          etichetta="Foto dell'evento"
-          formato="banda"
-          misura="grande"
+      {event.copertina ? (
+        <Figure
+          slot={event.copertina}
+          label="Foto dell'evento"
+          format="band"
+          measure="grande"
           sizes="100vw"
         />
       ) : null}
@@ -158,15 +158,15 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
       <section className="section section--light">
         <div className="container card">
           <div>
-            {evento.estratto ? <p className="text">{evento.estratto}</p> : null}
-            {evento.descrizione ? (
+            {event.estratto ? <p className="text">{event.estratto}</p> : null}
+            {event.descrizione ? (
               <div className="rich">
-                <RichText data={evento.descrizione} />
+                <RichText data={event.descrizione} />
               </div>
             ) : null}
-            {!evento.estratto && !evento.descrizione ? (
+            {!event.estratto && !event.descrizione ? (
               <p className="detail">
-                {concluso
+                {ended
                   ? 'Di questo evento restano la data, il tipo e il luogo: il programma non è stato archiviato.'
                   : 'Il programma di questo evento è in aggiornamento.'}
               </p>
@@ -176,29 +176,29 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
           <div>
             <div className="block">
               <h2>Dove</h2>
-              {sede ? (
+              {center ? (
                 <p className="detail">
-                  <Link href={`/centri/${sede.slug}`}>{sede.nome}</Link>
+                  <Link href={`/centri/${center.slug}`}>{center.nome}</Link>
                   <br />
-                  {indirizzoLeggibile(sede.indirizzo)}
+                  {readableAddress(center.indirizzo)}
                 </p>
               ) : (
                 /* «Da confermare» e' una promessa: su un evento passato non c'e'
                    piu' niente da confermare, il luogo semplicemente non e' stato
                    registrato nell'import. */
                 <p className="detail">
-                  {evento.luogo || (concluso ? 'Luogo non registrato.' : 'Luogo da confermare.')}
+                  {event.luogo || (ended ? 'Luogo non registrato.' : 'Luogo da confermare.')}
                 </p>
               )}
             </div>
 
-            {corsi.length > 0 ? (
+            {courses.length > 0 ? (
               <div className="block">
                 <h2>Discipline</h2>
                 <ul className="list__items">
-                  {corsi.map((corso) => (
-                    <li key={corso.id}>
-                      <Link href={`/corsi/${corso.slug}`}>{corso.nome}</Link>
+                  {courses.map((course) => (
+                    <li key={course.id}>
+                      <Link href={`/corsi/${course.slug}`}>{course.nome}</Link>
                     </li>
                   ))}
                 </ul>
@@ -212,7 +212,7 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
                 c'e' adesso. La richiesta parte con il centro gia' scelto, dove
                 l'evento ne aveva uno. */}
             <div className="block">
-              {concluso ? (
+              {ended ? (
                 <>
                   <h2>Questo evento è concluso</h2>
                   <p className="detail">
@@ -229,10 +229,10 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
                 <>
                   <h2>Come si partecipa</h2>
                   <p>
-                    {evento.ctaLink ? (
+                    {event.ctaLink ? (
                       <a
                         className="button button--primary"
-                        href={evento.ctaLink}
+                        href={event.ctaLink}
                         target="_blank"
                         rel="noreferrer noopener"
                       >
@@ -241,7 +241,7 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
                     ) : (
                       <Link
                         className="button button--primary"
-                        href={sede ? `/contatti?sede=${encodeURIComponent(sede.slug)}` : '/contatti'}
+                        href={center ? `/contatti?sede=${encodeURIComponent(center.slug)}` : '/contatti'}
                       >
                         Richiedi informazioni
                       </Link>

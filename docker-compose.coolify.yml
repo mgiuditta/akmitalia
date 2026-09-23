@@ -33,7 +33,7 @@ services:
   # E' anche il container da cui si semina, una volta sola e a mano - stesso
   # stadio, comando diverso:
   #
-  #   docker compose run --rm migrate pnpm semina
+  #   docker compose run --rm migrate pnpm seed
   #
   # Per questo monta il volume dei media: la semina carica le fotografie
   # editoriali, e devono finire dove le cerca l'app.
@@ -63,7 +63,7 @@ services:
         # Al build, non a runtime: finisce nel bundle del browser.
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?serve l'origine pubblica}
         # Qui il database non si raggiunge: il container di build non sta sulla
-        # rete dei servizi. Vedi src/componenti/payload.ts e docs/adr/0013.
+        # rete dei servizi. Vedi src/components/payload.ts e docs/adr/0013.
         BUILD_SENZA_DB: '1'
     restart: unless-stopped
     depends_on:

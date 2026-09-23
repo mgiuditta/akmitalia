@@ -3,19 +3,19 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import React from 'react'
 
-import { apriPayload } from '@/componenti/payload'
-import { AgendaEventi } from '@/componenti/AgendaEventi'
-import { Mappa, type PuntoMappa } from '@/componenti/Mappa'
+import { openPayload } from '@/components/payload'
+import { EventAgenda } from '@/components/EventAgenda'
+import { CenterMap, type MapPoint } from '@/components/CenterMap'
 import {
-  giorniLeggibili,
-  indirizzoLeggibile,
+  readableDays,
+  readableAddress,
   jsonLd,
-  nomeIstruttore,
-  pubblicato,
-  sitoUrl,
-} from '@/componenti/dati'
-import { Figura } from '@/componenti/Figura'
-import { metadatiPagina } from '@/componenti/seo'
+  instructorName,
+  published,
+  siteUrl,
+} from '@/components/data'
+import { Figure } from '@/components/Figure'
+import { pageMetadata } from '@/components/seo'
 
 /**
  * Scheda di un centro tecnico: e' la conversione. Indirizzo, orari, docenti e
@@ -26,7 +26,7 @@ export const revalidate = 60
 
 /* I giorni di schema.org sono in inglese: la mappa serve solo al JSON-LD, il
    testo visibile resta quello di giorniLeggibili. */
-const GIORNI_SCHEMA: Record<string, string> = {
+const SCHEMA_DAYS: Record<string, string> = {
   lun: 'Monday',
   mar: 'Tuesday',
   mer: 'Wednesday',
@@ -36,33 +36,33 @@ const GIORNI_SCHEMA: Record<string, string> = {
   dom: 'Sunday',
 }
 
-async function trovaSede(slug: string) {
-  const payload = await apriPayload()
-  const sedi = await payload.find({
+async function findCenter(slug: string) {
+  const payload = await openPayload()
+  const centers = await payload.find({
     collection: 'sedi',
     depth: 2,
     limit: 1,
-    where: { and: [{ slug: { equals: slug } }, pubblicato] },
+    where: { and: [{ slug: { equals: slug } }, published] },
   })
-  return sedi.docs[0] ?? null
+  return centers.docs[0] ?? null
 }
 
 export async function generateStaticParams() {
-  const payload = await apriPayload()
-  const sedi = await payload.find({
+  const payload = await openPayload()
+  const centers = await payload.find({
     collection: 'sedi',
     depth: 0,
     limit: 200,
     select: { slug: true },
-    where: pubblicato,
+    where: published,
   })
-  return sedi.docs.map((sede) => ({ slug: sede.slug }))
+  return centers.docs.map((center) => ({ slug: center.slug }))
 }
 
 /* Quando la scheda non c'e' la rotta chiama notFound() e rende not-found.tsx:
    il titolo del documento lo decide comunque questa funzione, e «AKM Italia»
    su una pagina che dice «questa pagina non c'e'» e' una riga che si contraddice. */
-const TITOLO_404 = { title: 'Pagina non trovata' }
+const TITLE_404 = { title: 'Pagina non trovata' }
 
 export async function generateMetadata({
   params,
@@ -70,103 +70,103 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const sede = await trovaSede(slug)
-  if (!sede) return TITOLO_404
+  const center = await findCenter(slug)
+  if (!center) return TITLE_404
 
-  return metadatiPagina({
-    titolo: sede.nome,
+  return pageMetadata({
+    titolo: center.nome,
     descrizione:
-      sede.descrizione ||
-      `Krav Maga a ${sede.indirizzo?.citta}: ${indirizzoLeggibile(sede.indirizzo)}. Giorni, orari e docenti del centro tecnico AKM Italia.`,
-    path: `/centri/${sede.slug}`,
+      center.descrizione ||
+      `Krav Maga a ${center.indirizzo?.citta}: ${readableAddress(center.indirizzo)}. Giorni, orari e docenti del centro tecnico AKM Italia.`,
+    path: `/centri/${center.slug}`,
   })
 }
 
-export default async function PaginaCentro({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CenterPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const sede = await trovaSede(slug)
-  if (!sede) notFound()
+  const center = await findCenter(slug)
+  if (!center) notFound()
 
   /* Gli eventi di questo centro da oggi in poi: uno stage e' datato e
      straordinario, l'orario e' ricorrente. Stanno sotto gli orari, non dentro. */
-  const payload = await apriPayload()
-  const adesso = new Date().toISOString()
-  const eventi = await payload.find({
+  const payload = await openPayload()
+  const now = new Date().toISOString()
+  const events = await payload.find({
     collection: 'eventi',
     depth: 0,
     limit: 5,
     sort: 'dataInizio',
     where: {
       and: [
-        pubblicato,
-        { sede: { equals: sede.id } },
+        published,
+        { sede: { equals: center.id } },
         {
           or: [
-            { dataFine: { greater_than_equal: adesso } },
-            { dataInizio: { greater_than_equal: adesso } },
+            { dataFine: { greater_than_equal: now } },
+            { dataInizio: { greater_than_equal: now } },
           ],
         },
       ],
     },
   })
 
-  const orari = sede.orari ?? []
-  const istruttori = (sede.istruttori ?? []).filter((i) => typeof i === 'object')
+  const schedule = center.orari ?? []
+  const instructors = (center.istruttori ?? []).filter((i) => typeof i === 'object')
 
-  const discipline = new Map<number, string>()
-  for (const orario of orari) {
-    if (typeof orario.disciplina === 'object' && orario.disciplina) {
-      discipline.set(orario.disciplina.id, orario.disciplina.nome)
+  const disciplines = new Map<number, string>()
+  for (const slot of schedule) {
+    if (typeof slot.disciplina === 'object' && slot.disciplina) {
+      disciplines.set(slot.disciplina.id, slot.disciplina.nome)
     }
   }
 
-  const punti: PuntoMappa[] =
-    typeof sede.coordinate?.lat === 'number' && typeof sede.coordinate?.lng === 'number'
+  const points: MapPoint[] =
+    typeof center.coordinate?.lat === 'number' && typeof center.coordinate?.lng === 'number'
       ? [
           {
-            id: sede.id,
-            nome: sede.nome,
-            citta: sede.indirizzo?.citta ?? '',
-            slug: sede.slug,
-            lat: sede.coordinate.lat,
-            lng: sede.coordinate.lng,
+            id: center.id,
+            nome: center.nome,
+            citta: center.indirizzo?.citta ?? '',
+            slug: center.slug,
+            lat: center.coordinate.lat,
+            lng: center.coordinate.lng,
           },
         ]
       : []
 
   /* Il centro e' un luogo fisico con indirizzo, coordinate e orari ricorrenti:
      senza JSON-LD un motore di ricerca deve indovinarlo dal testo. */
-  const luogo = {
+  const location = {
     '@context': 'https://schema.org',
     '@type': 'SportsActivityLocation',
-    name: sede.nome,
-    url: `${sitoUrl()}/centri/${sede.slug}`,
+    name: center.nome,
+    url: `${siteUrl()}/centri/${center.slug}`,
     sport: 'Krav Maga',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: sede.indirizzo?.via || undefined,
-      postalCode: sede.indirizzo?.cap || undefined,
-      addressLocality: sede.indirizzo?.citta || undefined,
-      addressRegion: sede.indirizzo?.provincia || undefined,
+      streetAddress: center.indirizzo?.via || undefined,
+      postalCode: center.indirizzo?.cap || undefined,
+      addressLocality: center.indirizzo?.citta || undefined,
+      addressRegion: center.indirizzo?.provincia || undefined,
       addressCountry: 'IT',
     },
     geo:
-      typeof sede.coordinate?.lat === 'number' && typeof sede.coordinate?.lng === 'number'
+      typeof center.coordinate?.lat === 'number' && typeof center.coordinate?.lng === 'number'
         ? {
             '@type': 'GeoCoordinates',
-            latitude: sede.coordinate.lat,
-            longitude: sede.coordinate.lng,
+            latitude: center.coordinate.lat,
+            longitude: center.coordinate.lng,
           }
         : undefined,
-    openingHoursSpecification: orari.flatMap((orario) =>
-      (orario.giorni ?? [])
-        .map((g) => GIORNI_SCHEMA[g as string])
+    openingHoursSpecification: schedule.flatMap((slot) =>
+      (slot.giorni ?? [])
+        .map((g) => SCHEMA_DAYS[g as string])
         .filter(Boolean)
-        .map((giorno) => ({
+        .map((day) => ({
           '@type': 'OpeningHoursSpecification',
-          dayOfWeek: giorno,
-          opens: orario.oraInizio,
-          closes: orario.oraFine,
+          dayOfWeek: day,
+          opens: slot.oraInizio,
+          closes: slot.oraFine,
         })),
     ),
   }
@@ -175,7 +175,7 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLd(luogo) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(location) }}
       />
       <section className="section section--black masthead">
         <div className="container masthead__content">
@@ -183,14 +183,14 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
             Torna ai centri
           </Link>
           <p className="eyebrow">Centro tecnico</p>
-          <h1 className="display display--md">{sede.nome}</h1>
-          <p className="text detail">{indirizzoLeggibile(sede.indirizzo)}</p>
+          <h1 className="display display--md">{center.nome}</h1>
+          <p className="text detail">{readableAddress(center.indirizzo)}</p>
           {/* Un centro non attivo resta pubblicato e sparisce dagli elenchi, ma la
               sua scheda si apre lo stesso: ci si arriva dall'albo, da un evento
               passato, da un vecchio link. Prima l'unico indizio era che mancava
               il quadrato verde, cioe' niente: un'assenza non e' un'etichetta
               (Regola dell'Etichetta). */}
-          {sede.attivo ? (
+          {center.attivo ? (
             <p className="status">Attivo in questa stagione</p>
           ) : (
             <p className="text detail">
@@ -204,46 +204,46 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
 
       {/* La sala di questo centro, fra la testata e la scheda: chi sceglie dove
           allenarsi vuole vedere il posto prima degli orari. */}
-      <Figura
-        slot={sede.foto}
-        etichetta="Foto del centro"
-        formato="banda"
-        misura="grande"
+      <Figure
+        slot={center.foto}
+        label="Foto del centro"
+        format="band"
+        measure="grande"
         sizes="100vw"
       />
 
       <section className="section section--light">
         <div className="container card">
           <div>
-            {sede.descrizione ? <p className="text">{sede.descrizione}</p> : null}
+            {center.descrizione ? <p className="text">{center.descrizione}</p> : null}
 
             <div className="block">
               <h2>Orari</h2>
-              {orari.length > 0 && !sede.attivo ? (
+              {schedule.length > 0 && !center.attivo ? (
                 <p className="detail">Programmazione dell’ultima stagione, non in corso.</p>
               ) : null}
-              {orari.length > 0 ? (
+              {schedule.length > 0 ? (
                 <div className="schedule">
-                  {orari.map((orario) => {
-                    const disciplina =
-                      typeof orario.disciplina === 'object' ? orario.disciplina : null
-                    const docenti = (orario.docenti ?? [])
-                      .map(nomeIstruttore)
+                  {schedule.map((slot) => {
+                    const discipline =
+                      typeof slot.disciplina === 'object' ? slot.disciplina : null
+                    const teachers = (slot.docenti ?? [])
+                      .map(instructorName)
                       .filter(Boolean)
                       .join(', ')
 
                     return (
-                      <div className="schedule__row" key={orario.id}>
-                        <span className="schedule__days">{giorniLeggibili(orario.giorni)}</span>
+                      <div className="schedule__row" key={slot.id}>
+                        <span className="schedule__days">{readableDays(slot.giorni)}</span>
                         <span>
-                          {orario.oraInizio}-{orario.oraFine}
+                          {slot.oraInizio}-{slot.oraFine}
                         </span>
                         <span>
-                          {disciplina ? (
-                            <Link href={`/corsi/${disciplina.slug}`}>{disciplina.nome}</Link>
+                          {discipline ? (
+                            <Link href={`/corsi/${discipline.slug}`}>{discipline.nome}</Link>
                           ) : null}
-                          {docenti ? ` · Docente ${docenti}` : ''}
-                          {orario.note ? ` · ${orario.note}` : ''}
+                          {teachers ? ` · Docente ${teachers}` : ''}
+                          {slot.note ? ` · ${slot.note}` : ''}
                         </span>
                       </div>
                     )
@@ -254,10 +254,10 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
               )}
             </div>
 
-            {eventi.docs.length > 0 ? (
+            {events.docs.length > 0 ? (
               <div className="block">
                 <h2>Prossimi eventi qui</h2>
-                <AgendaEventi eventi={eventi.docs} mostraLuogo={false} />
+                <EventAgenda events={events.docs} showPlace={false} />
                 <p>
                   <Link className="breadcrumb" href="/eventi">
                     Tutto il calendario
@@ -266,25 +266,25 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
               </div>
             ) : null}
 
-            {discipline.size > 0 ? (
+            {disciplines.size > 0 ? (
               <div className="block">
                 <h2>Cosa si pratica qui</h2>
                 <ul className="list__items">
-                  {[...discipline.values()].map((nome) => (
-                    <li key={nome}>{nome}</li>
+                  {[...disciplines.values()].map((name) => (
+                    <li key={name}>{name}</li>
                   ))}
                 </ul>
               </div>
             ) : null}
 
-            {istruttori.length > 0 ? (
+            {instructors.length > 0 ? (
               <div className="block">
                 <h2>Chi insegna</h2>
                 <ul className="list__items">
-                  {istruttori.map((istruttore) => (
-                    <li key={istruttore.id}>
-                      {istruttore.nome}
-                      {istruttore.ruolo ? ` · ${istruttore.ruolo}` : ''}
+                  {instructors.map((instructor) => (
+                    <li key={instructor.id}>
+                      {instructor.nome}
+                      {instructor.ruolo ? ` · ${instructor.ruolo}` : ''}
                     </li>
                   ))}
                 </ul>
@@ -293,21 +293,21 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
           </div>
 
           <div>
-            {punti.length > 0 ? (
-              <Mappa punti={punti} etichetta={`Dove si trova ${sede.nome}`} />
+            {points.length > 0 ? (
+              <CenterMap points={points} etichetta={`Dove si trova ${center.nome}`} />
             ) : null}
 
             <div className="block">
               <h2>Come arrivarci</h2>
               <p className="detail">
-                {sede.palestra ? `${sede.palestra}, ` : ''}
-                {indirizzoLeggibile(sede.indirizzo)}
+                {center.palestra ? `${center.palestra}, ` : ''}
+                {readableAddress(center.indirizzo)}
               </p>
-              {sede.mapsUrl ? (
+              {center.mapsUrl ? (
                 <p>
                   <a
                     className="center__maps"
-                    href={sede.mapsUrl}
+                    href={center.mapsUrl}
                     target="_blank"
                     rel="noreferrer noopener"
                   >
@@ -327,7 +327,7 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
                 <Link
                   className="button button--primary"
                   href={
-                    sede.attivo ? `/contatti?sede=${encodeURIComponent(sede.slug)}` : '/contatti'
+                    center.attivo ? `/contatti?sede=${encodeURIComponent(center.slug)}` : '/contatti'
                   }
                 >
                   Richiedi informazioni
