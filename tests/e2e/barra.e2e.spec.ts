@@ -40,7 +40,7 @@ test.describe('Menu telefono', () => {
 
   test('la barra resta alta 77px', async ({ page }) => {
     await page.goto('http://localhost:3000')
-    const barra = page.locator('header.barra')
+    const barra = page.locator('header.header')
     expect((await barra.boundingBox())?.height).toBe(77)
   })
 })
@@ -88,7 +88,7 @@ test.describe('Barra desktop', () => {
 
   test('la barra resta alta 77px', async ({ page }) => {
     await page.goto('http://localhost:3000')
-    const barra = page.locator('header.barra')
+    const barra = page.locator('header.header')
     expect((await barra.boundingBox())?.height).toBe(77)
   })
 })

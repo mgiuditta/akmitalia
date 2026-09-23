@@ -75,12 +75,12 @@ export default async function PaginaCentri({
 
   return (
     <>
-      <section className="sezione sezione--nera testata">
-        <div className="contenitore testata__contenuto">
+      <section className="section section--black masthead">
+        <div className="container masthead__content">
           <h1 className="display display--lg">
             {centri.length > 0 ? `${centri.length} centri, orari veri` : 'I centri tecnici'}
           </h1>
-          <p className="testo testata__testo">
+          <p className="text masthead__text">
             Indirizzo, giorni, orario e docente di ogni centro attivo. In ordine alfabetico per
             comune, senza raggruppamenti: la provincia è scritta accanto alla città.
           </p>
@@ -100,8 +100,8 @@ export default async function PaginaCentri({
         priorita
       />
 
-      <section className="sezione sezione--chiara" aria-labelledby="titolo-elenco">
-        <div className="contenitore">
+      <section className="section section--light" aria-labelledby="list-title">
+        <div className="container">
           <ElencoCentri centri={centri} province={province} />
         </div>
       </section>

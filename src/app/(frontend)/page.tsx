@@ -3,7 +3,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { apriPayload } from '@/componenti/payload'
-import { idDisciplina, ordinale, provinciaEstesa, pubblicato, testiBivio } from '@/componenti/dati'
+import { classeSuperficie, idDisciplina, ordinale, provinciaEstesa, pubblicato, testiBivio } from '@/componenti/dati'
 import { Figura } from '@/componenti/Figura'
 import { VideoEroe } from '@/componenti/VideoEroe'
 
@@ -148,10 +148,10 @@ export default async function Home() {
 
   return (
     <>
-      <section className="eroe" id="top">
+      <section className="hero" id="top">
         {eroeUrl ? (
           <Image
-            className="eroe__foto"
+            className="hero__photo"
             src={eroeUrl}
             alt={eroe?.alt || ''}
             fill
@@ -160,19 +160,19 @@ export default async function Home() {
           />
         ) : null}
         {videoUrl ? <VideoEroe src={videoUrl} /> : null}
-        {eroeUrl || videoUrl ? <div className="eroe__velo" /> : null}
+        {eroeUrl || videoUrl ? <div className="hero__scrim" /> : null}
         {/* Anche l'eroe dichiara la sua fotografia: e' generata come le altre
             (docs/adr/0012), e qui e' la prima cosa che si vede. Sta in basso
             a destra e non a sinistra, dove ci sono il titolo e i due inviti.
             Col video acceso la didascalia e' quella del video: dice cosa si
             vede, e cosa si vede non e' piu' la fotografia. */}
-        {didascalia ? <p className="eroe__didascalia">{didascalia}</p> : null}
+        {didascalia ? <p className="hero__caption">{didascalia}</p> : null}
 
-        <div className="contenitore eroe__contenuto">
-          <p className="occhiello">{occhiello}</p>
-          <h1 className="display display--eroe eroe__titolo">{titolo}</h1>
-          <p className="testo">{riga}</p>
-          <div className="eroe__coda">
+        <div className="container hero__content">
+          <p className="eyebrow">{occhiello}</p>
+          <h1 className="display display--hero hero__title">{titolo}</h1>
+          <p className="text">{riga}</p>
+          <div className="hero__tail">
             {/*
               I due inviti dell'eroe sono secondari, non primari. Nella prima
               schermata il rosso e' uno solo ed e' la CTA in barra, che porta
@@ -187,15 +187,15 @@ export default async function Home() {
               Un'ancora in pagina resta <a>: next/link su #percorsi rifarebbe la rotta.
             */}
             {primaria.href.startsWith('#') ? (
-              <a className="bottone bottone--secondario" href={primaria.href}>
+              <a className="button button--secondary" href={primaria.href}>
                 {primaria.testo}
               </a>
             ) : (
-              <Link className="bottone bottone--secondario" href={primaria.href}>
+              <Link className="button button--secondary" href={primaria.href}>
                 {primaria.testo}
               </Link>
             )}
-            <Link className="bottone bottone--secondario" href={secondaria.href}>
+            <Link className="button button--secondary" href={secondaria.href}>
               {secondaria.testo}
             </Link>
           </div>
@@ -205,72 +205,71 @@ export default async function Home() {
       {percorsi.length > 0 ? (
         <>
           <section
-            className="sezione sezione--nera bivio__testa"
+            className="section section--black fork__head"
             id="percorsi"
-            aria-labelledby="titolo-percorsi"
+            aria-labelledby="paths-title"
           >
-            <div className="contenitore bivio__intestazione">
-              <p className="occhiello">{bivio.occhiello}</p>
-              <h2 className="display display--md" id="titolo-percorsi">
+            <div className="container fork__heading">
+              <p className="eyebrow">{bivio.occhiello}</p>
+              <h2 className="display display--md" id="paths-title">
                 {bivio.titolo}
               </h2>
-              <p className="testo">{bivio.testo}</p>
+              <p className="text">{bivio.testo}</p>
               {/* Il rimando all'indice sta nell'intestazione del bivio: da solo
                   si prendeva una fascia intera - 220px di padding a 1440 - per
                   una riga da 14px, che e' spazio avanzato, non struttura. */}
-              <Link className="briciola" href="/corsi">
+              <Link className="breadcrumb" href="/corsi">
                 Tutti i percorsi
               </Link>
             </div>
           </section>
 
-          <ol className="bivio">
+          <ol className="fork">
             {percorsi.map((corso, i) => {
-              const superficie = corso.superficie ?? 'carbone'
-              const quante = sediPerCorso.get(corso.id) ?? 0
+                            const quante = sediPerCorso.get(corso.id) ?? 0
 
               return (
-                <li key={corso.id} className={`rivela percorso percorso--${superficie}`}>
+                <li key={corso.id} className={`reveal path ${classeSuperficie(corso.superficie)}`}>
                   <details>
-                    <summary className="contenitore percorso__testa">
-                      <span className="percorso__indice" aria-hidden="true">
+                    <summary className="container path__head">
+                      <span className="path__index" aria-hidden="true">
                         {ordinale(i + 1)}
                       </span>
-                      <span className="percorso__domanda">
+                      <span className="path__question">
                         <span className="display display--md">{corso.domanda || corso.nome}</span>
-                        <span className="percorso__nome">{corso.nome}</span>
+                        <span className="path__name">{corso.nome}</span>
                       </span>
-                      <span className="percorso__segno" aria-hidden="true" />
+                      <span className="path__mark" aria-hidden="true" />
                     </summary>
 
-                    <div className="contenitore percorso__corpo">
+                    <div className="container path__body">
                       <div>
-                        <p className="testo">{corso.sommario}</p>
+                        <p className="text">{corso.sommario}</p>
                         {corso.prova ? (
-                          <p className="testo dato percorso__prova">{corso.prova}</p>
+                          <p className="text detail path__trial">{corso.prova}</p>
                         ) : null}
-                        <p className="percorso__azione">
-                          <Link className="bottone bottone--primario" href={`/corsi/${corso.slug}`}>
+                        <p className="path__action">
+                          <Link className="button button--primary" href={`/corsi/${corso.slug}`}>
                             Vedi il percorso
                           </Link>
                         </p>
                       </div>
 
-                      <dl className="percorso__fatti">
+                      <dl className="path__facts">
                         {corso.aChiSiRivolge ? (
-                          <div className="percorso__fatto">
+                          <div className="path__fact">
                             <dt>A chi si rivolge</dt>
                             <dd>{corso.aChiSiRivolge}</dd>
                           </div>
                         ) : null}
                         {corso.durata ? (
-                          <div className="percorso__fatto">
+                          <div className="path__fact">
                             <dt>Come funziona</dt>
                             <dd>{corso.durata}</dd>
                           </div>
                         ) : null}
                         {quante > 0 ? (
-                          <div className="percorso__fatto">
+                          <div className="path__fact">
                             <dt>Centri che lo tengono</dt>
                             <dd>
                               {quante} su {centri.length}
@@ -288,43 +287,43 @@ export default async function Home() {
         </>
       ) : null}
 
-      <section className="sezione sezione--chiara" id="centri" aria-labelledby="titolo-centri">
-        <div className="contenitore">
-          <div className="centri__intestazione">
-            <span className="filetto" aria-hidden="true" />
-            <h2 className="display display--md" id="titolo-centri">
+      <section className="section section--light" id="centri" aria-labelledby="centers-title">
+        <div className="container">
+          <div className="centers__heading">
+            <span className="rule" aria-hidden="true" />
+            <h2 className="display display--md" id="centers-title">
               {centri.length > 0
                 ? `${centri.length} centri in ${province.size} province`
                 : 'I centri tecnici'}
             </h2>
-            <p className="testo">
+            <p className="text">
               Ogni percorso finisce in una sede. Indirizzo, giorni, orario e docente di ogni centro
               stanno nella pagina dei centri, in ordine alfabetico per comune.
             </p>
           </div>
 
           {comuni.length > 0 ? (
-            <ul className="comuni">
+            <ul className="towns">
               {comuni.map((comune) => (
-                <li className="comune" key={comune}>
+                <li className="town" key={comune}>
                   {comune}
                 </li>
               ))}
               {centri.length > comuni.length ? (
-                <li className="comune comune--resto">
+                <li className="town town--rest">
                   e altri {centri.length - comuni.length}
                 </li>
               ) : null}
             </ul>
           ) : null}
 
-          <p className="coda-azione">
-            <Link className="bottone bottone--primario" href="/centri">
+          <p className="tail-action">
+            <Link className="button button--primary" href="/centri">
               Trova un centro
             </Link>
             {/* Il secondo bottone non ripete il primo: dice come arrivarci, non
                 dove. La posizione la chiede /centri, che e' dove serve. */}
-            <Link className="bottone bottone--secondario" href="/centri?vicino=1">
+            <Link className="button button--secondary" href="/centri?vicino=1">
               Usa la mia posizione
             </Link>
           </p>
@@ -341,56 +340,56 @@ export default async function Home() {
         sizes="100vw"
       />
 
-      <section className="sezione sezione--carbone" id="prima-volta" aria-labelledby="titolo-prima">
-        <div className="contenitore prima">
+      <section className="section section--charcoal" id="prima-volta" aria-labelledby="first-title">
+        <div className="container first">
           <div>
-            <h2 className="display display--md" id="titolo-prima">
+            <h2 className="display display--md" id="first-title">
               Cosa succede quando entri
             </h2>
-            <p className="testo prima__attacco">
+            <p className="text first__lead">
               La palestra intimidisce più del Krav Maga. Ecco cosa aspettarsi la prima sera, così
               non devi chiederlo.
             </p>
           </div>
 
-          <div className="prima__punti">
+          <div className="first__points">
             {primaVolta.map((punto) => (
-              <div key={punto.titolo} className="rivela prima__punto">
+              <div key={punto.titolo} className="reveal first__point">
                 <h3>{punto.titolo}</h3>
-                <p className="testo">{punto.testo}</p>
+                <p className="text">{punto.testo}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="sezione sezione--nera" aria-labelledby="titolo-prove">
-        <div className="contenitore prove">
+      <section className="section section--black" aria-labelledby="trials-title">
+        <div className="container trials">
           <div>
-            <h2 className="display display--md" id="titolo-prove">
+            <h2 className="display display--md" id="trials-title">
               Le qualifiche si contano
             </h2>
-            <p className="testo prima__attacco">{qualifiche}</p>
+            <p className="text first__lead">{qualifiche}</p>
           </div>
 
           {/* Un numero a zero non e' una prova: la riga sparisce invece di dichiarare il vuoto. */}
-          <dl className="prove__numeri">
+          <dl className="trials__numbers">
             {centri.length > 0 ? (
-              <div className="prova">
-                <dt className="prova__valore">{centri.length}</dt>
-                <dd className="prova__voce">centri tecnici attivi in questa stagione</dd>
+              <div className="trial">
+                <dt className="trial__value">{centri.length}</dt>
+                <dd className="trial__item">centri tecnici attivi in questa stagione</dd>
               </div>
             ) : null}
             {istruttori.totalDocs > 0 ? (
-              <div className="prova">
-                <dt className="prova__valore">{istruttori.totalDocs}</dt>
-                <dd className="prova__voce">istruttori e maestri con nome, cognome e qualifica</dd>
+              <div className="trial">
+                <dt className="trial__value">{istruttori.totalDocs}</dt>
+                <dd className="trial__item">istruttori e maestri con nome, cognome e qualifica</dd>
               </div>
             ) : null}
             {province.size > 0 ? (
-              <div className="prova">
-                <dt className="prova__valore">{province.size}</dt>
-                <dd className="prova__voce">
+              <div className="trial">
+                <dt className="trial__value">{province.size}</dt>
+                <dd className="trial__item">
                   province coperte: {[...province].map(provinciaEstesa).sort().join(', ')}
                 </dd>
               </div>
@@ -403,21 +402,21 @@ export default async function Home() {
           richiesta di contatto dopo il bivio. Chiara prima del footer carbone:
           uno stacco di valore, non di tinta. Un bottone solo, con l'etichetta
           della barra: un intento, una parola. */}
-      <section className="sezione sezione--chiara" aria-labelledby="titolo-passo">
-        <div className="contenitore">
+      <section className="section section--light" aria-labelledby="step-title">
+        <div className="container">
           {/* A 390px le tre sezioni finali collassavano sulla stessa composizione:
               display-md, paragrafo, elenco o bottone a sinistra, e cambiava solo
               il fondo. Le prime due hanno una forma propria - i punti con i
               filetti, i numerali in Anton - questa no: la chiusura si prende il
               filetto e il corpo grande, cosi' il ritmo torna a farsi anche con
               la scala e non con il solo fondo (RHYTHM 2). */}
-          <span className="filetto" aria-hidden="true" />
-          <h2 className="display display--lg passo__titolo" id="titolo-passo">
+          <span className="rule" aria-hidden="true" />
+          <h2 className="display display--lg step__title" id="step-title">
             {passo.titolo}
           </h2>
-          <p className="testo prima__attacco">{passo.testo}</p>
-          <p className="coda-azione">
-            <Link className="bottone bottone--primario" href="/contatti">
+          <p className="text first__lead">{passo.testo}</p>
+          <p className="tail-action">
+            <Link className="button button--primary" href="/contatti">
               {passo.bottone}
             </Link>
           </p>

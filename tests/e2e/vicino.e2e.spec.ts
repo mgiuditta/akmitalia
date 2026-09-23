@@ -33,9 +33,9 @@ test.describe('Il centro più vicino', () => {
     await page.goto('http://localhost:3000/centri')
     await page.getByRole('button', { name: bottone }).click()
 
-    await expect(page.locator('#titolo-elenco')).toHaveText('I centri più vicini a te')
+    await expect(page.locator('#list-title')).toHaveText('I centri più vicini a te')
     await expect(page.getByText('Il più vicino a te')).toBeVisible()
-    await expect(page.locator('.centro__distanza').first()).toContainText('km da te')
+    await expect(page.locator('.center__distance').first()).toContainText('km da te')
   })
 
   test('con il permesso negato l’elenco resta e l’errore è una frase', async ({ page, context }) => {
@@ -46,8 +46,8 @@ test.describe('Il centro più vicino', () => {
     await page.goto('http://localhost:3000/centri')
     await page.getByRole('button', { name: bottone }).click()
 
-    await expect(page.locator('.vicino__avviso')).toContainText(/posizione/i)
-    await expect(page.locator('#titolo-elenco')).toHaveText('Tutti i centri')
-    expect(await page.locator('.centro').count()).toBeGreaterThan(0)
+    await expect(page.locator('.nearest__notice')).toContainText(/posizione/i)
+    await expect(page.locator('#list-title')).toHaveText('Tutti i centri')
+    expect(await page.locator('.center').count()).toBeGreaterThan(0)
   })
 })

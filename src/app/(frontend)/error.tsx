@@ -30,25 +30,25 @@ export default function Errore({
 
   return (
     <>
-      <section className="sezione sezione--nera testata">
-        <div className="contenitore testata__contenuto">
-          <p className="occhiello">Errore del sito</p>
+      <section className="section section--black masthead">
+        <div className="container masthead__content">
+          <p className="eyebrow">Errore del sito</p>
           <h1 className="display display--lg">Qualcosa non ha risposto</h1>
-          <p className="testo testata__testo">
+          <p className="text masthead__text">
             Non siamo riusciti a caricare questa pagina. Non è colpa di quello che hai fatto:
             riprova fra un momento, oppure scrivici e ti rispondiamo noi.
           </p>
-          {error.digest ? <p className="dato">Riferimento tecnico: {error.digest}</p> : null}
+          {error.digest ? <p className="detail">Riferimento tecnico: {error.digest}</p> : null}
         </div>
       </section>
 
-      <section className="sezione sezione--chiara">
-        <div className="contenitore">
-          <p className="coda-azione">
-            <button type="button" className="bottone bottone--secondario" onClick={() => retry()}>
+      <section className="section section--light">
+        <div className="container">
+          <p className="tail-action">
+            <button type="button" className="button button--secondary" onClick={() => retry()}>
               Riprova
             </button>
-            <Link className="bottone bottone--primario" href="/contatti">
+            <Link className="button button--primary" href="/contatti">
               Richiedi informazioni
             </Link>
           </p>

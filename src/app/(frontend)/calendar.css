@@ -5,54 +5,54 @@
  * per tipo (docs/adr/0005), nessuna ombra, spigolo zero.
  */
 
-.calendario__mesi {
+.calendar__months {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: baseline;
-  gap: var(--spazio-md);
-  padding-block-end: var(--spazio-lg);
+  gap: var(--space-md);
+  padding-block-end: var(--space-lg);
 }
 
-.calendario__mesi h2 {
+.calendar__months h2 {
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
 
 /* «Mese precedente» e «Mese successivo» sono i due controlli della pagina: il
    bersaglio sta a 44px, non all'altezza di una riga di testo. */
-.calendario__salto {
+.calendar__jump {
   display: inline-flex;
   align-items: center;
   min-block-size: 44px;
-  font-size: var(--corpo-caption);
-  font-weight: var(--peso-bold);
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
   text-decoration: none;
   white-space: nowrap;
 }
 
-.calendario__salto--dopo {
+.calendar__jump--next {
   justify-self: end;
 }
 
 /* Su telefono il titolo del mese sta sopra i due link, non in mezzo. */
 @media (max-width: 620px) {
-  .calendario__mesi {
+  .calendar__months {
     grid-template-columns: 1fr 1fr;
   }
 
-  .calendario__mesi h2 {
+  .calendar__months h2 {
     grid-row: 1;
     grid-column: 1 / -1;
     text-align: start;
   }
 }
 
-.calendario__salto:hover {
+.calendar__jump:hover {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 
-.calendario {
+.calendar {
   inline-size: 100%;
   border-collapse: collapse;
   table-layout: fixed;
@@ -60,7 +60,7 @@
 }
 
 /* La didascalia serve al lettore di schermo: il titolo del mese sta gia' sopra. */
-.calendario caption {
+.calendar caption {
   position: absolute;
   inline-size: 1px;
   block-size: 1px;
@@ -69,85 +69,85 @@
   white-space: nowrap;
 }
 
-.calendario th {
-  font-size: var(--corpo-caption);
-  font-weight: var(--peso-bold);
+.calendar th {
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
   text-align: start;
-  padding-block: var(--spazio-xs);
-  border-block-end: 1px solid var(--riga-locale);
+  padding-block: var(--space-xs);
+  border-block-end: 1px solid var(--row-rule);
 }
 
-.calendario__giorno {
+.calendar__day {
   vertical-align: top;
   block-size: 6.5rem;
-  padding: var(--spazio-xs) var(--spazio-xs) var(--spazio-sm);
-  border-block-end: 1px solid var(--colore-border);
-  border-inline-end: 1px solid var(--colore-border);
+  padding: var(--space-xs) var(--space-xs) var(--space-sm);
+  border-block-end: 1px solid var(--color-border);
+  border-inline-end: 1px solid var(--color-border);
 }
 
-.calendario__giorno:last-child {
+.calendar__day:last-child {
   border-inline-end: 0;
 }
 
 /* Il giorno di un altro mese arretra di peso, non di opacita': #333 al 45% su
    bianco rende circa #a3a3a3, cioe' 2,5:1 su un corpo da 14px. Il peso leggero
    lo distingue e il contrasto resta quello dell'inchiostro secondario. */
-.calendario__giorno--fuori .calendario__numero {
-  color: var(--colore-ink-secondary);
-  font-weight: var(--peso-light);
+.calendar__day--outside .calendar__number {
+  color: var(--color-ink-secondary);
+  font-weight: var(--weight-light);
 }
 
-.calendario__numero {
+.calendar__number {
   display: inline-block;
-  font-size: var(--corpo-caption);
-  font-weight: var(--peso-bold);
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
   line-height: 1.6;
   min-inline-size: 1.6em;
   text-align: center;
 }
 
 /* Oggi: un bordo, non un colore. Il rosso dice azione e il verde presenza. */
-.calendario__giorno--oggi .calendario__numero {
-  outline: 2px solid var(--colore-ink);
+.calendar__day--today .calendar__number {
+  outline: 2px solid var(--color-ink);
   outline-offset: -2px;
 }
 
-.calendario__eventi {
+.calendar__events {
   display: grid;
   gap: 4px;
-  margin-block-start: var(--spazio-xs);
+  margin-block-start: var(--space-xs);
 }
 
 /* 14px e non 13: e' un dato - luogo, ora, titolo - e la Regola del Dato Nudo
    non lo lascia scendere sotto la didascalia. */
-.calendario__evento {
+.calendar__event {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
-  font-size: var(--corpo-caption);
-  line-height: var(--interlinea-stretta);
+  font-size: var(--size-caption);
+  line-height: var(--leading-tight);
   text-decoration: none;
   padding: 2px 4px;
-  background: var(--colore-muted);
-  color: var(--colore-ink);
+  background: var(--color-muted);
+  color: var(--color-ink);
 }
 
 /* Due presentazioni nello stesso centro nello stesso giorno si leggevano
    identiche: l'ora e' quello che le distingue. */
-.calendario__ora {
+.calendar__time {
   font-variant-numeric: tabular-nums;
 }
 
-.calendario__evento:hover,
-.calendario__evento:focus-visible {
-  background: var(--colore-ink);
-  color: var(--colore-surface-light);
+.calendar__event:hover,
+.calendar__event:focus-visible {
+  background: var(--color-ink);
+  color: var(--color-surface-light);
 }
 
-.calendario__dove {
+.calendar__place {
   display: block;
-  font-weight: var(--peso-bold);
+  font-weight: var(--weight-bold);
 }
 
 /*
@@ -157,35 +157,35 @@
  * dell'evento lo porta l'agenda qui sotto, che su telefono e' la vista vera.
  * Sopra i 768px sparisce e tornano i titoli in cella.
  */
-.calendario__segno {
+.calendar__mark {
   display: none;
 }
 
 /* Su telefono la griglia e' una mappa dei giorni pieni: il testo entra
    nell'agenda sotto, e il quadrato dice solo «qui c'e' qualcosa». */
 @media (max-width: 767px) {
-  .calendario__giorno {
+  .calendar__day {
     block-size: auto;
     padding: 6px 2px;
     text-align: center;
   }
 
-  .calendario th {
+  .calendar th {
     text-align: center;
   }
 
   /* `display: none` e non un'opacita': i titoli escono anche dall'albero di
      accessibilita' e dal tab, non solo dalla vista. */
-  .calendario__eventi {
+  .calendar__events {
     display: none;
   }
 
-  .calendario__segno {
+  .calendar__mark {
     display: block;
     inline-size: 8px;
     block-size: 8px;
     margin: 4px auto 0;
-    background: var(--colore-ink);
+    background: var(--color-ink);
   }
 }
 
@@ -195,58 +195,58 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  margin-block-start: var(--spazio-xl);
+  margin-block-start: var(--space-xl);
   display: grid;
   font-variant-numeric: tabular-nums;
 }
 
-.blocco .agenda {
+.block .agenda {
   margin-block-start: 0;
 }
 
-.agenda__riga {
+.agenda__row {
   display: grid;
   grid-template-columns: 6.5rem 6rem minmax(0, 1fr);
-  gap: var(--spazio-md);
-  padding-block: var(--spazio-sm-alt);
-  border-block-start: 1px solid var(--riga-locale);
-  font-size: var(--corpo-caption);
+  gap: var(--space-md);
+  padding-block: var(--space-sm-alt);
+  border-block-start: 1px solid var(--row-rule);
+  font-size: var(--size-caption);
 }
 
-.agenda__riga:last-child {
-  border-block-end: 1px solid var(--riga-locale);
+.agenda__row:last-child {
+  border-block-end: 1px solid var(--row-rule);
 }
 
-.agenda__data {
-  font-weight: var(--peso-bold);
+.agenda__date {
+  font-weight: var(--weight-bold);
 }
 
-.agenda__titolo {
-  font-weight: var(--peso-bold);
+.agenda__title {
+  font-weight: var(--weight-bold);
   text-decoration: none;
 }
 
-.agenda__titolo:hover {
+.agenda__title:hover {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 
 .agenda__meta {
   display: block;
-  color: var(--colore-ink-secondary);
+  color: var(--color-ink-secondary);
 }
 
 @media (max-width: 620px) {
-  .agenda__riga {
+  .agenda__row {
     grid-template-columns: 6rem minmax(0, 1fr);
   }
 
-  .agenda__ora {
+  .agenda__time {
     grid-column: 2;
     order: 1;
   }
 
-  .agenda__ora:empty {
+  .agenda__time:empty {
     display: none;
   }
 }

@@ -11,10 +11,10 @@
 
 html {
   -webkit-font-smoothing: antialiased;
-  background: var(--colore-surface);
+  background: var(--color-surface);
   scroll-behavior: smooth;
   /* La navbar fissa non deve coprire il titolo quando si atterra su un'ancora. */
-  scroll-padding-top: var(--altezza-header);
+  scroll-padding-top: var(--header-height);
   /* Il menu blocca lo scroll di fondo: dove la barra di scorrimento occupa
      spazio, riservarlo sempre evita che la pagina salti di 15px all'apertura. */
   scrollbar-gutter: stable;
@@ -28,12 +28,12 @@ html {
 
 body {
   margin: 0;
-  background: var(--colore-surface);
-  color: var(--colore-on-primary);
+  background: var(--color-surface);
+  color: var(--color-on-primary);
   font-family: var(--font-body);
-  font-size: var(--corpo-testo);
-  font-weight: var(--peso-light);
-  line-height: var(--interlinea-testo);
+  font-size: var(--size-text);
+  font-weight: var(--weight-light);
+  line-height: var(--leading-text);
   font-kerning: normal;
 }
 
@@ -54,11 +54,11 @@ a {
  * Regola del Valore applicata anche allo stato di fuoco.
  */
 :root {
-  --anello: var(--colore-on-primary);
+  --ring: var(--color-on-primary);
 }
 
 :focus-visible {
-  outline: 2px solid var(--anello);
+  outline: 2px solid var(--ring);
   outline-offset: 3px;
 }
 
@@ -82,42 +82,42 @@ ol {
 
 /* ---------- primitivi ---------- */
 
-.contenitore {
-  max-width: var(--larghezza-pagina);
+.container {
+  max-width: var(--page-width);
   margin-inline: auto;
-  padding-inline: var(--margine-pagina);
+  padding-inline: var(--page-margin);
 }
 
-.sezione {
-  padding-block: clamp(var(--spazio-section-sm), 9vw, var(--spazio-section-lg));
+.section {
+  padding-block: clamp(var(--space-section-sm), 9vw, var(--space-section-lg));
 }
 
-.sezione--nera {
-  background: var(--colore-surface);
-  color: var(--colore-on-primary);
-  --riga-locale: var(--colore-ink-secondary);
-  --anello: var(--colore-on-primary);
+.section--black {
+  background: var(--color-surface);
+  color: var(--color-on-primary);
+  --row-rule: var(--color-ink-secondary);
+  --ring: var(--color-on-primary);
 }
 
-.sezione--carbone {
-  background: var(--colore-surface-alt);
-  color: var(--colore-on-primary);
-  --riga-locale: var(--colore-ink-secondary);
-  --anello: var(--colore-on-primary);
+.section--charcoal {
+  background: var(--color-surface-alt);
+  color: var(--color-on-primary);
+  --row-rule: var(--color-ink-secondary);
+  --ring: var(--color-on-primary);
 }
 
-.sezione--chiara {
-  background: var(--colore-surface-light);
-  color: var(--colore-ink);
-  --riga-locale: var(--colore-ink);
-  --anello: var(--colore-ink);
+.section--light {
+  background: var(--color-surface-light);
+  color: var(--color-ink);
+  --row-rule: var(--color-ink);
+  --ring: var(--color-ink);
 }
 
-.sezione--grigia {
-  background: var(--colore-muted);
-  color: var(--colore-ink);
-  --riga-locale: var(--colore-ink);
-  --anello: var(--colore-ink);
+.section--grey {
+  background: var(--color-muted);
+  color: var(--color-ink);
+  --row-rule: var(--color-ink);
+  --ring: var(--color-ink);
 }
 
 /* Anton si compone in maiuscolo. Con interlinea 1 gli accenti maiuscoli toccano
@@ -125,148 +125,148 @@ ol {
    l'interlinea collassata che tiene il titolo a blocco. */
 .display {
   font-family: var(--font-display);
-  font-weight: var(--peso-bold);
-  line-height: var(--interlinea-display);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-display);
   text-transform: uppercase;
   padding-block-start: 0.08em;
   text-wrap: balance;
 }
 
-.display--eroe {
-  font-size: var(--corpo-hero-display);
+.display--hero {
+  font-size: var(--size-hero-display);
 }
 
 .display--lg {
-  font-size: var(--corpo-display-lg);
+  font-size: var(--size-display-lg);
 }
 
 .display--md {
-  font-size: var(--corpo-display-md);
+  font-size: var(--size-display-md);
 }
 
 .display--sm {
-  font-size: var(--corpo-display-sm);
+  font-size: var(--size-display-sm);
 }
 
-.occhiello {
-  font-size: var(--corpo-caption);
-  font-weight: var(--peso-bold);
-  line-height: var(--interlinea-display);
+.eyebrow {
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-display);
 }
 
-.testo {
-  max-width: var(--misura-testo);
-  line-height: var(--interlinea-testo);
+.text {
+  max-width: var(--measure);
+  line-height: var(--leading-text);
   text-wrap: pretty;
 }
 
-.dato {
-  font-size: var(--corpo-caption);
+.detail {
+  font-size: var(--size-caption);
   font-variant-numeric: tabular-nums;
 }
 
 /* Il filetto tricolore e' una firma strutturale, non un dato: e' decorativo e
    sta in un pseudo-elemento o in un elemento vuoto con aria-hidden. */
-.filetto {
+.rule {
   display: block;
   inline-size: 96px;
   block-size: 3px;
   background: linear-gradient(
     90deg,
-    var(--tricolore-verde) 0 33.34%,
-    var(--filetto-centro, #ffffff) 33.33% 66.67%,
-    var(--tricolore-rosso) 66.66% 100%
+    var(--tricolor-green) 0 33.34%,
+    var(--rule-center, #ffffff) 33.33% 66.67%,
+    var(--tricolor-red) 66.66% 100%
   );
 }
 
 /* Su fondo bianco la banda centrale bianca sparisce e il filetto legge come due
    trattini: sulle superfici chiare passa al grigio riga. */
-.sezione--chiara {
-  --filetto-centro: var(--colore-border);
+.section--light {
+  --rule-center: var(--color-border);
 }
 
-.sezione--grigia {
-  --filetto-centro: var(--colore-surface-light);
+.section--grey {
+  --rule-center: var(--color-surface-light);
 }
 
 /* Il verde dice presenza: un dato vivo, non una categoria. La parola resta
    sempre accanto al segno, cosi' il colore non porta informazione da solo. */
-.stato {
+.status {
   display: inline-flex;
   align-items: center;
-  gap: var(--spazio-xs);
-  font-size: var(--corpo-caption);
-  font-weight: var(--peso-bold);
+  gap: var(--space-xs);
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
 }
 
-.stato::before {
+.status::before {
   content: '';
   inline-size: 8px;
   block-size: 8px;
-  background: var(--colore-presenza);
+  background: var(--color-presence);
   flex: none;
 }
 
 /* Su fondo chiaro il verde chiaro non regge: la variante scura sta a 6.69:1. */
-.sezione--chiara .stato::before,
-.sezione--grigia .stato::before,
-.percorso--bianco .stato::before,
-.percorso--grigio .stato::before {
-  background: var(--colore-presenza-scura);
+.section--light .status::before,
+.section--grey .status::before,
+.path--white .status::before,
+.path--grey .status::before {
+  background: var(--color-presence-dark);
 }
 
-.bottone {
+.button {
   display: inline-block;
-  padding: var(--spazio-md) var(--spazio-lg);
-  font-size: var(--corpo-link);
-  font-weight: var(--peso-bold);
-  line-height: var(--interlinea-testo);
+  padding: var(--space-md) var(--space-lg);
+  font-size: var(--size-link);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-text);
   text-decoration: none;
   border: 0;
-  border-radius: var(--raggio);
-  transition: background-color var(--durata) var(--curva), color var(--durata) var(--curva),
-    transform var(--durata) var(--curva);
+  border-radius: var(--radius);
+  transition: background-color var(--duration) var(--ease), color var(--duration) var(--ease),
+    transform var(--duration) var(--ease);
 }
 
 /* Un pixel di affondamento: e' feedback, non coreografia. Sotto
-   prefers-reduced-motion --durata va a 0 e resta uno scatto secco. */
-.bottone:active {
+   prefers-reduced-motion --duration va a 0 e resta uno scatto secco. */
+.button:active {
   transform: translateY(1px);
 }
 
 /* Il rosso dice azione e nient'altro: e' l'unica superficie colorata del sistema.
    Bianco su #e30917 sta a 4.86:1, sopra la soglia AA. */
-.bottone--primario {
-  background: var(--colore-azione);
-  color: var(--colore-on-primary);
-  box-shadow: var(--ombra-bottone);
+.button--primary {
+  background: var(--color-action);
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-button);
 }
 
-.bottone--primario:hover,
-.bottone--primario:active {
-  background: var(--colore-azione-premuta);
+.button--primary:hover,
+.button--primary:active {
+  background: var(--color-action-pressed);
 }
 
-.bottone--secondario {
-  background: var(--colore-surface-alt);
-  color: var(--colore-on-primary);
+.button--secondary {
+  background: var(--color-surface-alt);
+  color: var(--color-on-primary);
 }
 
-.bottone--secondario:hover {
-  background: var(--colore-surface);
+.button--secondary:hover {
+  background: var(--color-surface);
 }
 
-.salta {
+.skip {
   position: absolute;
   left: -9999px;
   z-index: 100;
 }
 
-.salta:focus {
-  left: var(--margine-pagina);
-  top: var(--spazio-sm);
-  padding: var(--spazio-sm) var(--spazio-md);
-  background: var(--colore-muted);
-  color: var(--colore-ink);
-  font-weight: var(--peso-bold);
+.skip:focus {
+  left: var(--page-margin);
+  top: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-muted);
+  color: var(--color-ink);
+  font-weight: var(--weight-bold);
 }

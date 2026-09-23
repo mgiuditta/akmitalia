@@ -103,11 +103,11 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
     blocchi.push({
       chiave: 'come',
       nodo: (
-        <div className="contenitore">
-          <h2 className="display display--sm titolo-elenco">Come si pratica</h2>
-          <dl className="corso__dati">
+        <div className="container">
+          <h2 className="display display--sm list-title">Come si pratica</h2>
+          <dl className="course__details">
             {comeFunziona.map((riga) => (
-              <div className="corso__dato" key={riga.voce}>
+              <div className="course__detail" key={riga.voce}>
                 <dt>{riga.voce}</dt>
                 <dd>{riga.dato}</dd>
               </div>
@@ -122,26 +122,26 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
     blocchi.push({
       chiave: 'descrizione',
       nodo: (
-        <div className="contenitore corso__discorso">
+        <div className="container course__prose">
           {/* Il blocco apriva con una schermata intera di Roboto 300 su carbone e
               il primo appiglio era un h2 da 22px a meta' altezza: nessun punto
               focale, e una sezione che apre sottovoce e' fuori registro a
               ENERGY 3. Il titolo che mancava e' quello che il blocco fa. */}
-          <h2 className="display display--sm titolo-elenco">In che cosa consiste</h2>
+          <h2 className="display display--sm list-title">In che cosa consiste</h2>
           {corso.descrizione ? (
-            <div className="ricco">
+            <div className="rich">
               <RichText data={corso.descrizione} />
             </div>
           ) : null}
 
           {focus.length > 0 ? (
-            <div className="rivela">
-              <h2 className="corso__sottotitolo">Su cosa si lavora</h2>
+            <div className="reveal">
+              <h2 className="course__subtitle">Su cosa si lavora</h2>
               {/* Etichette brevi in fila, non una terza colonna di un tris: e'
                   quello che il campo dichiara di essere. */}
-              <ul className="etichette">
+              <ul className="labels">
                 {focus.map((v) => (
-                  <li className="etichetta" key={v.id ?? v.voce}>
+                  <li className="label" key={v.id ?? v.voce}>
                     {v.voce}
                   </li>
                 ))}
@@ -157,12 +157,12 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
     blocchi.push({
       chiave: 'risultati',
       nodo: (
-        <div className="contenitore">
-          <h2 className="display display--sm titolo-elenco">Cosa ti porti a casa</h2>
-          <ol className="numerati">
+        <div className="container">
+          <h2 className="display display--sm list-title">Cosa ti porti a casa</h2>
+          <ol className="numbered">
             {risultati.map((v, i) => (
-              <li className="rivela numerato" key={v.id ?? v.voce}>
-                <span className="numerato__indice" aria-hidden="true">
+              <li className="reveal numbered-item" key={v.id ?? v.voce}>
+                <span className="numbered-item__index" aria-hidden="true">
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <span>{v.voce}</span>
@@ -178,9 +178,9 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
     blocchi.push({
       chiave: 'adatto',
       nodo: (
-        <div className="contenitore">
-          <h2 className="display display--sm titolo-elenco">Questo percorso è per te se</h2>
-          <ul className="elenco__voci elenco__voci--largo">
+        <div className="container">
+          <h2 className="display display--sm list-title">Questo percorso è per te se</h2>
+          <ul className="list__items list__items--wide">
             {adattoA.map((v) => (
               <li key={v.id ?? v.voce}>{v.voce}</li>
             ))}
@@ -192,12 +192,12 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
 
   return (
     <>
-      <section className="sezione sezione--nera testata testata--percorso">
+      <section className="section section--black masthead masthead--path">
         {/* Il segno e' inchiostro su trasparente: sul nero va invertito, come la
             fotografia dell'eroe entra nel sistema come valore e non come colore. */}
         {segnoUrl ? (
           <Image
-            className="testata__segno"
+            className="masthead__mark"
             src={segnoUrl}
             alt=""
             width={400}
@@ -207,15 +207,15 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
           />
         ) : null}
 
-        <div className="contenitore testata__contenuto">
-          <Link className="briciola" href="/corsi">
+        <div className="container masthead__content">
+          <Link className="breadcrumb" href="/corsi">
             Torna ai percorsi
           </Link>
-          <p className="occhiello">{corso.occhiello || 'Percorso'}</p>
+          <p className="eyebrow">{corso.occhiello || 'Percorso'}</p>
           <h1 className="display display--lg">{corso.domanda || corso.nome}</h1>
-          <p className="testo testata__testo">{corso.sommario}</p>
+          <p className="text masthead__text">{corso.sommario}</p>
 
-          <dl className="testata__fatti">
+          <dl className="masthead__facts">
             <div>
               <dt>Il corso</dt>
               <dd>{corso.nome}</dd>
@@ -236,9 +236,9 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
             ) : null}
           </dl>
 
-          <p className="testata__azione">
+          <p className="masthead__action">
             <Link
-              className="bottone bottone--primario"
+              className="button button--primary"
               href={`/contatti?corso=${encodeURIComponent(corso.slug)}`}
             >
               {corso.azione || 'Chiedi una prova'}
@@ -249,7 +249,7 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
 
       {blocchi.map((blocco, i) => (
         <section
-          className={`sezione sezione--${i % 2 === 0 ? 'chiara' : 'carbone'}`}
+          className={`section section--${i % 2 === 0 ? 'light' : 'charcoal'}`}
           key={blocco.chiave}
         >
           {blocco.nodo}
@@ -259,21 +259,21 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
       {/* La prova sta da sola sul nero e a corpo grande: e' la riga che dimostra
           il percorso, non una nota in coda a una colonna. */}
       {corso.prova ? (
-        <section className="sezione sezione--nera">
-          <div className="contenitore">
-            <p className="corso__prova">{corso.prova}</p>
+        <section className="section section--black">
+          <div className="container">
+            <p className="course__trial">{corso.prova}</p>
           </div>
         </section>
       ) : null}
 
-      <section className="sezione sezione--chiara" aria-labelledby="titolo-dove">
-        <div className="contenitore">
-          <div className="centri__intestazione">
-            <span className="filetto" aria-hidden="true" />
-            <h2 className="display display--md" id="titolo-dove">
+      <section className="section section--light" aria-labelledby="place-title">
+        <div className="container">
+          <div className="centers__heading">
+            <span className="rule" aria-hidden="true" />
+            <h2 className="display display--md" id="place-title">
               Dove si pratica
             </h2>
-            <p className="testo">
+            <p className="text">
               {centri.length > 0
                 ? `${centri.length} ${centri.length === 1 ? 'centro tiene' : 'centri tengono'} questo percorso. Gli orari qui sotto sono solo quelli di ${corso.nome}.`
                 : 'Questo percorso non è ancora in calendario in nessun centro. Scrivici e ti diciamo quando parte.'}
@@ -281,22 +281,22 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
           </div>
 
           {centri.length > 0 ? (
-            <ul className="centri__elenco">
+            <ul className="centers__list">
               {centri.map((sede) => {
                 const suoi = (sede.orari ?? []).filter((o) => idDisciplina(o.disciplina) === corso.id)
 
                 return (
-                  <li className="rivela centro" key={sede.id}>
-                    <h3 className="centro__nome">
-                      <Link className="centro__collegamento" href={`/centri/${sede.slug}`}>
+                  <li className="reveal center" key={sede.id}>
+                    <h3 className="center__name">
+                      <Link className="center__link" href={`/centri/${sede.slug}`}>
                         {sede.nome}
                       </Link>
                     </h3>
-                    <p className="centro__indirizzo">{indirizzoLeggibile(sede.indirizzo)}</p>
-                    <div className="centro__orari">
+                    <p className="center__address">{indirizzoLeggibile(sede.indirizzo)}</p>
+                    <div className="center__schedule">
                       {suoi.map((orario) => (
-                        <div className="centro__orario" key={orario.id}>
-                          <span className="centro__giorni">{giorniLeggibili(orario.giorni)}</span>
+                        <div className="center__slot" key={orario.id}>
+                          <span className="center__days">{giorniLeggibili(orario.giorni)}</span>
                           <span>
                             {orario.oraInizio}-{orario.oraFine}
                             {orario.note ? ` · ${orario.note}` : ''}
@@ -312,14 +312,14 @@ export default async function PaginaCorso({ params }: { params: Promise<{ slug: 
 
           {/* La pagina finisce dove finisce il percorso: nel modulo, con questo
               percorso gia' selezionato. */}
-          <p className="coda-azione">
+          <p className="tail-action">
             <Link
-              className="bottone bottone--primario"
+              className="button button--primary"
               href={`/contatti?corso=${encodeURIComponent(corso.slug)}`}
             >
               {corso.azione || 'Chiedi una prova'}
             </Link>
-            <Link className="bottone bottone--secondario" href="/centri">
+            <Link className="button button--secondary" href="/centri">
               Vedi tutti i centri
             </Link>
           </p>

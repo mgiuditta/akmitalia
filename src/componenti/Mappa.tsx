@@ -122,14 +122,14 @@ export function Mappa({
      *
      * Il nodo e' 44x44, quasi tutto trasparente: e' il bersaglio minimo da dito,
      * non la misura del segno, che resta una targhetta da 14px in fondo al nodo
-     * (il disegno sta in mappa.css). Il marker del centro piu' vicino porta il
+     * (il disegno sta in map.css). Il marker del centro piu' vicino porta il
      * nome del comune scritto accanto, perche' la Regola dell'Etichetta non
      * ammette un valore che parli da solo.
      */
     const icona = (punto: PuntoMappa, primo: boolean) =>
       L.divIcon({
-        className: `mappa__segno${primo ? ' mappa__segno--vicino' : ''}`,
-        html: primo ? `<span class="mappa__etichetta">${fuga(punto.citta)}</span>` : '',
+        className: `map__mark${primo ? ' map__mark--nearest' : ''}`,
+        html: primo ? `<span class="map__label">${fuga(punto.citta)}</span>` : '',
         iconSize: [44, 44],
         iconAnchor: [22, 44],
         popupAnchor: [0, -30],
@@ -155,7 +155,7 @@ export function Mappa({
          intrattiene. Il ritardo lo porta il nodo, l'animazione sta in CSS e
          sparisce sotto prefers-reduced-motion. */
       if (!fermo) {
-        marker.getElement()?.style.setProperty('--ritardo', `${Math.min(i, 20) * 40}ms`)
+        marker.getElement()?.style.setProperty('--delay', `${Math.min(i, 20) * 40}ms`)
       }
     })
 
@@ -173,5 +173,5 @@ export function Mappa({
     }
   }, [punti, pronta, vicino])
 
-  return <div className="mappa" ref={contenitore} role="application" aria-label={etichetta} />
+  return <div className="map" ref={contenitore} role="application" aria-label={etichetta} />
 }

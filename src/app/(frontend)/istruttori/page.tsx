@@ -54,15 +54,15 @@ export default async function PaginaIstruttori() {
 
   return (
     <>
-      <section className="sezione sezione--nera testata">
-        <div className="contenitore testata__contenuto">
+      <section className="section section--black masthead">
+        <div className="container masthead__content">
           <h1 className="display display--lg">Le qualifiche si contano</h1>
           {/* «Almeno quattro anni di percorso e un esame di abilitazione» era un
               numero presentato come fatto, senza riscontro in `data/`, in `docs/`
               ne' in PRODUCT.md. Qui sotto ogni riga dell'albo porta la qualifica
               e il grado di una persona con nome e cognome: quella e' la prova che
               il sito ha davvero. */}
-          <p className="testo testata__testo">
+          <p className="text masthead__text">
             I docenti sono istruttori qualificati, tesserati e assicurati CSEN: qui sotto ognuno
             con nome, qualifica e grado. Le qualifiche AKM sono riconosciute da CSEN-CONI,
             F.E.K.D.A. e P.T.D.
@@ -81,28 +81,28 @@ export default async function PaginaIstruttori() {
         priorita
       />
 
-      <section className="sezione sezione--chiara" aria-labelledby="titolo-albo">
-        <div className="contenitore">
-          <h2 className="display display--sm titolo-elenco" id="titolo-albo">
+      <section className="section section--light" aria-labelledby="directory-title">
+        <div className="container">
+          <h2 className="display display--sm list-title" id="directory-title">
             {istruttori.docs.length > 0
               ? `${istruttori.docs.length} istruttori e maestri`
               : 'L’albo'}
           </h2>
 
           {istruttori.docs.length > 0 ? (
-            <ul className="albo">
+            <ul className="directory">
               {istruttori.docs.map((istruttore) => {
                 const sedi = (istruttore.sedi?.docs ?? []).filter(
                   (s): s is Exclude<typeof s, number> => typeof s === 'object' && s !== null,
                 )
 
                 return (
-                  <li className="rivela istruttore" key={istruttore.id}>
+                  <li className="reveal instructor" key={istruttore.id}>
                     {/* Il ritratto non sparisce quando manca: la griglia della
                         scheda lo prevede, e un segnaposto dice al cliente che
                         li' va caricata una foto. */}
                     <Figura
-                      classe="istruttore__foto"
+                      classe="instructor__photo"
                       slot={istruttore.foto}
                       etichetta="Ritratto"
                       formato="quadro"
@@ -110,12 +110,12 @@ export default async function PaginaIstruttori() {
                       sizes="88px"
                     />
 
-                    <h3 className="istruttore__nome">{istruttore.nome}</h3>
+                    <h3 className="instructor__name">{istruttore.nome}</h3>
                     {istruttore.ruolo ? (
-                      <p className="istruttore__ruolo">{istruttore.ruolo}</p>
+                      <p className="instructor__role">{istruttore.ruolo}</p>
                     ) : null}
 
-                    <p className="dato">
+                    <p className="detail">
                       {[
                         istruttore.qualifica ? QUALIFICHE[istruttore.qualifica] : null,
                         istruttore.grado,
@@ -126,7 +126,7 @@ export default async function PaginaIstruttori() {
                     </p>
 
                     {(istruttore.credenziali ?? []).length > 0 ? (
-                      <ul className="istruttore__voci">
+                      <ul className="instructor__items">
                         {(istruttore.credenziali ?? []).map((c) => (
                           <li key={c.id ?? c.voce}>{c.voce}</li>
                         ))}
@@ -139,7 +139,7 @@ export default async function PaginaIstruttori() {
                         che ha chiuso la stagione lo dice qui, non solo nella sua
                         scheda: da qui si clicca. */}
                     {sedi.length > 0 ? (
-                      <p className="dato">
+                      <p className="detail">
                         Insegna a{' '}
                         {sedi.map((sede, i) => (
                           <React.Fragment key={sede.id}>
@@ -155,7 +155,7 @@ export default async function PaginaIstruttori() {
               })}
             </ul>
           ) : (
-            <p className="testo vuoto">L’albo è in aggiornamento.</p>
+            <p className="text empty">L’albo è in aggiornamento.</p>
           )}
         </div>
       </section>

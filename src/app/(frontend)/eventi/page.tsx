@@ -101,10 +101,10 @@ export default async function PaginaEventi({
 
   return (
     <>
-      <section className="sezione sezione--nera testata">
-        <div className="contenitore testata__contenuto">
+      <section className="section section--black masthead">
+        <div className="container masthead__content">
           <h1 className="display display--lg">Eventi</h1>
-          <p className="testo testata__testo">
+          <p className="text masthead__text">
             Stage, esami, presentazioni e feste della stagione, mese per mese. Ogni evento ha
             data, orario e centro: gli orari settimanali stanno nella scheda di ogni centro.
           </p>
@@ -120,17 +120,17 @@ export default async function PaginaEventi({
         priorita
       />
 
-      <section className="sezione sezione--chiara" aria-labelledby="titolo-mese">
-        <div className="contenitore">
-          <nav className="calendario__mesi" aria-label="Cambia mese">
-            <Link className="calendario__salto" href={`/eventi?mese=${chiaveMese(mesePrecedente(mese))}`}>
+      <section className="section section--light" aria-labelledby="month-title">
+        <div className="container">
+          <nav className="calendar__months" aria-label="Cambia mese">
+            <Link className="calendar__jump" href={`/eventi?mese=${chiaveMese(mesePrecedente(mese))}`}>
               Mese precedente
             </Link>
-            <h2 className="display display--sm" id="titolo-mese">
+            <h2 className="display display--sm" id="month-title">
               {nomeMese(mese)}
             </h2>
             <Link
-              className="calendario__salto calendario__salto--dopo"
+              className="calendar__jump calendar__jump--next"
               href={`/eventi?mese=${chiaveMese(meseSuccessivo(mese))}`}
             >
               Mese successivo
@@ -141,7 +141,7 @@ export default async function PaginaEventi({
               celle vuote: sotto la piega il messaggio e il rimando al prossimo
               mese non li vedeva nessuno. */}
           {eventi.docs.length === 0 ? (
-            <p className="testo vuoto vuoto--mese">
+            <p className="text empty empty--month">
               Nessun evento a {nomeMese(mese)}.{' '}
               {meseProssimo ? (
                 <Link href={`/eventi?mese=${chiaveMese(meseProssimo)}`}>
@@ -153,7 +153,7 @@ export default async function PaginaEventi({
             </p>
           ) : null}
 
-          <table className="calendario">
+          <table className="calendar">
             <caption>Calendario di {nomeMese(mese)}</caption>
             <thead>
               <tr>
@@ -170,23 +170,23 @@ export default async function PaginaEventi({
                   {settimana.map((giorno) => {
                     const del = perGiorno.get(giorno) ?? []
                     const classi = [
-                      'calendario__giorno',
-                      giorno.slice(0, 7) !== questoMese ? 'calendario__giorno--fuori' : '',
-                      giorno === oggi ? 'calendario__giorno--oggi' : '',
+                      'calendar__day',
+                      giorno.slice(0, 7) !== questoMese ? 'calendar__day--outside' : '',
+                      giorno === oggi ? 'calendar__day--today' : '',
                     ]
                       .filter(Boolean)
                       .join(' ')
                     return (
                       <td className={classi} key={giorno}>
-                        <span className="calendario__numero">{Number(giorno.slice(8))}</span>
+                        <span className="calendar__number">{Number(giorno.slice(8))}</span>
                         {del.length > 0 ? (
                           <>
-                            <div className="calendario__eventi">
+                            <div className="calendar__events">
                               {del.map((evento) => {
                                 const ora = orarioLeggibile(evento.dataInizio, evento.dataFine)
                                 return (
                                   <Link
-                                    className="calendario__evento"
+                                    className="calendar__event"
                                     href={`/eventi/${evento.slug}`}
                                     key={evento.id}
                                   >
@@ -194,9 +194,9 @@ export default async function PaginaEventi({
                                         dieci celle dicono «Presentazione», e a distinguerle
                                         e' il centro. L'ora distingue le due dello stesso
                                         centro nello stesso giorno, che si leggevano uguali. */}
-                                    <b className="calendario__dove">{doveEvento(evento)}</b>
+                                    <b className="calendar__place">{doveEvento(evento)}</b>
                                     {ora ? (
-                                      <span className="calendario__ora">{ora} </span>
+                                      <span className="calendar__time">{ora} </span>
                                     ) : null}
                                     {evento.titolo}
                                   </Link>
@@ -207,7 +207,7 @@ export default async function PaginaEventi({
                                 docs/adr/0014: un segno, non un link da 6px moltiplicato
                                 per gli eventi del giorno. Quello che c'e' lo dice
                                 l'agenda qui sotto, che su telefono e' la vista vera. */}
-                            <span className="calendario__segno" aria-hidden="true" />
+                            <span className="calendar__mark" aria-hidden="true" />
                           </>
                         ) : null}
                       </td>

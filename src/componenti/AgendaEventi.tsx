@@ -30,13 +30,13 @@ export function AgendaEventi({
         const concluso = new Date(evento.dataFine || evento.dataInizio).getTime() < Date.now()
 
         return (
-          <li className="agenda__riga" key={evento.id}>
-            <time className="agenda__data" dateTime={evento.dataInizio}>
+          <li className="agenda__row" key={evento.id}>
+            <time className="agenda__date" dateTime={evento.dataInizio}>
               {dataBreve(evento.dataInizio)}
             </time>
-            <span className="agenda__ora">{orario}</span>
+            <span className="agenda__time">{orario}</span>
             <span>
-              <Link className="agenda__titolo" href={`/eventi/${evento.slug}`}>
+              <Link className="agenda__title" href={`/eventi/${evento.slug}`}>
                 {evento.titolo}
               </Link>
               <span className="agenda__meta">

@@ -4,7 +4,7 @@
  * affidata a GSAP (docs/adr/0006).
  *
  * Il repertorio e' chiuso (DESIGN.md, Regola dell'Indice): l'entrata scandita
- * di .rivela, la sequenza a tempo dell'eroe, l'apertura dei details del bivio,
+ * di .reveal, la sequenza a tempo dell'eroe, l'apertura dei details del bivio,
  * l'ingresso in cascata dei marker di mappa, l'apertura del menu. La sesta, il
  * video dell'eroe, e' contenuto e non coreografia: sta in home.css e in
  * VideoEroe.tsx (docs/adr/0015).
@@ -18,7 +18,7 @@
  * il contenuto non dipende da un observer per esistere: dove `view()` non c'e',
  * e sotto prefers-reduced-motion, il blocco e' semplicemente gia' completo.
  */
-@keyframes rivela {
+@keyframes reveal {
   from {
     opacity: 0;
     transform: translateY(18px);
@@ -34,15 +34,15 @@
  * all'opacita' piena solo a due terzi di schermo, quindi il testo nella parte
  * bassa si leggeva schiarito. L'entrata scandisce, non vela.
  *
- * `.rivela` sta sugli elenchi - le righe del bivio, i punti della prima volta,
+ * `.reveal` sta sugli elenchi - le righe del bivio, i punti della prima volta,
  * le schede dei centri, l'albo - e non sulla prosa: le sezioni di un'informativa
  * non sono un elenco, e li' l'entrata non scandiva niente (vedi la rotta
  * editoriale, che non la usa piu').
  */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    .rivela {
-      animation: rivela linear both;
+    .reveal {
+      animation: reveal linear both;
       animation-timeline: view();
       animation-range: entry 10% cover 18%;
     }
@@ -63,15 +63,15 @@
       interpolate-size: allow-keywords;
     }
 
-    .percorso details::details-content {
+    .path details::details-content {
       block-size: 0;
       overflow: clip;
       transition:
-        block-size var(--durata-rivela) var(--curva),
-        content-visibility var(--durata-rivela) allow-discrete;
+        block-size var(--duration-reveal) var(--ease),
+        content-visibility var(--duration-reveal) allow-discrete;
     }
 
-    .percorso details[open]::details-content {
+    .path details[open]::details-content {
       block-size: auto;
     }
   }
@@ -80,21 +80,21 @@
 /* L'eroe e' l'unico blocco che entra a tempo e non a scorrimento: la pagina si
    apre una volta sola, e la sequenza serve a dare l'ordine di lettura
    (occhiello, titolo, testo, azioni), non a intrattenere. Stessi fotogrammi di
-   .rivela, nessuna curva elastica, come vuole la Regola dell'Indice. */
+   .reveal, nessuna curva elastica, come vuole la Regola dell'Indice. */
 @media (prefers-reduced-motion: no-preference) {
-  .eroe__contenuto > * {
-    animation: rivela var(--durata-rivela) var(--curva) both;
+  .hero__content > * {
+    animation: reveal var(--duration-reveal) var(--ease) both;
   }
 
-  .eroe__contenuto > *:nth-child(2) {
+  .hero__content > *:nth-child(2) {
     animation-delay: 70ms;
   }
 
-  .eroe__contenuto > *:nth-child(3) {
+  .hero__content > *:nth-child(3) {
     animation-delay: 140ms;
   }
 
-  .eroe__contenuto > *:nth-child(4) {
+  .hero__content > *:nth-child(4) {
     animation-delay: 210ms;
   }
 }

@@ -131,7 +131,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: jsonLd(ente) }}
         />
-        <a className="salta" href="#contenuto">
+        <a className="skip" href="#contenuto">
           Salta al contenuto
         </a>
         <Barra nome={nome} stemma={stemma} conteggi={conteggi} navigazione={navigazione} />

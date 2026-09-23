@@ -155,7 +155,7 @@ export function ElencoCentri({ centri, province }: { centri: Sedi[]; province: s
 
   return (
     <>
-      <h2 className="display display--sm titolo-elenco" id="titolo-elenco">
+      <h2 className="display display--sm list-title" id="list-title">
         {posizione
           ? 'I centri più vicini a te'
           : scelta
@@ -163,11 +163,11 @@ export function ElencoCentri({ centri, province }: { centri: Sedi[]; province: s
             : 'Tutti i centri'}
       </h2>
 
-      <div className="scelte">
+      <div className="choices">
         {province.length > 1 ? (
-          <nav className="filtri" aria-label="Filtra per provincia">
+          <nav className="filters" aria-label="Filtra per provincia">
             <a
-              className={`filtro${scelta ? '' : ' filtro--attivo'}`}
+              className={`filter${scelta ? '' : ' filter--active'}`}
               href="/centri"
               aria-current={scelta ? undefined : 'true'}
               onClick={(e) => scegli(e, null)}
@@ -177,7 +177,7 @@ export function ElencoCentri({ centri, province }: { centri: Sedi[]; province: s
             {province.map((p) => (
               <a
                 key={p}
-                className={`filtro${scelta === p ? ' filtro--attivo' : ''}`}
+                className={`filter${scelta === p ? ' filter--active' : ''}`}
                 href={`/centri?provincia=${p}`}
                 aria-current={scelta === p ? 'true' : undefined}
                 onClick={(e) => scegli(e, p)}
@@ -190,10 +190,10 @@ export function ElencoCentri({ centri, province }: { centri: Sedi[]; province: s
 
         {/* Il bottone e' secondario: la conversione e' la richiesta, non la
             posizione. Ordinare per distanza e' una vista, non un'azione. */}
-        <p className="vicino">
+        <p className="nearest">
           <button
             type="button"
-            className="bottone bottone--secondario"
+            className="button button--secondary"
             onClick={chiediPosizione}
             disabled={stato === 'in-corso'}
           >
@@ -207,14 +207,14 @@ export function ElencoCentri({ centri, province }: { centri: Sedi[]; province: s
       </div>
 
       {/* Gli stati si dicono a parole: il rosso e' gia' impegnato a dire «premi qui». */}
-      <p className="dato vicino__avviso" role="status" aria-live="polite">
+      <p className="detail nearest__notice" role="status" aria-live="polite">
         {avviso ?? ''}
       </p>
 
       {visibili.length > 0 ? (
-        <div className="centri">
+        <div className="centers">
           {punti.length > 0 ? (
-            <div className="centri__mappa">
+            <div className="centers__map">
               <Mappa
                 punti={punti}
                 vicino={vicino}
@@ -223,7 +223,7 @@ export function ElencoCentri({ centri, province }: { centri: Sedi[]; province: s
               {/* Il singolare non era gestito, e la frase si rompeva proprio con il
                   dato di oggi: «1 centri non hanno ancora le coordinate». */}
               {punti.length < visibili.length ? (
-                <p className="dato mappa__nota">
+                <p className="detail map__note">
                   {visibili.length - punti.length === 1
                     ? 'Un centro non ha ancora le coordinate: lo trovi'
                     : `${visibili.length - punti.length} centri non hanno ancora le coordinate: li trovi`}{' '}
@@ -233,7 +233,7 @@ export function ElencoCentri({ centri, province }: { centri: Sedi[]; province: s
             </div>
           ) : null}
 
-          <ul className="centri__elenco" aria-live="polite">
+          <ul className="centers__list" aria-live="polite">
             {visibili.map((centro) => {
               const km = distanze.get(centro.id)
               return (
@@ -248,7 +248,7 @@ export function ElencoCentri({ centri, province }: { centri: Sedi[]; province: s
           </ul>
         </div>
       ) : (
-        <p className="testo vuoto">
+        <p className="text empty">
           L’elenco dei centri attivi è in aggiornamento per la stagione. Scrivici e ti diciamo
           qual è il più vicino.
         </p>

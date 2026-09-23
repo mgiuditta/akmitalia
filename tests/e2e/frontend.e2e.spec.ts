@@ -24,12 +24,12 @@ test.describe('Frontend', () => {
     await filtro.click()
 
     await expect(page).toHaveURL(/\/centri\?provincia=MI$/)
-    await expect(page.locator('#titolo-elenco')).toHaveText('Centri in provincia di MI')
+    await expect(page.locator('#list-title')).toHaveText('Centri in provincia di MI')
     expect(await page.evaluate(() => (window as unknown as { __vivo?: number }).__vivo)).toBe(1)
 
     await page.goBack()
     await expect(page).toHaveURL(/\/centri$/)
-    await expect(page.locator('#titolo-elenco')).toHaveText('Tutti i centri')
+    await expect(page.locator('#list-title')).toHaveText('Tutti i centri')
   })
 
   test('la pagina contatti mostra il modulo con le etichette', async ({ page }) => {

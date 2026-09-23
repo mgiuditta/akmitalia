@@ -29,14 +29,14 @@ export function VideoEroe({ src }: { src: string }) {
     <>
       <video
         ref={video}
-        className="eroe__foto eroe__video"
+        className="hero__photo hero__video"
         src={src}
         muted
         loop
         playsInline
         preload="none"
         aria-hidden="true"
-        data-visibile={avviato || undefined}
+        data-visible={avviato || undefined}
         onPlaying={() => {
           setInCorso(true)
           setAvviato(true)
@@ -45,7 +45,7 @@ export function VideoEroe({ src }: { src: string }) {
       />
       <button
         type="button"
-        className="bottone bottone--secondario eroe__pausa"
+        className="button button--secondary hero__pause"
         onClick={() => {
           const v = video.current
           if (!v) return

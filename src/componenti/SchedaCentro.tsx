@@ -34,30 +34,30 @@ export function SchedaCentro({
   const orari = centro.orari ?? []
 
   return (
-    <li className={`rivela centro${piuVicino ? ' centro--vicino' : ''}`}>
+    <li className={`reveal center${piuVicino ? ' center--nearest' : ''}`}>
       {/* Il piu' vicino porta la parola, non solo la posizione nell'elenco. */}
-      {piuVicino ? <p className="centro__vicino">Il più vicino a te</p> : null}
-      <Titolo className="centro__nome">
-        <Link className="centro__collegamento" href={`/centri/${centro.slug}`}>
+      {piuVicino ? <p className="center__nearest">Il più vicino a te</p> : null}
+      <Titolo className="center__name">
+        <Link className="center__link" href={`/centri/${centro.slug}`}>
           {centro.nome}
         </Link>
       </Titolo>
 
-      <p className="centro__indirizzo">
+      <p className="center__address">
         {indirizzoLeggibile(centro.indirizzo)}
-        {distanza ? <span className="centro__distanza">a {distanza} da te</span> : null}
+        {distanza ? <span className="center__distance">a {distanza} da te</span> : null}
       </p>
 
       {orari.length > 0 ? (
-        <div className="centro__orari">
+        <div className="center__schedule">
           {orari.map((orario) => {
             const disciplina =
               typeof orario.disciplina === 'object' ? orario.disciplina?.nome : null
             const docenti = (orario.docenti ?? []).map(nomeIstruttore).filter(Boolean).join(', ')
 
             return (
-              <div className="centro__orario" key={orario.id}>
-                <span className="centro__giorni">{giorniLeggibili(orario.giorni)}</span>
+              <div className="center__slot" key={orario.id}>
+                <span className="center__days">{giorniLeggibili(orario.giorni)}</span>
                 <span>
                   {orario.oraInizio}-{orario.oraFine}
                   {disciplina ? ` · ${disciplina}` : ''}
@@ -69,11 +69,11 @@ export function SchedaCentro({
           })}
         </div>
       ) : (
-        <p className="dato">Orari in aggiornamento.</p>
+        <p className="detail">Orari in aggiornamento.</p>
       )}
 
       {centro.attivo === false ? (
-        <p className="dato">Non attivo in questa stagione: gli orari sono quelli dell’ultima.</p>
+        <p className="detail">Non attivo in questa stagione: gli orari sono quelli dell’ultima.</p>
       ) : null}
     </li>
   )

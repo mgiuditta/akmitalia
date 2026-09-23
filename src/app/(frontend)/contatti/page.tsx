@@ -128,19 +128,19 @@ export default async function PaginaContatti({
 
   return (
     <>
-      <section className="sezione sezione--nera testata">
-        <div className="contenitore testata__contenuto">
+      <section className="section section--black masthead">
+        <div className="container masthead__content">
           <h1 className="display display--lg">Richiedi informazioni</h1>
-          <p className="testo testata__testo">{contatti.introRichieste || INTRO}</p>
+          <p className="text masthead__text">{contatti.introRichieste || INTRO}</p>
         </div>
       </section>
 
       {/* L'ancora della CTA in barra quando si e' gia' su questa pagina: li'
           «Richiedi informazioni» ripeteva l'H1 e portava dove si era gia'. */}
-      <section className="sezione sezione--chiara" id="modulo" aria-labelledby="titolo-modulo">
-        <div className="contenitore contatto">
+      <section className="section section--light" id="modulo" aria-labelledby="form-title">
+        <div className="container contact">
           <div>
-            <h2 className="display display--sm titolo-elenco" id="titolo-modulo">
+            <h2 className="display display--sm list-title" id="form-title">
               Scrivici
             </h2>
             <FormRichiesta
@@ -161,9 +161,9 @@ export default async function PaginaContatti({
             />
           </div>
 
-          <aside className="contatto__recapiti" aria-label="Recapiti">
+          <aside className="contact__channels" aria-label="Recapiti">
             <Figura
-              classe="contatto__foto"
+              classe="contact__photo"
               slot={contatti.immagineContatti}
               etichetta="Foto della pagina contatti"
               formato="ritratto"
@@ -174,14 +174,14 @@ export default async function PaginaContatti({
                 un'installazione pulita - qui non c'era niente: un <dl> vuoto e
                 cinquecentocinquanta pixel di bianco. Uno stato vuoto si dichiara. */}
             {recapiti ? null : (
-              <p className="testo dato">
+              <p className="text detail">
                 Non pubblichiamo un recapito diretto: la richiesta qui accanto arriva a chi
                 tiene le lezioni nel centro che scegli, e ti risponde quella persona.
               </p>
             )}
-            <dl className="recapiti">
+            <dl className="channels">
               {contatti.telefono ? (
-                <div className="recapito">
+                <div className="channel">
                   <dt>Telefono</dt>
                   <dd>
                     <a href={`tel:${telefono}`}>{contatti.telefono}</a>
@@ -189,7 +189,7 @@ export default async function PaginaContatti({
                 </div>
               ) : null}
               {contatti.whatsapp ? (
-                <div className="recapito">
+                <div className="channel">
                   <dt>WhatsApp</dt>
                   <dd>
                     <a href={`https://wa.me/${whatsapp}`} rel="noopener">
@@ -199,7 +199,7 @@ export default async function PaginaContatti({
                 </div>
               ) : null}
               {contatti.email ? (
-                <div className="recapito">
+                <div className="channel">
                   <dt>Email</dt>
                   <dd>
                     <a href={`mailto:${contatti.email}`}>{contatti.email}</a>
@@ -207,7 +207,7 @@ export default async function PaginaContatti({
                 </div>
               ) : null}
               {indirizzo ? (
-                <div className="recapito">
+                <div className="channel">
                   <dt>Sede legale</dt>
                   <dd>{indirizzo}</dd>
                 </div>

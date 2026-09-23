@@ -91,11 +91,11 @@ export default async function PaginaEditoriale({
 
   return (
     <>
-      <section className="sezione sezione--nera testata">
-        <div className="contenitore testata__contenuto">
-          {pagina.occhiello ? <p className="occhiello">{pagina.occhiello}</p> : null}
+      <section className="section section--black masthead">
+        <div className="container masthead__content">
+          {pagina.occhiello ? <p className="eyebrow">{pagina.occhiello}</p> : null}
           <h1 className="display display--lg">{pagina.titolo}</h1>
-          {pagina.sommario ? <p className="testo testata__testo">{pagina.sommario}</p> : null}
+          {pagina.sommario ? <p className="text masthead__text">{pagina.sommario}</p> : null}
         </div>
       </section>
 
@@ -110,23 +110,23 @@ export default async function PaginaEditoriale({
         sizes="100vw"
       />
 
-      <section className="sezione sezione--chiara">
-        <div className="contenitore editoriale">
+      <section className="section section--light">
+        <div className="container editorial">
           {sezioni.length > 0 ? (
             sezioni.map((sezione, i) => (
               /* Niente `.rivela` qui: le sezioni di un'informativa non sono un
                  elenco, e l'entrata allo scroll le lasciava schiarite nella parte
                  bassa dello schermo invece di scandirle. Il repertorio del
                  movimento vale dove c'e' qualcosa da scandire. */
-              <section className="editoriale__sezione" key={sezione.id ?? i}>
+              <section className="editorial__section" key={sezione.id ?? i}>
                 {sezione.titolo ? <h2>{sezione.titolo}</h2> : null}
-                <div className="ricco">
+                <div className="rich">
                   <RichText data={sezione.testo} />
                 </div>
               </section>
             ))
           ) : (
-            <p className="testo vuoto">Questa pagina è in aggiornamento.</p>
+            <p className="text empty">Questa pagina è in aggiornamento.</p>
           )}
         </div>
       </section>

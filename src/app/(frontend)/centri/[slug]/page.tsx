@@ -177,23 +177,23 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(luogo) }}
       />
-      <section className="sezione sezione--nera testata">
-        <div className="contenitore testata__contenuto">
-          <Link className="briciola" href="/centri">
+      <section className="section section--black masthead">
+        <div className="container masthead__content">
+          <Link className="breadcrumb" href="/centri">
             Torna ai centri
           </Link>
-          <p className="occhiello">Centro tecnico</p>
+          <p className="eyebrow">Centro tecnico</p>
           <h1 className="display display--md">{sede.nome}</h1>
-          <p className="testo dato">{indirizzoLeggibile(sede.indirizzo)}</p>
+          <p className="text detail">{indirizzoLeggibile(sede.indirizzo)}</p>
           {/* Un centro non attivo resta pubblicato e sparisce dagli elenchi, ma la
               sua scheda si apre lo stesso: ci si arriva dall'albo, da un evento
               passato, da un vecchio link. Prima l'unico indizio era che mancava
               il quadrato verde, cioe' niente: un'assenza non e' un'etichetta
               (Regola dell'Etichetta). */}
           {sede.attivo ? (
-            <p className="stato">Attivo in questa stagione</p>
+            <p className="status">Attivo in questa stagione</p>
           ) : (
-            <p className="testo dato">
+            <p className="text detail">
               Questo centro non è attivo in questa stagione: gli orari qui sotto sono quelli
               dell’ultima e non sono in corso. Scrivici e ti diciamo qual è il centro più vicino
               aperto.
@@ -212,18 +212,18 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
         sizes="100vw"
       />
 
-      <section className="sezione sezione--chiara">
-        <div className="contenitore scheda">
+      <section className="section section--light">
+        <div className="container card">
           <div>
-            {sede.descrizione ? <p className="testo">{sede.descrizione}</p> : null}
+            {sede.descrizione ? <p className="text">{sede.descrizione}</p> : null}
 
-            <div className="blocco">
+            <div className="block">
               <h2>Orari</h2>
               {orari.length > 0 && !sede.attivo ? (
-                <p className="dato">Programmazione dell’ultima stagione, non in corso.</p>
+                <p className="detail">Programmazione dell’ultima stagione, non in corso.</p>
               ) : null}
               {orari.length > 0 ? (
-                <div className="orari">
+                <div className="schedule">
                   {orari.map((orario) => {
                     const disciplina =
                       typeof orario.disciplina === 'object' ? orario.disciplina : null
@@ -233,8 +233,8 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
                       .join(', ')
 
                     return (
-                      <div className="orari__riga" key={orario.id}>
-                        <span className="orari__giorni">{giorniLeggibili(orario.giorni)}</span>
+                      <div className="schedule__row" key={orario.id}>
+                        <span className="schedule__days">{giorniLeggibili(orario.giorni)}</span>
                         <span>
                           {orario.oraInizio}-{orario.oraFine}
                         </span>
@@ -250,16 +250,16 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
                   })}
                 </div>
               ) : (
-                <p className="dato">Orari in aggiornamento per la stagione.</p>
+                <p className="detail">Orari in aggiornamento per la stagione.</p>
               )}
             </div>
 
             {eventi.docs.length > 0 ? (
-              <div className="blocco">
+              <div className="block">
                 <h2>Prossimi eventi qui</h2>
                 <AgendaEventi eventi={eventi.docs} mostraLuogo={false} />
                 <p>
-                  <Link className="briciola" href="/eventi">
+                  <Link className="breadcrumb" href="/eventi">
                     Tutto il calendario
                   </Link>
                 </p>
@@ -267,9 +267,9 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
             ) : null}
 
             {discipline.size > 0 ? (
-              <div className="blocco">
+              <div className="block">
                 <h2>Cosa si pratica qui</h2>
-                <ul className="elenco__voci">
+                <ul className="list__items">
                   {[...discipline.values()].map((nome) => (
                     <li key={nome}>{nome}</li>
                   ))}
@@ -278,9 +278,9 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
             ) : null}
 
             {istruttori.length > 0 ? (
-              <div className="blocco">
+              <div className="block">
                 <h2>Chi insegna</h2>
-                <ul className="elenco__voci">
+                <ul className="list__items">
                   {istruttori.map((istruttore) => (
                     <li key={istruttore.id}>
                       {istruttore.nome}
@@ -297,16 +297,16 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
               <Mappa punti={punti} etichetta={`Dove si trova ${sede.nome}`} />
             ) : null}
 
-            <div className="blocco">
+            <div className="block">
               <h2>Come arrivarci</h2>
-              <p className="dato">
+              <p className="detail">
                 {sede.palestra ? `${sede.palestra}, ` : ''}
                 {indirizzoLeggibile(sede.indirizzo)}
               </p>
               {sede.mapsUrl ? (
                 <p>
                   <a
-                    className="centro__maps"
+                    className="center__maps"
                     href={sede.mapsUrl}
                     target="_blank"
                     rel="noreferrer noopener"
@@ -323,16 +323,16 @@ export default async function PaginaCentro({ params }: { params: Promise<{ slug:
                   Per un centro non attivo la richiesta parte senza sede: quel
                   centro non e' fra le scelte del modulo, e mandarci qualcuno
                   sarebbe una promessa che non possiamo tenere. */}
-              <p className="coda-azione">
+              <p className="tail-action">
                 <Link
-                  className="bottone bottone--primario"
+                  className="button button--primary"
                   href={
                     sede.attivo ? `/contatti?sede=${encodeURIComponent(sede.slug)}` : '/contatti'
                   }
                 >
                   Richiedi informazioni
                 </Link>
-                <Link className="bottone bottone--secondario" href="/corsi">
+                <Link className="button button--secondary" href="/corsi">
                   Tutti i percorsi
                 </Link>
               </p>

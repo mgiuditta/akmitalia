@@ -119,17 +119,17 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(schema) }} />
-      <section className="sezione sezione--nera testata">
-        <div className="contenitore testata__contenuto">
-          <Link className="briciola" href="/eventi">
+      <section className="section section--black masthead">
+        <div className="container masthead__content">
+          <Link className="breadcrumb" href="/eventi">
             Torna al calendario
           </Link>
-          <p className="occhiello">
+          <p className="eyebrow">
             {etichettaTipo(evento.tipo)}
             {concluso ? ' · Concluso' : ''}
           </p>
           <h1 className="display display--md">{evento.titolo}</h1>
-          <p className="testo dato">
+          <p className="text detail">
             <time dateTime={evento.dataInizio}>{quando}</time>
           </p>
         </div>
@@ -155,17 +155,17 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
         />
       ) : null}
 
-      <section className="sezione sezione--chiara">
-        <div className="contenitore scheda">
+      <section className="section section--light">
+        <div className="container card">
           <div>
-            {evento.estratto ? <p className="testo">{evento.estratto}</p> : null}
+            {evento.estratto ? <p className="text">{evento.estratto}</p> : null}
             {evento.descrizione ? (
-              <div className="ricco">
+              <div className="rich">
                 <RichText data={evento.descrizione} />
               </div>
             ) : null}
             {!evento.estratto && !evento.descrizione ? (
-              <p className="dato">
+              <p className="detail">
                 {concluso
                   ? 'Di questo evento restano la data, il tipo e il luogo: il programma non è stato archiviato.'
                   : 'Il programma di questo evento è in aggiornamento.'}
@@ -174,10 +174,10 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
           </div>
 
           <div>
-            <div className="blocco">
+            <div className="block">
               <h2>Dove</h2>
               {sede ? (
-                <p className="dato">
+                <p className="detail">
                   <Link href={`/centri/${sede.slug}`}>{sede.nome}</Link>
                   <br />
                   {indirizzoLeggibile(sede.indirizzo)}
@@ -186,16 +186,16 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
                 /* «Da confermare» e' una promessa: su un evento passato non c'e'
                    piu' niente da confermare, il luogo semplicemente non e' stato
                    registrato nell'import. */
-                <p className="dato">
+                <p className="detail">
                   {evento.luogo || (concluso ? 'Luogo non registrato.' : 'Luogo da confermare.')}
                 </p>
               )}
             </div>
 
             {corsi.length > 0 ? (
-              <div className="blocco">
+              <div className="block">
                 <h2>Discipline</h2>
-                <ul className="elenco__voci">
+                <ul className="list__items">
                   {corsi.map((corso) => (
                     <li key={corso.id}>
                       <Link href={`/corsi/${corso.slug}`}>{corso.nome}</Link>
@@ -211,16 +211,16 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
                 Su un evento concluso l'azione non e' iscriversi: e' vedere cosa
                 c'e' adesso. La richiesta parte con il centro gia' scelto, dove
                 l'evento ne aveva uno. */}
-            <div className="blocco">
+            <div className="block">
               {concluso ? (
                 <>
                   <h2>Questo evento è concluso</h2>
-                  <p className="dato">
+                  <p className="detail">
                     Resta in archivio per chi cerca cos’è successo. Gli appuntamenti aperti
                     stanno nel calendario.
                   </p>
                   <p>
-                    <Link className="bottone bottone--secondario" href="/eventi">
+                    <Link className="button button--secondary" href="/eventi">
                       Vedi il calendario
                     </Link>
                   </p>
@@ -231,7 +231,7 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
                   <p>
                     {evento.ctaLink ? (
                       <a
-                        className="bottone bottone--primario"
+                        className="button button--primary"
                         href={evento.ctaLink}
                         target="_blank"
                         rel="noreferrer noopener"
@@ -240,7 +240,7 @@ export default async function PaginaEvento({ params }: { params: Promise<{ slug:
                       </a>
                     ) : (
                       <Link
-                        className="bottone bottone--primario"
+                        className="button button--primary"
                         href={sede ? `/contatti?sede=${encodeURIComponent(sede.slug)}` : '/contatti'}
                       >
                         Richiedi informazioni

@@ -68,7 +68,7 @@ const senzaCoda = (p: string) => p.replace(/\/$/, '') || '/'
 function Attesa() {
   const { pending } = useLinkStatus()
   if (!pending) return null
-  return <span className="menu__attesa">Apro…</span>
+  return <span className="menu__wait">Apro…</span>
 }
 
 export function Menu({
@@ -127,10 +127,10 @@ export function Menu({
 
     contesto.current?.revert()
     contesto.current = gsap.context(() => {
-      const fondi = gsap.utils.toArray<HTMLElement>('.menu__fondo')
-      const testi = gsap.utils.toArray<HTMLElement>('.menu__testo')
-      const spalle = gsap.utils.toArray<HTMLElement>('.menu__ordinale, .menu__dato')
-      const filetto = '.menu__filetto'
+      const fondi = gsap.utils.toArray<HTMLElement>('.menu__backdrop')
+      const testi = gsap.utils.toArray<HTMLElement>('.menu__text')
+      const spalle = gsap.utils.toArray<HTMLElement>('.menu__ordinal, .menu__detail')
+      const filetto = '.menu__rule'
 
       const tl = gsap.timeline({ onComplete: alTermine })
 
@@ -195,13 +195,13 @@ export function Menu({
     const fondale = [
       document.getElementById('contenuto'),
       document.getElementById('pie'),
-      document.querySelector<HTMLElement>('.salta'),
+      document.querySelector<HTMLElement>('.skip'),
     ]
     for (const el of fondale) if (el) el.inert = aperto
-    document.documentElement.classList.toggle('menu-aperto', aperto)
+    document.documentElement.classList.toggle('menu-open', aperto)
 
     if (aperto) {
-      nodo.dataset.menu = 'aperto'
+      nodo.dataset.menu = 'open'
       coreografia(true)
       /* Il resto della pagina e' inerte, quindi il pannello si comporta da
          finestra: il fuoco ci entra, altrimenti il primo Tab dopo l'apertura
@@ -210,10 +210,10 @@ export function Menu({
       return
     }
 
-    if (nodo.dataset.menu !== 'aperto') return
+    if (nodo.dataset.menu !== 'open') return
 
     const chiudi = () => {
-      nodo.dataset.menu = 'chiuso'
+      nodo.dataset.menu = 'closed'
     }
     if (!coreografia(false, chiudi)) chiudi()
   }, [aperto, coreografia])
@@ -250,7 +250,7 @@ export function Menu({
   useEffect(() => {
     return () => {
       contesto.current?.revert()
-      document.documentElement.classList.remove('menu-aperto')
+      document.documentElement.classList.remove('menu-open')
     }
   }, [])
 
@@ -263,8 +263,8 @@ export function Menu({
           comunque. Fuori dall'albero di accessibilita' per non aggiungere un
           bersaglio grande quanto lo schermo. */}
       <div
-        className="menu__velo"
-        data-menu={aperto ? 'aperto' : 'chiuso'}
+        className="menu__scrim"
+        data-menu={aperto ? 'open' : 'closed'}
         aria-hidden="true"
         onClick={() => {
           setAperto(false)
@@ -274,35 +274,35 @@ export function Menu({
 
       <nav
         ref={radice}
-        id="menu-principale"
+        id="main-menu"
         className="menu"
         aria-label="Principale"
-        data-menu="chiuso"
+        data-menu="closed"
       >
-        <span className="menu__filetto" aria-hidden="true" />
+        <span className="menu__rule" aria-hidden="true" />
 
-        <div className="menu__fondi" aria-hidden="true">
-          <div className="menu__fondo menu__fondo--carta" />
-          <div className="menu__fondo menu__fondo--nero" />
-          <div className="menu__fondo menu__fondo--carbone" />
+        <div className="menu__backdrops" aria-hidden="true">
+          <div className="menu__backdrop menu__backdrop--paper" />
+          <div className="menu__backdrop menu__backdrop--black" />
+          <div className="menu__backdrop menu__backdrop--charcoal" />
         </div>
 
         {/* Toccare la voce della pagina in cui si e' gia' non cambia il
             pathname: senza questo il pannello resterebbe aperto sul nulla. */}
-        <ul className="menu__elenco" onClick={() => setAperto(false)}>
+        <ul className="menu__list" onClick={() => setAperto(false)}>
           {voci.map((voce, i) => (
-            <li className="menu__voce" key={voce.href}>
-              <span className="menu__ordinale" aria-hidden="true">
+            <li className="menu__item" key={voce.href}>
+              <span className="menu__ordinal" aria-hidden="true">
                 {ordinale(i)}
               </span>
               <Link className="menu__link" href={voce.href}>
-                <span className="menu__maschera">
-                  <span className="menu__testo">{voce.testo}</span>
+                <span className="menu__mask">
+                  <span className="menu__text">{voce.testo}</span>
                 </span>
                 <Attesa />
               </Link>
               {voce.dato ? (
-                <span className={voce.vivo ? 'menu__dato stato' : 'menu__dato'}>
+                <span className={voce.vivo ? 'menu__detail status' : 'menu__detail'}>
                   {voce.dato}
                 </span>
               ) : null}
@@ -317,7 +317,7 @@ export function Menu({
           destinazione e parola: porta al modulo, che e' l'unica cosa che su
           quella pagina resta da fare. */}
       <Link
-        className="bottone bottone--primario barra__cta"
+        className="button button--primary header__cta"
         href={suPagina ? '#modulo' : cta.href}
       >
         {suPagina ? 'Vai al modulo' : cta.testo}
@@ -326,22 +326,22 @@ export function Menu({
       <button
         ref={bottone}
         type="button"
-        className="menu__bottone"
+        className="menu__button"
         aria-expanded={aperto}
-        aria-controls="menu-principale"
+        aria-controls="main-menu"
         onClick={() => setAperto((v) => !v)}
       >
-        <span className="menu__etichetta">
-          <span className="menu__etichetta-riga" data-stato="chiuso">
+        <span className="menu__label">
+          <span className="menu__label-row" data-state="closed">
             Menu
           </span>
-          <span className="menu__etichetta-riga" data-stato="aperto" aria-hidden="true">
+          <span className="menu__label-row" data-state="open" aria-hidden="true">
             Chiudi
           </span>
         </span>
-        <span className="menu__icona" aria-hidden="true">
-          <span className="menu__barretta" />
-          <span className="menu__barretta" />
+        <span className="menu__icon" aria-hidden="true">
+          <span className="menu__bar" />
+          <span className="menu__bar" />
         </span>
       </button>
 

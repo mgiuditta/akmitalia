@@ -71,25 +71,25 @@ export function Figura({
   if (!url) {
     return (
       <div
-        className={`segnaposto${classe ? ` ${classe}` : ''}`}
+        className={`placeholder${classe ? ` ${classe}` : ''}`}
         style={{ aspectRatio: ritaglio }}
         /* E' un vuoto dichiarato, non un'immagine: chi legge con lo schermo
            sente l'etichetta una volta e non un file inesistente. */
         role="img"
         aria-label={`${etichetta}: immagine non ancora caricata`}
       >
-        <span className="segnaposto__marca" aria-hidden="true">
+        <span className="placeholder__brand" aria-hidden="true">
           AKM
         </span>
-        <span className="segnaposto__voce">{etichetta}</span>
+        <span className="placeholder__item">{etichetta}</span>
       </div>
     )
   }
 
   return (
-    <figure className={`figura${classe ? ` ${classe}` : ''}`} style={{ aspectRatio: ritaglio }}>
+    <figure className={`figure${classe ? ` ${classe}` : ''}`} style={{ aspectRatio: ritaglio }}>
       <Image
-        className="figura__foto"
+        className="figure__photo"
         src={url}
         alt={alt}
         fill
@@ -103,7 +103,7 @@ export function Figura({
           sapere cos'e' che sta guardando quanto chi ascolta. Sta sovrapposta in
           fondo alla foto, che e' dove DESIGN.md §4 mette le didascalie, su una
           lastra piena: nessun velo, nessun vetro. */}
-      {didascalia ? <figcaption className="figura__didascalia">{didascalia}</figcaption> : null}
+      {didascalia ? <figcaption className="figure__caption">{didascalia}</figcaption> : null}
     </figure>
   )
 }

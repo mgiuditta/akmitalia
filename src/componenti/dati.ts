@@ -1,4 +1,4 @@
-import type { Eventi, Impostazioni, Sedi } from '@/payload-types'
+import type { Corsi, Eventi, Impostazioni, Sedi } from '@/payload-types'
 
 import { TIPI_EVENTO } from '@/collections/Eventi'
 
@@ -73,6 +73,18 @@ export function idDisciplina(disciplina: unknown): number | null {
     return typeof doc.id === 'number' ? doc.id : null
   }
   return null
+}
+
+/** Il valore di superficie resta quello salvato a DB; la classe CSS e' in inglese. */
+const SUPERFICI: Record<Corsi['superficie'], string> = {
+  nero: 'black',
+  carbone: 'charcoal',
+  bianco: 'white',
+  grigio: 'grey',
+}
+
+export function classeSuperficie(superficie: Corsi['superficie'] | null | undefined) {
+  return `path--${SUPERFICI[superficie ?? 'carbone']}`
 }
 
 export function ordinale(n: number) {

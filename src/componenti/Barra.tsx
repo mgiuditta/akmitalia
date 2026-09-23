@@ -56,7 +56,7 @@ function dati(c: ConteggiBarra): Record<string, Pick<VoceMenu, 'dato' | 'vivo'>>
   return righe
 }
 
-const TRICOLORE = ['verde', 'bianco', 'rosso'] as const
+const TRICOLORE = ['green', 'white', 'red'] as const
 
 export function Barra({
   nome,
@@ -81,12 +81,12 @@ export function Barra({
   const cta = { href: navigazione.cta.href, testo: navigazione.cta.etichetta }
 
   return (
-    <header className="barra">
-      <div className="contenitore barra__griglia">
-        <Link className="barra__marchio" href="/">
+    <header className="header">
+      <div className="container header__grid">
+        <Link className="header__logo" href="/">
           {stemma ? (
             <Image
-              className="barra__stemma"
+              className="header__crest"
               src={stemma.url}
               alt=""
               width={36}
@@ -94,25 +94,25 @@ export function Barra({
               priority
             />
           ) : null}
-          <span className="barra__lockup">
+          <span className="header__lockup">
             {/* Tricolore del cliente (PRODUCT.md): una lettera per colore, senza
                 spazi fra gli span, cosi' lo screen reader legge una parola sola. */}
-            <span className="barra__nome">
+            <span className="header__name">
               {[...marchio].map((lettera, i) => (
-                <span key={i} className={`barra__lettera barra__lettera--${TRICOLORE[i % 3]}`}>
+                <span key={i} className={`header__letter header__letter--${TRICOLORE[i % 3]}`}>
                   {lettera}
                 </span>
               ))}
             </span>
-            {paese ? <span className="barra__paese">{paese}</span> : null}
+            {paese ? <span className="header__country">{paese}</span> : null}
           </span>
         </Link>
 
-        <nav className="barra__nav" aria-label="Principale">
-          <ul className="barra__voci">
+        <nav className="header__nav" aria-label="Principale">
+          <ul className="header__items">
             {voci.map((voce) => (
               <li key={voce.href}>
-                <Link className="barra__voce" href={voce.href}>
+                <Link className="header__item" href={voce.href}>
                   {voce.testo}
                 </Link>
               </li>

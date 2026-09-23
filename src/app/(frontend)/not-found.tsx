@@ -23,21 +23,21 @@ import React from 'react'
 export default function NonTrovata() {
   return (
     <>
-      <section className="sezione sezione--nera testata">
-        <div className="contenitore testata__contenuto">
-          <p className="occhiello">Errore 404</p>
+      <section className="section section--black masthead">
+        <div className="container masthead__content">
+          <p className="eyebrow">Errore 404</p>
           <h1 className="display display--lg">Questa pagina non c’è</h1>
-          <p className="testo testata__testo">
+          <p className="text masthead__text">
             L’indirizzo è sbagliato, oppure la pagina è stata tolta: succede quando un centro
             chiude la stagione o un evento esce dal calendario.
           </p>
         </div>
       </section>
 
-      <section className="sezione sezione--chiara">
-        <div className="contenitore">
-          <h2 className="display display--sm titolo-elenco">Da qui si riparte</h2>
-          <ul className="elenco__voci elenco__voci--largo">
+      <section className="section section--light">
+        <div className="container">
+          <h2 className="display display--sm list-title">Da qui si riparte</h2>
+          <ul className="list__items list__items--wide">
             <li>
               <Link href="/centri">I centri tecnici, con indirizzo e orari</Link>
             </li>
@@ -52,8 +52,8 @@ export default function NonTrovata() {
             </li>
           </ul>
 
-          <p className="coda-azione">
-            <Link className="bottone bottone--primario" href="/contatti">
+          <p className="tail-action">
+            <Link className="button button--primary" href="/contatti">
               Richiedi informazioni
             </Link>
           </p>

@@ -10,9 +10,9 @@
 @import './tokens.css';
 @import 'leaflet/dist/leaflet.css';
 @import './base.css';
-@import './cromo.css';
+@import './chrome.css';
 @import './home.css';
-@import './coreografia.css';
-@import './mappa.css';
-@import './pagine.css';
-@import './calendario.css';
+@import './motion.css';
+@import './map.css';
+@import './pages.css';
+@import './calendar.css';

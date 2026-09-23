@@ -37,28 +37,28 @@ export function Pie({
   const anno = new Date().getFullYear()
 
   return (
-    <footer className="pie" id="pie">
-      <div className="contenitore">
+    <footer className="footer" id="footer">
+      <div className="container">
         {/* Il footer e' una sezione interna: il filetto la apre (docs/adr/0009). */}
-        <span className="filetto pie__filetto" aria-hidden="true" />
+        <span className="rule footer__rule" aria-hidden="true" />
 
-        <div className="pie__griglia">
-          <div className="pie__marca">
-            <p className="display display--sm pie__nome">{nome}</p>
-            {testo ? <p className="testo pie__testo">{testo}</p> : null}
+        <div className="footer__grid">
+          <div className="footer__brand">
+            <p className="display display--sm footer__name">{nome}</p>
+            {testo ? <p className="text footer__text">{testo}</p> : null}
 
             {contatti?.email || contatti?.telefono ? (
-              <ul className="pie__recapiti">
+              <ul className="footer__channels">
                 {contatti?.email ? (
                   <li>
-                    <a className="pie__link" href={`mailto:${contatti.email}`}>
+                    <a className="footer__link" href={`mailto:${contatti.email}`}>
                       {contatti.email}
                     </a>
                   </li>
                 ) : null}
                 {contatti?.telefono ? (
                   <li>
-                    <a className="pie__link" href={`tel:${contatti.telefono.replace(/\s/g, '')}`}>
+                    <a className="footer__link" href={`tel:${contatti.telefono.replace(/\s/g, '')}`}>
                       {contatti.telefono}
                     </a>
                   </li>
@@ -67,36 +67,36 @@ export function Pie({
             ) : null}
           </div>
 
-          <nav className="pie__colonna" aria-label="Sezioni del sito">
-            <p className="pie__titolo">Il sito</p>
-            <ul className="pie__voci">
+          <nav className="footer__column" aria-label="Sezioni del sito">
+            <p className="footer__title">Il sito</p>
+            <ul className="footer__items">
               <li>
-                <Link className="pie__link" href="/corsi">
+                <Link className="footer__link" href="/corsi">
                   I percorsi
                 </Link>
               </li>
               <li>
-                <Link className="pie__link" href="/centri">
+                <Link className="footer__link" href="/centri">
                   I centri tecnici
                 </Link>
               </li>
               <li>
-                <Link className="pie__link" href="/istruttori">
+                <Link className="footer__link" href="/istruttori">
                   Gli istruttori
                 </Link>
               </li>
               <li>
-                <Link className="pie__link" href="/eventi">
+                <Link className="footer__link" href="/eventi">
                   Gli eventi
                 </Link>
               </li>
               <li>
-                <Link className="pie__link" href="/#prima-volta">
+                <Link className="footer__link" href="/#prima-volta">
                   La prima lezione
                 </Link>
               </li>
               <li>
-                <Link className="pie__link" href="/contatti">
+                <Link className="footer__link" href="/contatti">
                   Richiedi informazioni
                 </Link>
               </li>
@@ -104,13 +104,13 @@ export function Pie({
           </nav>
 
           {province.length > 0 ? (
-            <div className="pie__colonna">
-              <p className="pie__titolo">Dove si pratica</p>
+            <div className="footer__column">
+              <p className="footer__title">Dove si pratica</p>
               {/* Raggruppati per provincia scritta per esteso: «MB» non e' una
                   parola che qualcuno cerca, «Monza e Brianza» si'. */}
-              <dl className="pie__province">
+              <dl className="footer__provinces">
                 {province.map((gruppo) => (
-                  <div className="pie__provincia" key={gruppo.provincia}>
+                  <div className="footer__province" key={gruppo.provincia}>
                     <dt>{gruppo.provincia}</dt>
                     <dd>{gruppo.comuni.join(', ')}</dd>
                   </div>
@@ -120,7 +120,7 @@ export function Pie({
           ) : null}
         </div>
 
-        <div className="pie__coda">
+        <div className="footer__tail">
           <span>
             © {anno} {ragioneSociale || nome}
           </span>
@@ -128,7 +128,7 @@ export function Pie({
           {/* Le legali stanno in coda, non nella directory sopra: sono un obbligo
               da assolvere, non una destinazione che qualcuno cerca. */}
           {legali.map((voce) => (
-            <Link className="pie__link" href={voce.href} key={voce.href}>
+            <Link className="footer__link" href={voce.href} key={voce.href}>
               {voce.etichetta}
             </Link>
           ))}

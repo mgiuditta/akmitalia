@@ -33,7 +33,7 @@ test.describe('Pagine editoriali', () => {
 
   test('il footer porta le voci legali', async ({ page }) => {
     await page.goto('http://localhost:3000/')
-    const pie = page.locator('#pie')
+    const pie = page.locator('#footer')
     await expect(pie.getByRole('link', { name: 'Privacy' })).toBeVisible()
     await expect(pie.getByRole('link', { name: 'Cookie' })).toBeVisible()
   })

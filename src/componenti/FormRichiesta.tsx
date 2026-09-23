@@ -142,10 +142,10 @@ function Modulo({
 
   if (stato.ok) {
     return (
-      <div className="conferma" role="status">
+      <div className="confirmation" role="status">
         <h3 className="display display--sm">Richiesta inviata</h3>
-        <p className="testo">{stato.messaggio}</p>
-        <button type="button" className="bottone bottone--secondario" onClick={altra}>
+        <p className="text">{stato.messaggio}</p>
+        <button type="button" className="button button--secondary" onClick={altra}>
           Invia un’altra richiesta
         </button>
       </div>
@@ -164,66 +164,66 @@ function Modulo({
     name: nome,
     defaultValue: stato.valori[nome] ?? iniziale[nome] ?? '',
     'aria-invalid': stato.errori[nome] ? true : undefined,
-    'aria-describedby': stato.errori[nome] ? `errore-${nome}` : undefined,
+    'aria-describedby': stato.errori[nome] ? `error-${nome}` : undefined,
   })
 
   const errore = (nome: CampoRichiesta) =>
     stato.errori[nome] ? (
-      <p className="campo__errore" id={`errore-${nome}`}>
+      <p className="field__error" id={`error-${nome}`}>
         {stato.errori[nome]}
       </p>
     ) : null
 
   return (
-    <form className="modulo" action={invia} noValidate aria-busy={inCorso}>
+    <form className="form" action={invia} noValidate aria-busy={inCorso}>
       {stato.messaggio ? (
-        <div ref={avviso} tabIndex={-1} role="alert" className="modulo__avviso">
+        <div ref={avviso} tabIndex={-1} role="alert" className="form__notice">
           {stato.messaggio}
         </div>
       ) : null}
 
-      {testi.nota ? <p className="dato">{testi.nota}</p> : null}
+      {testi.nota ? <p className="detail">{testi.nota}</p> : null}
 
-      <div className="modulo__riga">
-        <div className="campo">
+      <div className="form__row">
+        <div className="field">
           <label htmlFor="cognome">Cognome</label>
           <input type="text" autoComplete="family-name" {...campo('cognome')} />
           {errore('cognome')}
         </div>
-        <div className="campo">
+        <div className="field">
           <label htmlFor="nome">Nome</label>
           <input type="text" autoComplete="given-name" {...campo('nome')} />
           {errore('nome')}
         </div>
       </div>
 
-      <div className="modulo__riga">
-        <div className="campo">
+      <div className="form__row">
+        <div className="field">
           <label htmlFor="email">Email</label>
           <input type="email" autoComplete="email" inputMode="email" {...campo('email')} />
           {errore('email')}
         </div>
-        <div className="campo">
+        <div className="field">
           <label htmlFor="telefono">Telefono</label>
           <input type="tel" autoComplete="tel" inputMode="tel" {...campo('telefono')} />
           {errore('telefono')}
         </div>
       </div>
 
-      <div className="modulo__riga">
+      <div className="form__row">
         {opzioni.dataNascita ? (
-          <div className="campo">
+          <div className="field">
             <label htmlFor="dataNascita">Data di nascita</label>
             <input type="date" autoComplete="bday" {...campo('dataNascita')} />
             {errore('dataNascita')}
           </div>
         ) : null}
-        <div className="campo">
+        <div className="field">
           <label htmlFor="sede">Centro tecnico</label>
           <select
             {...campo('sede')}
             aria-describedby={
-              [stato.errori.sede ? 'errore-sede' : null, sedeScelta ? 'sede-dati' : null]
+              [stato.errori.sede ? 'error-sede' : null, sedeScelta ? 'center-details' : null]
                 .filter(Boolean)
                 .join(' ') || undefined
             }
@@ -240,7 +240,7 @@ function Modulo({
           {/* L'indirizzo del centro scelto, in chiaro: chi scrive sa gia' dove
               andra' (PRODUCT.md, «Cliccare un centro deve dare tutto»). */}
           {sedeScelta ? (
-            <p className="campo__nota dato" id="sede-dati">
+            <p className="field__note detail" id="center-details">
               {sedeScelta.palestra && sedeScelta.palestra !== sedeScelta.nome ? (
                 <>
                   {sedeScelta.palestra}
@@ -251,7 +251,7 @@ function Modulo({
               {sedeScelta.mapsUrl ? (
                 <>
                   <br />
-                  <a className="briciola" href={sedeScelta.mapsUrl} target="_blank" rel="noopener">
+                  <a className="breadcrumb" href={sedeScelta.mapsUrl} target="_blank" rel="noopener">
                     Apri in Maps
                   </a>
                 </>
@@ -262,7 +262,7 @@ function Modulo({
       </div>
 
       {opzioni.percorso ? (
-        <div className="campo">
+        <div className="field">
           <label htmlFor="corso">Percorso di interesse (facoltativo)</label>
           <select {...campo('corso')}>
             <option value="">Nessuna preferenza</option>
@@ -282,28 +282,28 @@ function Modulo({
       ) : null}
 
       {opzioni.messaggio ? (
-        <div className="campo">
+        <div className="field">
           <label htmlFor="messaggio">Messaggio (facoltativo)</label>
           <textarea rows={5} {...campo('messaggio')} />
           {errore('messaggio')}
         </div>
       ) : null}
 
-      <div className="campo campo--scelta">
+      <div className="field field--choice">
         <input
           type="checkbox"
           id="consenso"
           name="consenso"
           defaultChecked={stato.valori.consenso === 'on'}
           aria-invalid={stato.errori.consenso ? true : undefined}
-          aria-describedby={stato.errori.consenso ? 'errore-consenso' : undefined}
+          aria-describedby={stato.errori.consenso ? 'error-consenso' : undefined}
         />
         <label htmlFor="consenso">{testi.etichettaConsenso}</label>
         {/* Il link sta fuori dalla label: dentro, un click sull'informativa
             spunterebbe anche la casella. */}
         {testi.privacy ? (
-          <p className="campo__nota">
-            <Link className="briciola" href={testi.privacy.href}>
+          <p className="field__note">
+            <Link className="breadcrumb" href={testi.privacy.href}>
               {testi.privacy.etichetta}
             </Link>
           </p>
@@ -311,7 +311,7 @@ function Modulo({
         {errore('consenso')}
       </div>
 
-      <div className="campo campo--nascosto" aria-hidden="true">
+      <div className="field field--hidden" aria-hidden="true">
         <label htmlFor="sito">Sito web</label>
         <input type="text" id="sito" name="sito" tabIndex={-1} autoComplete="off" />
       </div>
@@ -324,12 +324,12 @@ function Modulo({
             strategy="afterInteractive"
             onReady={montaTurnstile}
           />
-          <div ref={turnstile} className="campo campo--turnstile" />
+          <div ref={turnstile} className="field field--turnstile" />
         </>
       ) : null}
 
       <p>
-        <button type="submit" className="bottone bottone--primario" disabled={inCorso}>
+        <button type="submit" className="button button--primary" disabled={inCorso}>
           {inCorso ? 'Invio in corso' : testi.etichettaInvio}
         </button>
       </p>

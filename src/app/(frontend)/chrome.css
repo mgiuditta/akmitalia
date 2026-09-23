@@ -5,37 +5,37 @@
 
 /* ---------- barra ---------- */
 
-.barra {
+.header {
   position: fixed;
   inset-block-start: 0;
   inset-inline: 0;
   z-index: 50;
-  height: var(--altezza-header);
-  background: var(--colore-surface);
-  color: var(--colore-on-primary);
+  height: var(--header-height);
+  background: var(--color-surface);
+  color: var(--color-on-primary);
   /* Opaca a ogni posizione di scroll: niente bordo, niente blur. */
 }
 
 /* Il filetto tricolore chiude la barra dall'interno: l'altezza resta quella di
-   --altezza-header e l'eroe non deve ricalcolare il proprio margine.
+   --header-height e l'eroe non deve ricalcolare il proprio margine.
    E' un tab da 96px allineato al marchio, non una banda a tutta larghezza: a
    1440px tre campi da 480px leggono come uno striscione, non come una firma. */
-.barra__griglia {
+.header__grid {
   position: relative;
 }
 
-.barra__griglia::after {
+.header__grid::after {
   content: '';
   position: absolute;
   inset-block-end: 0;
-  inset-inline-start: var(--margine-pagina);
+  inset-inline-start: var(--page-margin);
   inline-size: 96px;
   block-size: 3px;
   background: linear-gradient(
     90deg,
-    var(--tricolore-verde) 0 33.34%,
+    var(--tricolor-green) 0 33.34%,
     #ffffff 33.33% 66.67%,
-    var(--tricolore-rosso) 66.66% 100%
+    var(--tricolor-red) 66.66% 100%
   );
 }
 
@@ -45,36 +45,36 @@
  * Sopra, la riga delle voci prende il posto del bottone: marchio, voci, CTA.
  * L'altezza e' 77px ovunque. Vedi docs/adr/0007 e docs/adr/0008.
  */
-.barra__griglia {
-  height: var(--altezza-header);
+.header__grid {
+  height: var(--header-height);
   display: grid;
   align-items: center;
   grid-template-columns: auto 1fr auto;
   grid-template-areas: 'marchio cta bottone';
-  gap: var(--spazio-lg);
+  gap: var(--space-lg);
 }
 
 /* La riga delle voci esiste solo sopra i 1024px: sotto, `display: none` la
    toglie anche dall'albero di accessibilita', cosi' il pannello resta l'unico
    landmark «Principale». */
-.barra__nav {
+.header__nav {
   display: none;
 }
 
 @media (min-width: 1024px) {
-  .barra__griglia {
+  .header__grid {
     grid-template-areas: 'marchio nav cta';
   }
 
-  .barra__nav {
+  .header__nav {
     grid-area: nav;
     display: flex;
     justify-content: flex-end;
   }
 
-  .barra__voci {
+  .header__items {
     display: flex;
-    gap: var(--spazio-lg);
+    gap: var(--space-lg);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -83,26 +83,26 @@
 
   /* Il token nav-link di DESIGN.md: Roboto 16, peso 300. Il segno di hover e'
      una sottolineatura staccata, non un colore: la Regola del Valore. */
-  .barra__voce {
+  .header__item {
     display: inline-flex;
     align-items: center;
     /* 1024 e' anche l'iPad in orizzontale, che e' un dito: il bersaglio non
        scende sotto i 44px nemmeno dove c'e' un puntatore. */
     min-block-size: 44px;
-    padding-block: var(--spazio-sm);
-    font-size: var(--corpo-link);
-    font-weight: var(--peso-light);
-    line-height: var(--interlinea-testo);
+    padding-block: var(--space-sm);
+    font-size: var(--size-link);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-text);
     text-decoration: none;
   }
 
-  .barra__voce:hover,
-  .barra__voce:focus-visible {
+  .header__item:hover,
+  .header__item:focus-visible {
     text-decoration: underline;
     text-underline-offset: 6px;
   }
 
-  .barra__cta {
+  .header__cta {
     grid-area: cta;
     justify-self: start;
   }
@@ -110,22 +110,22 @@
   /* Pannello, velo e bottone non esistono: fuori dal DOM reso, fuori dal tab.
      Il selettore col figlio diretto serve a vincere sulle regole del menu, che
      vengono dopo nel foglio e dichiarano il proprio display. */
-  .barra__griglia > .menu,
-  .barra__griglia > .menu__velo,
-  .barra__griglia > .menu__bottone {
+  .header__grid > .menu,
+  .header__grid > .menu__scrim,
+  .header__grid > .menu__button {
     display: none;
   }
 }
 
-.barra__marchio {
+.header__logo {
   grid-area: marchio;
   display: flex;
   align-items: center;
-  gap: var(--spazio-sm-alt);
+  gap: var(--space-sm-alt);
   text-decoration: none;
 }
 
-.barra__stemma {
+.header__crest {
   width: 36px;
   height: 36px;
   flex: none;
@@ -137,46 +137,46 @@
  * alla Regola della Spaziatura Normale). Anton resta fuori dalla barra perche'
  * sotto i 33px viola la Regola dello Stacco Netto: qui il carattere e' Roboto.
  */
-.barra__lockup {
+.header__lockup {
   display: grid;
   gap: 2px;
   line-height: 1;
   text-transform: uppercase;
-  font-weight: var(--peso-bold);
+  font-weight: var(--weight-bold);
 }
 
-.barra__nome {
+.header__name {
   /* 19px e non 17: a 19px bold e' testo grande e AA chiede 3:1. Su nero il
      verde fa 5.5:1 e il rosso 4.3:1; a 17px il rosso non passerebbe. */
   font-size: 1.1875rem;
   letter-spacing: 0.08em;
 }
 
-.barra__lettera--verde {
-  color: var(--tricolore-verde);
+.header__letter--green {
+  color: var(--tricolor-green);
 }
 
-.barra__lettera--rosso {
-  color: var(--tricolore-rosso);
+.header__letter--red {
+  color: var(--tricolor-red);
 }
 
-.barra__paese {
+.header__country {
   font-size: 0.6875rem;
   letter-spacing: 0.22em;
 }
 
-.barra__cta {
+.header__cta {
   grid-area: cta;
   justify-self: end;
-  padding: var(--spazio-sm-alt) var(--spazio-gutter);
+  padding: var(--space-sm-alt) var(--space-gutter);
   white-space: nowrap;
 }
 
 
 /* ---------- menu ---------- */
 
-/* Attenzione per chi tocchera' le animazioni: un transform su .barra o su
-   .barra__griglia le rende blocco contenitore del pannello `fixed`, che
+/* Attenzione per chi tocchera' le animazioni: un transform su .header o su
+   .header__grid le rende blocco contenitore del pannello `fixed`, che
    collasserebbe dentro i 77px della barra. Si anima il pannello e i suoi
    figli, mai il cromo che li contiene. */
 
@@ -193,12 +193,12 @@
    raggiungibile col tab, perche' porta anche `inert`. La larghezza e' l'unica
    cosa che cambia con il breakpoint. */
 .menu {
-  /* Il pannello ha un gutter suo, piu' stretto di --margine-pagina: dentro 620px
+  /* Il pannello ha un gutter suo, piu' stretto di --page-margin: dentro 620px
      il margine da 60px della pagina lascia 500px, e «ISTRUTTORI» in Anton a 55px
      ne chiede 503. Il gutter e' una misura del contenitore, non del viewport. */
-  --margine-menu: clamp(20px, 4vw, 32px);
+  --menu-margin: clamp(20px, 4vw, 32px);
   position: fixed;
-  inset-block: var(--altezza-header) 0;
+  inset-block: var(--header-height) 0;
   inset-inline-end: 0;
   inline-size: min(55vw, 620px);
   display: flex;
@@ -216,7 +216,7 @@
   visibility: hidden;
 }
 
-.menu[data-menu='aperto'] {
+.menu[data-menu='open'] {
   transform: none;
   visibility: visible;
 }
@@ -224,19 +224,19 @@
 /* Il velo non e' un fondo decorativo: e' il resto del sito che arretra di un
    valore. Sotto i 700px il pannello copre tutto e il velo non si vede mai,
    quindi non gli serve una regola di breakpoint. */
-.menu__velo {
+.menu__scrim {
   position: fixed;
-  inset-block: var(--altezza-header) 0;
+  inset-block: var(--header-height) 0;
   inset-inline: 0;
   background: rgb(0 0 0 / 0.66);
   opacity: 0;
   visibility: hidden;
   transition:
-    opacity var(--durata) var(--curva),
-    visibility var(--durata);
+    opacity var(--duration) var(--ease),
+    visibility var(--duration);
 }
 
-.menu__velo[data-menu='aperto'] {
+.menu__scrim[data-menu='open'] {
   opacity: 1;
   visibility: visible;
 }
@@ -252,33 +252,33 @@
    avrebbe nessun bordo. La Regola del Manifesto vieta l'ombra e il bordo al
    cromo e vuole che la profondita' si faccia scambiando il valore della
    superficie: e' esattamente quello che fa l'ultimo tempo. */
-.menu__fondi {
+.menu__backdrops {
   position: absolute;
   inset: 0;
   display: block;
   z-index: 0;
 }
 
-.menu__fondo {
+.menu__backdrop {
   position: absolute;
   inset: 0;
   transform: translateX(101%);
 }
 
-.menu[data-menu='aperto'] .menu__fondo {
+.menu[data-menu='open'] .menu__backdrop {
   transform: none;
 }
 
-.menu__fondo--carta {
-  background: var(--colore-muted);
+.menu__backdrop--paper {
+  background: var(--color-muted);
 }
 
-.menu__fondo--carbone {
-  background: var(--colore-surface-alt);
+.menu__backdrop--charcoal {
+  background: var(--color-surface-alt);
 }
 
-.menu__fondo--nero {
-  background: var(--colore-surface);
+.menu__backdrop--black {
+  background: var(--color-surface);
 }
 
 /* Il filetto resta il tab da 96px del sistema: steso a tutta larghezza
@@ -286,10 +286,10 @@
    guardia. Sta al bordo interno del pannello e non sopra il tab della barra,
    che con il foglio da destra non e' piu' allineato: il tab statico si spegne
    mentre il menu e' aperto, quindi la firma si sposta invece di sdoppiarsi. */
-.menu__filetto {
+.menu__rule {
   position: absolute;
   inset-block-start: 0;
-  inset-inline-start: var(--margine-menu);
+  inset-inline-start: var(--menu-margin);
   display: block;
   inline-size: 96px;
   block-size: 3px;
@@ -298,43 +298,43 @@
   transform-origin: left center;
   background: linear-gradient(
     90deg,
-    var(--tricolore-verde) 0 33.34%,
+    var(--tricolor-green) 0 33.34%,
     #ffffff 33.33% 66.67%,
-    var(--tricolore-rosso) 66.66% 100%
+    var(--tricolor-red) 66.66% 100%
   );
 }
 
-.menu-aperto .barra__griglia::after {
+.menu-open .header__grid::after {
   opacity: 0;
 }
 
-.menu[data-menu='aperto'] .menu__filetto {
+.menu[data-menu='open'] .menu__rule {
   transform: none;
 }
 
 /* margin-block-start: auto invece di justify-content: flex-end, che con
    overflow taglierebbe l'inizio della colonna sui viewport bassi. */
-.menu__elenco {
+.menu__list {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: var(--spazio-lg-alt);
+  gap: var(--space-lg-alt);
   margin: 0;
   margin-block-start: auto;
-  padding: var(--spazio-section-sm) var(--margine-menu) var(--spazio-section);
+  padding: var(--space-section-sm) var(--menu-margin) var(--space-section);
   list-style: none;
 }
 
-.menu__voce {
+.menu__item {
   position: relative;
   display: grid;
-  gap: var(--spazio-xs);
+  gap: var(--space-xs);
 }
 
-.menu__ordinale {
+.menu__ordinal {
   display: block;
-  font-size: var(--corpo-caption);
-  font-weight: var(--peso-bold);
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
   line-height: 1;
   font-variant-numeric: tabular-nums;
   opacity: 0;
@@ -343,54 +343,54 @@
 .menu__link {
   display: block;
   color: inherit;
-  padding-block: var(--spazio-xs);
+  padding-block: var(--space-xs);
   text-decoration: none;
 }
 
 /* La maschera taglia la riga: il titolo entra da sotto e non si vede
    arrivare. Un filo di respiro in cima per gli accenti maiuscoli, che a
    interlinea 1 sono l'unico punto dove Anton tocca il bordo. */
-.menu__maschera {
+.menu__mask {
   display: block;
   overflow: hidden;
   padding-block-start: 0.06em;
 }
 
-.menu__testo {
+.menu__text {
   display: block;
   font-family: var(--font-display);
-  font-size: var(--corpo-display-md);
-  font-weight: var(--peso-bold);
-  line-height: var(--interlinea-display);
+  font-size: var(--size-display-md);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-display);
   text-transform: uppercase;
   transform: translateY(120%);
 }
 
-.menu[data-menu='aperto'] .menu__testo {
+.menu[data-menu='open'] .menu__text {
   transform: none;
 }
 
-.menu[data-menu='aperto'] .menu__ordinale,
-.menu[data-menu='aperto'] .menu__dato {
+.menu[data-menu='open'] .menu__ordinal,
+.menu[data-menu='open'] .menu__detail {
   opacity: 1;
 }
 
 /* Il riscontro al tocco: una parola, alla misura dell'etichetta. Non anima
    niente e non occupa spazio finche' non serve. */
-.menu__attesa {
+.menu__wait {
   display: block;
-  padding-block-start: var(--spazio-xs);
-  font-size: var(--corpo-caption);
-  font-weight: var(--peso-bold);
+  padding-block-start: var(--space-xs);
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
 }
 
-/* flex invece di block cosi' il pallino di .stato resta allineato al testo. */
-.menu__dato {
+/* flex invece di block cosi' il pallino di .status resta allineato al testo. */
+.menu__detail {
   display: flex;
   align-items: center;
-  gap: var(--spazio-xs);
-  font-size: var(--corpo-caption);
-  font-weight: var(--peso-bold);
+  gap: var(--space-xs);
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
   font-variant-numeric: tabular-nums;
   opacity: 0;
 }
@@ -404,25 +404,25 @@
  * foglio perche' una lastra che si ferma sull'incolonnamento del testo legge
  * come un bottone; questa deve leggere come una riga accesa.
  *
- * Si accende la sola lastra, mai i figli della voce: .menu__testo,
- * .menu__ordinale e .menu__dato portano gli stili inline lasciati da GSAP, che
+ * Si accende la sola lastra, mai i figli della voce: .menu__text,
+ * .menu__ordinal e .menu__detail portano gli stili inline lasciati da GSAP, che
  * vincono su qualsiasi regola di questo foglio. Una regola che li animasse non
  * fallirebbe in modo visibile, semplicemente non avrebbe effetto.
  */
 @media (hover: hover) {
-  .menu__voce::before {
+  .menu__item::before {
     content: '';
     position: absolute;
-    inset-block: calc(var(--spazio-xs) * -1);
-    inset-inline: calc(var(--margine-menu) * -1);
+    inset-block: calc(var(--space-xs) * -1);
+    inset-inline: calc(var(--menu-margin) * -1);
     z-index: -1;
-    background: var(--colore-surface);
+    background: var(--color-surface);
     transform: scaleX(0);
     transform-origin: left center;
-    transition: transform var(--durata) var(--curva);
+    transition: transform var(--duration) var(--ease);
   }
 
-  .menu__voce:hover::before {
+  .menu__item:hover::before {
     transform: none;
   }
 }
@@ -430,11 +430,11 @@
 /* Il bottone: etichetta scritta piu' due barrette che diventano una croce.
    Solo transform, e le curve stanno nei token, quindi con
    prefers-reduced-motion si spengono da sole. */
-.menu__bottone {
+.menu__button {
   grid-area: bottone;
   display: flex;
   align-items: center;
-  gap: var(--spazio-xs);
+  gap: var(--space-xs);
   min-block-size: 44px;
   min-inline-size: 44px;
   justify-content: flex-end;
@@ -447,34 +447,34 @@
   cursor: pointer;
 }
 
-.menu__etichetta {
+.menu__label {
   display: grid;
   min-inline-size: max-content;
   overflow: hidden;
   block-size: 1em;
-  font-size: var(--corpo-caption);
-  font-weight: var(--peso-bold);
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
   line-height: 1;
 }
 
-.menu__etichetta-riga {
+.menu__label-row {
   grid-area: 1 / 1;
-  transition: transform var(--durata) var(--curva);
+  transition: transform var(--duration) var(--ease);
 }
 
-.menu__etichetta-riga[data-stato='aperto'] {
+.menu__label-row[data-state='open'] {
   transform: translateY(100%);
 }
 
-.menu-aperto .menu__etichetta-riga[data-stato='chiuso'] {
+.menu-open .menu__label-row[data-state='closed'] {
   transform: translateY(-100%);
 }
 
-.menu-aperto .menu__etichetta-riga[data-stato='aperto'] {
+.menu-open .menu__label-row[data-state='open'] {
   transform: none;
 }
 
-.menu__icona {
+.menu__icon {
   position: relative;
   display: block;
   inline-size: 18px;
@@ -482,45 +482,45 @@
   flex: none;
 }
 
-.menu__barretta {
+.menu__bar {
   position: absolute;
   inset-inline: 0;
   block-size: 2px;
   background: currentColor;
-  transition: transform var(--durata) var(--curva);
+  transition: transform var(--duration) var(--ease);
 }
 
-.menu__barretta:first-child {
+.menu__bar:first-child {
   inset-block-start: 0;
 }
 
-.menu__barretta:last-child {
+.menu__bar:last-child {
   inset-block-end: 0;
 }
 
-.menu-aperto .menu__barretta:first-child {
+.menu-open .menu__bar:first-child {
   transform: translateY(5px) rotate(45deg);
 }
 
-.menu-aperto .menu__barretta:last-child {
+.menu-open .menu__bar:last-child {
   transform: translateY(-5px) rotate(-45deg);
 }
 
 /* Il fondo non scorre sotto il pannello. */
-.menu-aperto,
-.menu-aperto body {
+.menu-open,
+.menu-open body {
   overflow: hidden;
 }
 
 @media (max-width: 700px) {
-  .barra__griglia {
-    gap: var(--spazio-sm);
+  .header__grid {
+    gap: var(--space-sm);
   }
 
   /* Tre elementi in riga dentro 320px: il respiro della CTA e' la sola cosa
      che puo' cedere, e cede per gradi invece che a scatti. */
-  .barra__cta {
-    padding-inline: clamp(var(--spazio-sm), 3.2vw, var(--spazio-gutter));
+  .header__cta {
+    padding-inline: clamp(var(--space-sm), 3.2vw, var(--space-gutter));
   }
 
   /* Il foglio diventa lo schermo: sotto i 700px non c'e' larghezza da lasciare
@@ -534,7 +534,7 @@
 /* Sotto i 420px il lockup perde la seconda riga: «Italia» e' gia' nello stemma
    e nel titolo del documento, e a quella larghezza lo spazio serve alla CTA. */
 @media (max-width: 420px) {
-  .barra__paese {
+  .header__country {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -542,7 +542,7 @@
     clip-path: inset(50%);
   }
 
-  .menu__etichetta {
+  .menu__label {
     position: absolute;
     inline-size: 1px;
     block-size: 1px;
@@ -550,7 +550,7 @@
     clip-path: inset(50%);
   }
 
-  .menu__bottone {
+  .menu__button {
     justify-content: center;
   }
 }
@@ -563,76 +563,76 @@
  * comuni per provincia. La terza e' la piu' larga perche' porta prosa, non link.
  * Il filetto apre la sezione dall'alto e non porta informazione.
  */
-.pie {
-  background: var(--colore-surface-alt);
-  color: var(--colore-on-primary);
-  padding-block: clamp(var(--spazio-section-sm), 7vw, var(--spazio-section));
-  --riga-locale: var(--colore-ink-secondary);
-  --anello: var(--colore-on-primary);
+.footer {
+  background: var(--color-surface-alt);
+  color: var(--color-on-primary);
+  padding-block: clamp(var(--space-section-sm), 7vw, var(--space-section));
+  --row-rule: var(--color-ink-secondary);
+  --ring: var(--color-on-primary);
 }
 
-.pie__filetto {
-  margin-block-end: clamp(var(--spazio-xl), 4vw, var(--spazio-section-sm));
+.footer__rule {
+  margin-block-end: clamp(var(--space-xl), 4vw, var(--space-section-sm));
 }
 
-.pie__griglia {
+.footer__grid {
   display: grid;
-  gap: var(--spazio-xxl);
+  gap: var(--space-xxl);
 }
 
 @media (min-width: 800px) {
-  .pie__griglia {
+  .footer__grid {
     grid-template-columns: minmax(0, 18rem) minmax(0, 12rem);
-    gap: var(--spazio-xxl) var(--spazio-section);
+    gap: var(--space-xxl) var(--space-section);
   }
 }
 
 @media (min-width: 1100px) {
-  .pie__griglia {
+  .footer__grid {
     grid-template-columns: minmax(0, 18rem) minmax(0, 12rem) minmax(0, 1fr);
   }
 }
 
 /* Il nome sta in Anton: il footer e' l'ultima affermazione della pagina, non
    un'etichetta. Sotto i 33px non scende, quindi resta display--sm. */
-.pie__nome {
-  margin-block-end: var(--spazio-md);
+.footer__name {
+  margin-block-end: var(--space-md);
 }
 
-.pie__testo {
-  color: var(--colore-muted);
+.footer__text {
+  color: var(--color-muted);
 }
 
-.pie__recapiti {
+.footer__channels {
   display: grid;
-  gap: var(--spazio-sm);
-  margin-block-start: var(--spazio-gutter);
+  gap: var(--space-sm);
+  margin-block-start: var(--space-gutter);
   font-variant-numeric: tabular-nums;
 }
 
-.pie__titolo {
-  font-size: var(--corpo-caption);
-  font-weight: var(--peso-bold);
-  padding-block-end: var(--spazio-md);
+.footer__title {
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+  padding-block-end: var(--space-md);
 }
 
-.pie__voci {
+.footer__items {
   display: grid;
-  gap: var(--spazio-sm);
+  gap: var(--space-sm);
 }
 
 /* I link del piede sono controlli isolati, non link dentro una frase: il
    bersaglio arriva a 44px con l'interlinea, non con il corpo del testo. */
-.pie__link {
+.footer__link {
   display: inline-flex;
   align-items: center;
   min-block-size: 44px;
-  font-size: var(--corpo-caption);
-  font-weight: var(--peso-bold);
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
   text-decoration: none;
 }
 
-.pie__link:hover {
+.footer__link:hover {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -642,50 +642,50 @@
  * una lista piu' alta del resto del footer e non si leggevano comunque. La
  * provincia in grassetto e' l'unico segno, e sta scritta per esteso.
  */
-.pie__province {
+.footer__provinces {
   display: grid;
-  gap: var(--spazio-md);
-  font-size: var(--corpo-caption);
+  gap: var(--space-md);
+  font-size: var(--size-caption);
 }
 
 /* Colonne di testo e non celle di griglia: le province hanno lunghezze molto
    diverse - Milano dodici comuni, Lodi uno - e in griglia ogni riga si allineava
    alla piu' alta, lasciando buchi. Il flusso a colonne li chiude. */
 @media (min-width: 1100px) {
-  .pie__province {
+  .footer__provinces {
     display: block;
     columns: 2;
-    column-gap: var(--spazio-section);
+    column-gap: var(--space-section);
   }
 
-  .pie__provincia {
+  .footer__province {
     break-inside: avoid;
-    padding-block-end: var(--spazio-lg);
+    padding-block-end: var(--space-lg);
   }
 }
 
-.pie__provincia dt {
-  font-weight: var(--peso-bold);
+.footer__province dt {
+  font-weight: var(--weight-bold);
   padding-block-end: 4px;
 }
 
-.pie__provincia dd {
-  color: var(--colore-muted);
-  line-height: var(--interlinea-larga);
+.footer__province dd {
+  color: var(--color-muted);
+  line-height: var(--leading-loose);
 }
 
-.pie__coda {
-  margin-block-start: var(--spazio-section-sm);
-  padding-block-start: var(--spazio-gutter);
-  border-block-start: 1px solid var(--riga-locale);
+.footer__tail {
+  margin-block-start: var(--space-section-sm);
+  padding-block-start: var(--space-gutter);
+  border-block-start: 1px solid var(--row-rule);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--spazio-md) var(--spazio-lg);
-  font-size: var(--corpo-caption);
+  gap: var(--space-md) var(--space-lg);
+  font-size: var(--size-caption);
 }
 
-.pie__coda a {
+.footer__tail a {
   display: inline-flex;
   align-items: center;
   min-block-size: 44px;

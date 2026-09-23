@@ -4,7 +4,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { apriPayload } from '@/componenti/payload'
-import { idDisciplina, ordinale, pubblicato, testiBivio } from '@/componenti/dati'
+import { classeSuperficie, idDisciplina, ordinale, pubblicato, testiBivio } from '@/componenti/dati'
 import { Figura } from '@/componenti/Figura'
 import { metadatiPagina } from '@/componenti/seo'
 
@@ -66,14 +66,14 @@ export default async function PaginaCorsi() {
 
   return (
     <>
-      <section className="sezione sezione--nera testata bivio__testa">
-        <div className="contenitore testata__contenuto">
+      <section className="section section--black masthead fork__head">
+        <div className="container masthead__content">
           <h1 className="display display--lg">{bivio.titolo}</h1>
-          <p className="testo testata__testo">{bivio.testo}</p>
+          <p className="text masthead__text">{bivio.testo}</p>
           {/* Il conteggio sta qui e non in una sezione sua: una fascia intera per
               una riga di titolo era un blocco vuoto fra due blocchi pieni. */}
           {corsi.docs.length > 0 ? (
-            <p className="dato">{corsi.docs.length} percorsi, in ordine di lettura.</p>
+            <p className="detail">{corsi.docs.length} percorsi, in ordine di lettura.</p>
           ) : null}
         </div>
       </section>
@@ -90,30 +90,29 @@ export default async function PaginaCorsi() {
       />
 
       {corsi.docs.length > 0 ? (
-        <ol className="bivio" aria-label="I percorsi">
+        <ol className="fork" aria-label="I percorsi">
           {corsi.docs.map((corso, i) => {
-            const superficie = corso.superficie ?? 'carbone'
-            const quante = sediPerCorso.get(corso.id) ?? 0
+                        const quante = sediPerCorso.get(corso.id) ?? 0
             const segno = typeof corso.immagine === 'object' ? corso.immagine : null
 
             return (
-              <li className={`rivela percorso percorso--${superficie}`} key={corso.id}>
-                <Link className="contenitore percorso__riga" href={`/corsi/${corso.slug}`}>
-                  <span className="percorso__indice" aria-hidden="true">
+              <li className={`reveal path ${classeSuperficie(corso.superficie)}`} key={corso.id}>
+                <Link className="container path__row" href={`/corsi/${corso.slug}`}>
+                  <span className="path__index" aria-hidden="true">
                     {ordinale(i + 1)}
                   </span>
 
-                  <span className="percorso__domanda">
+                  <span className="path__question">
                     <span className="display display--md">{corso.domanda || corso.nome}</span>
-                    <span className="percorso__nome">{corso.nome}</span>
-                    <span className="testo percorso__sommario">{corso.sommario}</span>
+                    <span className="path__name">{corso.nome}</span>
+                    <span className="text path__summary">{corso.sommario}</span>
                     {/* Un percorso che nessun centro attivo tiene non perde la riga
                         in silenzio: la riga c'e' e dice perche'. Il quadrato verde
                         resta al dato vivo, cioe' ai centri che lo tengono davvero. */}
-                    <span className="percorso__coda">
+                    <span className="path__tail">
                       {corso.aChiSiRivolge ? <span>{corso.aChiSiRivolge}</span> : null}
                       {quante > 0 ? (
-                        <span className="stato">
+                        <span className="status">
                           {quante} {quante === 1 ? 'centro lo tiene' : 'centri lo tengono'}
                         </span>
                       ) : (
@@ -126,7 +125,7 @@ export default async function PaginaCorsi() {
                       si inverte, non si nasconde. */}
                   {segno?.url ? (
                     <Image
-                      className="percorso__segno-marchio"
+                      className="path__mark-logo"
                       src={segno.url}
                       alt=""
                       width={96}
@@ -140,8 +139,8 @@ export default async function PaginaCorsi() {
           })}
         </ol>
       ) : (
-        <section className="sezione sezione--chiara">
-          <p className="testo vuoto contenitore">
+        <section className="section section--light">
+          <p className="text empty container">
             I percorsi della stagione sono in aggiornamento. Scrivici e ti diciamo qual è quello
             che ti riguarda.
           </p>
@@ -154,21 +153,21 @@ export default async function PaginaCorsi() {
           superfici uguali dove doveva esserci il cambio di valore che chiude
           (Regola del Valore). Una fascia chiara chiude sempre, e porta l'azione
           che la pagina fin qui non aveva. */}
-      <section className="sezione sezione--chiara" aria-labelledby="titolo-coda-corsi">
-        <div className="contenitore">
-          <span className="filetto" aria-hidden="true" />
-          <h2 className="display display--md passo__titolo" id="titolo-coda-corsi">
+      <section className="section section--light" aria-labelledby="courses-tail-title">
+        <div className="container">
+          <span className="rule" aria-hidden="true" />
+          <h2 className="display display--md step__title" id="courses-tail-title">
             Non sai quale è il tuo
           </h2>
-          <p className="testo prima__attacco">
+          <p className="text first__lead">
             Scrivici in due righe cosa cerchi: ti diciamo quale percorso ti riguarda e in quale
             centro si tiene, senza impegno.
           </p>
-          <p className="coda-azione">
-            <Link className="bottone bottone--primario" href="/contatti">
+          <p className="tail-action">
+            <Link className="button button--primary" href="/contatti">
               Richiedi informazioni
             </Link>
-            <Link className="bottone bottone--secondario" href="/centri">
+            <Link className="button button--secondary" href="/centri">
               Vedi tutti i centri
             </Link>
           </p>
