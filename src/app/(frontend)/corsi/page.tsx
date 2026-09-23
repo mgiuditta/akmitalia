@@ -96,20 +96,20 @@ export default async function CoursesPage() {
             const mark = typeof course.immagine === 'object' ? course.immagine : null
 
             return (
-              <li className={`reveal path ${surfaceClass(course.superficie)}`} key={course.id}>
-                <Link className="container path__row" href={`/corsi/${course.slug}`}>
-                  <span className="path__index" aria-hidden="true">
+              <li className={`reveal pathway ${surfaceClass(course.superficie)}`} key={course.id}>
+                <Link className="container pathway__row" href={`/corsi/${course.slug}`}>
+                  <span className="pathway__index" aria-hidden="true">
                     {ordinal(i + 1)}
                   </span>
 
-                  <span className="path__question">
+                  <span className="pathway__question">
                     <span className="display display--md">{course.domanda || course.nome}</span>
-                    <span className="path__name">{course.nome}</span>
-                    <span className="text path__summary">{course.sommario}</span>
+                    <span className="pathway__name">{course.nome}</span>
+                    <span className="text pathway__summary">{course.sommario}</span>
                     {/* Un percorso che nessun centro attivo tiene non perde la riga
                         in silenzio: la riga c'e' e dice perche'. Il quadrato verde
                         resta al dato vivo, cioe' ai centri che lo tengono davvero. */}
-                    <span className="path__tail">
+                    <span className="pathway__tail">
                       {course.aChiSiRivolge ? <span>{course.aChiSiRivolge}</span> : null}
                       {howMany > 0 ? (
                         <span className="status">
@@ -125,7 +125,7 @@ export default async function CoursesPage() {
                       si inverte, non si nasconde. */}
                   {mark?.url ? (
                     <Image
-                      className="path__mark-logo"
+                      className="pathway__mark-logo"
                       src={mark.url}
                       alt=""
                       width={96}

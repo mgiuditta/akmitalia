@@ -210,8 +210,8 @@ ol {
 /* Su fondo chiaro il verde chiaro non regge: la variante scura sta a 6.69:1. */
 .section--light .status::before,
 .section--grey .status::before,
-.path--white .status::before,
-.path--grey .status::before {
+.pathway--white .status::before,
+.pathway--grey .status::before {
   background: var(--color-presence-dark);
 }
 

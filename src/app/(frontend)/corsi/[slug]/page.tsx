@@ -192,7 +192,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
 
   return (
     <>
-      <section className="section section--black masthead masthead--path">
+      <section className="section section--black masthead masthead--pathway">
         {/* Il segno e' inchiostro su trasparente: sul nero va invertito, come la
             fotografia dell'eroe entra nel sistema come valore e non come colore. */}
         {markUrl ? (

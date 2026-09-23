@@ -84,7 +84,7 @@ const SURFACES: Record<Corsi['superficie'], string> = {
 }
 
 export function surfaceClass(surface: Corsi['superficie'] | null | undefined) {
-  return `path--${SURFACES[surface ?? 'carbone']}`
+  return `pathway--${SURFACES[surface ?? 'carbone']}`
 }
 
 export function ordinal(n: number) {

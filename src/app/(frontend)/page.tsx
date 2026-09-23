@@ -229,47 +229,47 @@ export default async function Home() {
                             const howMany = centersByCourse.get(course.id) ?? 0
 
               return (
-                <li key={course.id} className={`reveal path ${surfaceClass(course.superficie)}`}>
+                <li key={course.id} className={`reveal pathway ${surfaceClass(course.superficie)}`}>
                   <details>
-                    <summary className="container path__head">
-                      <span className="path__index" aria-hidden="true">
+                    <summary className="container pathway__head">
+                      <span className="pathway__index" aria-hidden="true">
                         {ordinal(i + 1)}
                       </span>
-                      <span className="path__question">
+                      <span className="pathway__question">
                         <span className="display display--md">{course.domanda || course.nome}</span>
-                        <span className="path__name">{course.nome}</span>
+                        <span className="pathway__name">{course.nome}</span>
                       </span>
-                      <span className="path__mark" aria-hidden="true" />
+                      <span className="pathway__mark" aria-hidden="true" />
                     </summary>
 
-                    <div className="container path__body">
+                    <div className="container pathway__body">
                       <div>
                         <p className="text">{course.sommario}</p>
                         {course.prova ? (
-                          <p className="text detail path__trial">{course.prova}</p>
+                          <p className="text detail pathway__trial">{course.prova}</p>
                         ) : null}
-                        <p className="path__action">
+                        <p className="pathway__action">
                           <Link className="button button--primary" href={`/corsi/${course.slug}`}>
                             Vedi il percorso
                           </Link>
                         </p>
                       </div>
 
-                      <dl className="path__facts">
+                      <dl className="pathway__facts">
                         {course.aChiSiRivolge ? (
-                          <div className="path__fact">
+                          <div className="pathway__fact">
                             <dt>A chi si rivolge</dt>
                             <dd>{course.aChiSiRivolge}</dd>
                           </div>
                         ) : null}
                         {course.durata ? (
-                          <div className="path__fact">
+                          <div className="pathway__fact">
                             <dt>Come funziona</dt>
                             <dd>{course.durata}</dd>
                           </div>
                         ) : null}
                         {howMany > 0 ? (
-                          <div className="path__fact">
+                          <div className="pathway__fact">
                             <dt>Centri che lo tengono</dt>
                             <dd>
                               {howMany} su {centers.length}

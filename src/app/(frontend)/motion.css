@@ -63,7 +63,7 @@
       interpolate-size: allow-keywords;
     }
 
-    .path details::details-content {
+    .pathway details::details-content {
       block-size: 0;
       overflow: clip;
       transition:
@@ -71,7 +71,7 @@
         content-visibility var(--duration-reveal) allow-discrete;
     }
 
-    .path details[open]::details-content {
+    .pathway details[open]::details-content {
       block-size: auto;
     }
   }

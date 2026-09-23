@@ -132,43 +132,43 @@
   padding-block-end: clamp(var(--space-xl), 4vw, var(--space-section-sm));
 }
 
-.path {
+.pathway {
   border-block-start: 1px solid var(--row-rule);
 }
 
-.path:last-child {
+.pathway:last-child {
   border-block-end: 1px solid var(--row-rule);
 }
 
-.path--black {
+.pathway--black {
   background: var(--color-surface);
   color: var(--color-on-primary);
   --row-rule: var(--color-ink-secondary);
   --ring: var(--color-on-primary);
 }
 
-.path--charcoal {
+.pathway--charcoal {
   background: var(--color-surface-alt);
   color: var(--color-on-primary);
   --row-rule: var(--color-ink-secondary);
   --ring: var(--color-on-primary);
 }
 
-.path--white {
+.pathway--white {
   background: var(--color-surface-light);
   color: var(--color-ink);
   --row-rule: var(--color-ink);
   --ring: var(--color-ink);
 }
 
-.path--grey {
+.pathway--grey {
   background: var(--color-muted);
   color: var(--color-ink);
   --row-rule: var(--color-ink);
   --ring: var(--color-ink);
 }
 
-.path__head {
+.pathway__head {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
@@ -179,28 +179,28 @@
   transition: background-color var(--duration) var(--ease);
 }
 
-.path__head::-webkit-details-marker {
+.pathway__head::-webkit-details-marker {
   display: none;
 }
 
 /* La riga occupa tutta la larghezza: un anello esterno finisce fuori schermo.
    Qui il focus si disegna dentro. */
-.path__head:focus-visible {
+.pathway__head:focus-visible {
   outline-offset: -4px;
 }
 
 /* L'hover scambia il valore di superficie, mai la tinta. */
-.path--black .path__head:hover,
-.path--charcoal .path__head:hover {
+.pathway--black .pathway__head:hover,
+.pathway--charcoal .pathway__head:hover {
   background: #0f0f0f;
 }
 
-.path--white .path__head:hover,
-.path--grey .path__head:hover {
+.pathway--white .pathway__head:hover,
+.pathway--grey .pathway__head:hover {
   background: #f3f3f3;
 }
 
-.path__index {
+.pathway__index {
   font-family: var(--font-display);
   font-size: var(--size-display-sm);
   line-height: 1;
@@ -208,14 +208,14 @@
   opacity: 0.5;
 }
 
-.path__question {
+.pathway__question {
   display: grid;
   gap: var(--space-xs);
 }
 
 /* La riga dell'indice: stesso vocabolario del bivio in home, ma e' un link
    intero e non un pannello che si apre. */
-.path__row {
+.pathway__row {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: start;
@@ -226,36 +226,36 @@
 }
 
 @media (min-width: 800px) {
-  .path__row {
+  .pathway__row {
     grid-template-columns: auto minmax(0, 1fr) 96px;
   }
 }
 
-.path__row:focus-visible {
+.pathway__row:focus-visible {
   outline-offset: -4px;
 }
 
 /* L'hover scambia il valore di superficie, mai la tinta. */
-.path--black .path__row:hover,
-.path--charcoal .path__row:hover {
+.pathway--black .pathway__row:hover,
+.pathway--charcoal .pathway__row:hover {
   background: #0f0f0f;
 }
 
-.path--white .path__row:hover,
-.path--grey .path__row:hover {
+.pathway--white .pathway__row:hover,
+.pathway--grey .pathway__row:hover {
   background: #f3f3f3;
 }
 
-.path__row:hover .display {
+.pathway__row:hover .display {
   text-decoration: underline;
   text-underline-offset: 8px;
 }
 
-.path__summary {
+.pathway__summary {
   margin-block-start: var(--space-xs);
 }
 
-.path__tail {
+.pathway__tail {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs) var(--space-lg);
@@ -267,7 +267,7 @@
 /* Il marchio del percorso e' inchiostro su trasparente: sulle superfici scure
    si inverte invece di sparire. Sotto gli 800px esce dalla riga: a colonna
    singola ruberebbe l'altezza al titolo. */
-.path__mark-logo {
+.pathway__mark-logo {
   display: none;
   inline-size: 96px;
   block-size: auto;
@@ -275,17 +275,17 @@
 }
 
 @media (min-width: 800px) {
-  .path__mark-logo {
+  .pathway__mark-logo {
     display: block;
   }
 }
 
-.path--black .path__mark-logo,
-.path--charcoal .path__mark-logo {
+.pathway--black .pathway__mark-logo,
+.pathway--charcoal .pathway__mark-logo {
   filter: invert(1);
 }
 
-.path__name {
+.pathway__name {
   font-size: var(--size-caption);
   font-weight: var(--weight-bold);
   line-height: var(--leading-display);
@@ -294,15 +294,15 @@
 /* Il segno di apertura e' un piu' fatto di due barrette da 2px, lo stesso
    vocabolario del bottone del menu: il sistema non ha una libreria di icone e
    una freccia di testo non e' un'icona, e' un carattere che cambia da font a font. */
-.path__mark {
+.pathway__mark {
   position: relative;
   inline-size: 16px;
   block-size: 16px;
   flex: none;
 }
 
-.path__mark::before,
-.path__mark::after {
+.pathway__mark::before,
+.pathway__mark::after {
   content: '';
   position: absolute;
   inset-block-start: 7px;
@@ -313,43 +313,43 @@
   transition: transform var(--duration) var(--ease);
 }
 
-.path__mark::after {
+.pathway__mark::after {
   transform: rotate(90deg);
 }
 
 /* Aperto, il piu' diventa un meno: la barretta verticale rientra nell'orizzontale. */
-.path details[open] .path__mark::after {
+.pathway details[open] .pathway__mark::after {
   transform: rotate(0deg);
 }
 
-.path__body {
+.pathway__body {
   display: grid;
   gap: var(--space-lg);
   padding-block-end: clamp(var(--space-lg), 3vw, var(--space-xxl));
 }
 
 @media (min-width: 800px) {
-  .path__body {
+  .pathway__body {
     grid-template-columns: minmax(0, 34rem) minmax(0, 1fr);
     gap: var(--space-xxl);
   }
 }
 
-.path__trial {
+.pathway__trial {
   margin-block-start: var(--space-md);
 }
 
-.path__action {
+.pathway__action {
   margin-block-start: var(--space-lg);
 }
 
-.path__facts {
+.pathway__facts {
   display: grid;
   gap: var(--space-sm-alt);
   align-content: start;
 }
 
-.path__fact {
+.pathway__fact {
   display: grid;
   grid-template-columns: 11rem 1fr;
   gap: var(--space-md);
@@ -358,14 +358,14 @@
   border-block-start: 1px solid var(--row-rule);
 }
 
-.path__fact dt {
+.pathway__fact dt {
   font-weight: var(--weight-bold);
 }
 
 /* Su telefono l'etichetta scende sopra il dato: due colonne dentro 390px
    spezzano ogni riga in tre. */
 @media (max-width: 620px) {
-  .path__fact {
+  .pathway__fact {
     grid-template-columns: 1fr;
     gap: var(--space-xs);
   }

@@ -156,7 +156,7 @@
 
 /* La testata di un percorso porta il segno del corso e i due fatti che
    decidono: a chi si rivolge e in quanti centri si tiene. */
-.masthead--path {
+.masthead--pathway {
   position: relative;
   overflow: hidden;
 }
