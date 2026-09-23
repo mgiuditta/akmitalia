@@ -33,7 +33,7 @@ services:
   # E' anche il container da cui si semina, una volta sola e a mano - stesso
   # stadio, comando diverso:
   #
-  #   docker compose run --rm migrate pnpm seed
+  #   docker compose run --rm migrate pnpm semina
   #
   # Per questo monta il volume dei media: la semina carica le fotografie
   # editoriali, e devono finire dove le cerca l'app.

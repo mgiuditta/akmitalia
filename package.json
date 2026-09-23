@@ -24,7 +24,7 @@
     "import:events": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/import-events.ts",
     "fonts:download": "sh scripts/download-fonts.sh",
     "images:editorial": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/editorial-images.ts",
-    "seed": "pnpm import:centers && pnpm centers:geocode && pnpm pages:legal && pnpm courses:content && pnpm import:events && pnpm images:editorial"
+    "semina": "pnpm import:centers && pnpm centers:geocode && pnpm pages:legal && pnpm courses:content && pnpm import:events && pnpm images:editorial"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.88.0",
