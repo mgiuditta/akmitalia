@@ -14,7 +14,7 @@ build sulla macchina di chi rilascia e rinunciare al deploy da `main`.
 
 Decisione: **con `BUILD_SENZA_DB=1` il build riceve un Payload che risponde vuoto.**
 
-Sta tutto in `src/componenti/payload.ts`, che diventa l'unico punto in cui le rotte
+Sta tutto in `src/components/payload.ts`, che diventa l'unico punto in cui le rotte
 aprono Payload. Fuori dal build la bandiera non si legge nemmeno - la condizione vuole
 anche `NEXT_PHASE=phase-production-build` - quindi il build in locale e qualunque
 rilascio che il database ce l'ha continuano a pregenerare tutto, schede comprese.
@@ -25,10 +25,10 @@ Le `generateStaticParams` tornano vuote e le schede si rendono su richiesta: `dy
 e' acceso di suo, non cambia niente per chi naviga. Le pagine indice si prerenderizzano
 senza elenchi, e `revalidate` le riempie al primo accesso.
 
-I global invece non sono vuoti: `valoriPredefiniti()` ricostruisce dai campi gli stessi
+I global invece non sono vuoti: `defaultValues()` ricostruisce dai campi gli stessi
 valori che Payload restituisce su un database appena migrato - e che restituisce davvero,
 verificato, finche' nessuno ha salvato quel global. Serve perche' senza quei valori il
-guscio non regge: `navigazione.cta.href` esplode in `Barra.tsx` e il build muore lo
+guscio non regge: `navigazione.cta.href` esplode in `SiteHeader.tsx` e il build muore lo
 stesso, solo piu' avanti. Con i default il guscio prerenderizzato ha il menu giusto, il
 bottone giusto e il piede giusto, e a mancare sono i soli dati di collection.
 
@@ -62,7 +62,7 @@ gia' piene.
 
 ## Cosa non copre
 
-`valoriPredefiniti()` conosce `row` e `group`, i due contenitori che i nostri global
+`defaultValues()` conosce `row` e `group`, i due contenitori che i nostri global
 usano. Un `tabs` in un global tornerebbe vuoto e non se ne accorgerebbe nessuno finche'
 il guscio non si rompe: il caso si aggiunge li' quando servira'. Il test in
-`tests/int/predefiniti.int.spec.ts` tiene fermo quello che la barra legge.
+`tests/int/defaults.int.spec.ts` tiene fermo quello che la barra legge.

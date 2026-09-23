@@ -32,7 +32,7 @@ che cambia il comportamento. Il CSS cambia una larghezza; il JavaScript non camb
 
 ## Cosa cambia
 
-- **La barra ha una sola griglia.** `marchio | CTA | bottone` a ogni breakpoint. `.barra__nav`
+- **La barra ha una sola griglia.** `marchio | CTA | bottone` a ogni breakpoint. `.header__nav`
   non esiste piu': la nav e' `fixed` e sta fuori dalla griglia sempre, non solo sotto i 700px.
 - **Il pannello e' un foglio, non uno schermo, sopra i 700px.** L'animazione e' gia' quella
   giusta e non e' stata toccata: i tre fondi entrano da destra sfalsati di 0.12s. A tutto
@@ -56,12 +56,12 @@ che cambia il comportamento. Il CSS cambia una larghezza; il JavaScript non camb
   lastra che si ferma sull'incolonnamento leggerebbe come un bottone, e questa deve leggere
   come una riga accesa. E' uno stacco di valore, come i tre fondi: nel menu non entra nessuna
   tinta che non sia gia' nel sistema.
-- **L'hover non tocca i figli della voce.** Niente trasformazioni su `.menu__testo`,
-  `.menu__ordinale`, `.menu__dato`: quei tre portano gli stili inline lasciati da GSAP, che
+- **L'hover non tocca i figli della voce.** Niente trasformazioni su `.menu__text`,
+  `.menu__ordinal`, `.menu__detail`: quei tre portano gli stili inline lasciati da GSAP, che
   vincono su qualsiasi regola del foglio. Una regola CSS che li animasse non fallirebbe in
   modo visibile, si limiterebbe a non avere effetto — che e' il modo peggiore di fallire.
   Si accende la sola lastra, che GSAP non tocca.
-- **Il foglio ha un gutter suo, `--margine-menu`.** `--margine-pagina` vale fino a 60px, e
+- **Il foglio ha un gutter suo, `--menu-margin`.** `--page-margin` vale fino a 60px, e
   dentro 620px lascia 500px a un «ISTRUTTORI» in Anton che ne chiede 503. Il gutter di un
   contenitore si misura sul contenitore, non sul viewport: `clamp(20px, 4vw, 32px)`, usato
   anche dal filetto e dalla lastra dell'hover perche' i tre devono incolonnarsi.
@@ -70,7 +70,7 @@ che cambia il comportamento. Il CSS cambia una larghezza; il JavaScript non camb
   nasce con una barra di scorrimento orizzontale. Il clip e' anche giusto in entrata, perche'
   il fondo deve arrivare dal bordo del foglio e non da fuori schermo.
 - **`.barra__link` e' cancellato.** Serviva a dare corpo 16px peso 300 ai link in riga.
-  Il link del pannello ha gia' il proprio corpo — `.menu__testo`, Anton — quindi la classe
+  Il link del pannello ha gia' il proprio corpo — `.menu__text`, Anton — quindi la classe
   non contribuiva piu' niente. Il token `nav-link` resta in `DESIGN.md` ma non lo usa piu'
   nessuna navigazione.
 - **Il filetto tricolore si sposta invece di sdoppiarsi.** Resta il tab da 96px, ma sul bordo
@@ -96,8 +96,8 @@ li riceve il bottone del menu. Vorrebbe dire che il menu e' diventato la strada 
 e non per navigare, e allora la riga in barra torna sopra i 1200px, dove c'e' larghezza per
 tenerla senza deroghe tipografiche.
 
-Resta valida la regola di `docs/adr/0006`, ora anche per il velo: **non si anima mai `.barra`
-ne' `.barra__griglia`.** Un transform su di loro le rende blocco contenitore di ogni figlio
+Resta valida la regola di `docs/adr/0006`, ora anche per il velo: **non si anima mai `.header`
+ne' `.header__grid`.** Un transform su di loro le rende blocco contenitore di ogni figlio
 `fixed`, e sia il pannello sia il velo collasserebbero dentro i 77px della barra.
 
 ## Conseguenze
@@ -107,10 +107,10 @@ ne' `.barra__griglia`.** Un transform su di loro le rende blocco contenitore di 
   sui centri attivi. Cambia solo la clausola «sotto i 700px».
 - `DESIGN.md` e' aggiornato: la voce `navbar` perde i link in riga, la voce `menu` smette di
   essere una regola di telefono.
-- Sparisce il listener di `matchMedia` in `src/componenti/Menu.tsx` e sparisce la costante del
+- Sparisce il listener di `matchMedia` in `src/components/Menu.tsx` e sparisce la costante del
   breakpoint. Al suo posto una costante sola, `prefers-reduced-motion`, che era gia' l'altra
   meta' di ogni controllo.
-- `tests/e2e/barra.e2e.spec.ts` gira gli stessi due casi su 375px e su 1440px. Il primo
+- `tests/e2e/header.e2e.spec.ts` gira gli stessi due casi su 375px e su 1440px. Il primo
   `toBeHidden` di ogni caso e' quello che dice se il desktop e' tornato ad avere i link in
   riga. GSAP resta fuori dai test: un test sui tempi di una timeline e' un test che sfarfalla.
 - L'alternativa scartata e' tenere la riga su desktop e aggiungere il pannello come secondo

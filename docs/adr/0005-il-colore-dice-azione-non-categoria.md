@@ -20,7 +20,7 @@ nessun terzo.
 
 ## Cosa cambia
 
-- **Rosso `#E30917` = azione.** Superficie del solo `bottone--primario`, con l'etichetta in
+- **Rosso `#E30917` = azione.** Superficie del solo `button--primary`, con l'etichetta in
   bianco (4.86:1, sopra AA) e `#B00711` per hover e active (7.28:1). Non tocca nessuna
   superficie di sezione, nessun titolo, nessun bordo.
 - **Verde `#00B44B` = presenza.** Solo segnale di dato vivo: il centro attivo in questa

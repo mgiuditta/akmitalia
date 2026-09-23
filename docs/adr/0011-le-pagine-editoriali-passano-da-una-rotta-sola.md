@@ -17,7 +17,7 @@ importate hanno gia'.
 ## Perche' `path` e non i segmenti
 
 `path` e' un campo salvato e indicizzato, calcolato da un hook come genitore piu' slug
-(`src/collections/Pagine.ts`). Un campo virtuale si legge ma non si filtra, e questa rotta
+(`src/collections/Pages.ts`). Un campo virtuale si legge ma non si filtra, e questa rotta
 deve poter fare `where: { path: { equals: '/krav-maga/faq' } }` con una query sola,
 qualunque sia la profondita'.
 
@@ -30,7 +30,7 @@ lo copre un test e2e.
 
 ## Cosa ne consegue
 
-- Privacy e cookie sono contenuto, non codice. Le crea `pnpm pagine:legali` con il testo di
+- Privacy e cookie sono contenuto, non codice. Le crea `pnpm pages:legal` con il testo di
   partenza, e da li' in poi le riscrive il cliente dall'admin.
 - Le voci legali del footer vengono dal global `Navigazione`, gruppo «Voci legali».
 - I redirect dal vecchio sito hanno finalmente una destinazione.

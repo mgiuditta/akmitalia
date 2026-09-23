@@ -64,7 +64,7 @@ non sono componibili sul punto che conta, la tinta.
 
 ## Conseguenze operative
 
-- `pnpm font:scarica` scarica Anton e Roboto, non piu Fira Sans. I `.ttf` restano fuori dal
+- `pnpm fonts:download` scarica Anton e Roboto, non piu Fira Sans. I `.ttf` restano fuori dal
   repo.
 - `src/app/(frontend)/tokens.css` porta i token esatti del sistema. Il frontend era ancora il
   boilerplate Payload, quindi non c'e codice da riscrivere: e il momento piu economico in cui

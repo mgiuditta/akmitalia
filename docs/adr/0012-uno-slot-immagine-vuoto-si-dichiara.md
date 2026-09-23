@@ -35,7 +35,7 @@ nome del campo lo porta l'`aria-label`.
 AKM non ha un archivio utilizzabile: le immagini del vecchio sito sono compresse, a colori,
 e mostrano volti riconoscibili di persone che non hanno firmato una liberatoria. Le cinque
 fotografie che il sito porta oggi sono generate, in bianco e nero, con i prompt scritti in
-`scripts/immagini-editoriali.ts`. Sono un punto di partenza, non un archivio: quando il
+`scripts/editorial-images.ts`. Sono un punto di partenza, non un archivio: quando il
 cliente fa un servizio in sala, si sostituiscono dall'admin senza toccare il codice.
 
 L'unica fotografia vera del gruppo e' quella di `/contatti`, che era gia' in libreria.
@@ -57,5 +57,5 @@ sono pagine, non record: lì il segnaposto continua a dire al cliente quale camp
 ## Cosa non cambia
 
 Il monocromo. Ogni fotografia entra nel sistema come valore e non come colore, filtrata in
-`.figura__foto`, esattamente come l'eroe faceva gia' da solo. Il segnaposto non e' un'altra
+`.figure__photo`, esattamente come l'eroe faceva gia' da solo. Il segnaposto non e' un'altra
 estetica: e' la stessa superficie carbone delle schede.

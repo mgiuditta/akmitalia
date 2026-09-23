@@ -21,7 +21,7 @@ qualcos'altro.
 
 ## Dove sparisce
 
-Da tutte le `.testata__contenuto`: `/corsi`, `/corsi/[slug]`, `/centri`, `/centri/[slug]`,
+Da tutte le `.masthead__content`: `/corsi`, `/corsi/[slug]`, `/centri`, `/centri/[slug]`,
 `/contatti`, `/istruttori`. La testata continua a distinguersi per quello che era gia' il
 suo mestiere: superficie nera, scala display, e l'asimmetria del testo che rientra.
 

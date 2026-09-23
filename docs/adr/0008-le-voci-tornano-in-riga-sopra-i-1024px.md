@@ -22,7 +22,7 @@ lo stesso che spegne il pannello.
 - **Il pannello non cambia.** Ordinali, conteggi, tre fondi, `inert` sul fondale, Escape che
   riporta il fuoco. Cambia solo che sopra i 1024px non esiste.
 - **La CTA non si nasconde mai.** Resta in barra a ogni larghezza.
-- **Non si anima mai `.barra` ne' `.barra__griglia`.** Il pannello e il velo sono ancora
+- **Non si anima mai `.header` ne' `.header__grid`.** Il pannello e il velo sono ancora
   figli `fixed` della barra sotto i 1024px.
 
 ## Cosa cambia
@@ -37,5 +37,5 @@ lo stesso che spegne il pannello.
 - **Torna un listener di `matchMedia`**, quello che 0007 aveva tolto: chi apre il pannello a
   1000px e allarga la finestra non deve restare con la pagina `inert`. Chiude e basta.
 - **GSAP non si scarica sopra i 1024px.** Il pannello non esiste, il warm-up si ferma prima.
-- `tests/e2e/barra.e2e.spec.ts`: il caso desktop ora si aspetta la riga visibile e il
+- `tests/e2e/header.e2e.spec.ts`: il caso desktop ora si aspetta la riga visibile e il
   bottone nascosto. Il caso telefono e' invariato.

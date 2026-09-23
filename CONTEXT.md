@@ -4,7 +4,7 @@ Glossario del dominio AKM Italia. Solo termini, nessuna decisione di implementaz
 
 ## Centro tecnico
 
-Il luogo dove si pratica, e l'unita' di conversione del sito: ogni percorso finisce in un centro tecnico. Nel codice (collection, join, campi) e' `sedi`; nella URL pubblica e nel parlato di AKM e' «centro»: `/centri` e `/centri/[slug]`. I due nomi indicano la stessa cosa.
+Il luogo dove si pratica, e l'unita' di conversione del sito: ogni percorso finisce in un centro tecnico. Nello schema Payload (collection, join, campi) e' `sedi`; nel resto del codice, che e' in inglese, e' `center`; nella URL pubblica e nel parlato di AKM e' «centro»: `/centri` e `/centri/[slug]`. I nomi indicano la stessa cosa.
 
 Un centro tecnico e' identificato dal nome, che nella pratica unisce comune e struttura ospitante: «Abbiategrasso - Dynamic Dance School».
 
@@ -53,3 +53,18 @@ Il corso visto dal primo bivio. **Non e' una seconda entita'**: un percorso e' u
 Il bivio e' la prima decisione che il sito chiede, e la domanda che risolve e' «qual e' il mio momento», non «quale disciplina». Per questo il percorso si sceglie per **chi domanda**, mai per eta': «crescita dei ragazzi» e' la voce del genitore e copre ogni corso che riguardi un minore; l'eta' sta nella scheda del corso e nella nota dell'orario, dove e' gia' scritta.
 
 Un corso nuovo **non** e' un percorso finche' qualcuno non lo marca. Il bivio resta corto per scelta editoriale, non per vincolo tecnico.
+
+## Nomi nel codice
+
+Il codice e' in inglese, lo schema Payload e le URL no: slug, campi e valori salvati a DB restano quelli italiani, perche' rinominarli e' una migrazione e non una scelta di stile. Dove i nomi divergono:
+
+| Termine | Schema Payload | Codice e classi CSS |
+|---|---|---|
+| Centro tecnico | `sedi` | `center` |
+| Luogo evento | `luogo` | `location` |
+| Orario | `orari` | `slot`, e `schedule` per l'insieme |
+| Docente | `docenti` | `teacher` |
+| Corso | `corsi` | `course` |
+| Percorso | `inBivio` su `corsi` | `pathway` |
+| Bivio | `bivio` (in `impostazioni`) | `fork` |
+| Ruolo di superficie | `superficie`: `nero`, `carbone`, `bianco`, `grigio` | `surface`: `black`, `charcoal`, `white`, `grey` |

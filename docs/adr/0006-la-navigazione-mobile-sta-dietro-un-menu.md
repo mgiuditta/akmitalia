@@ -65,8 +65,8 @@ e' una spesa reale: circa 28 kB gz. Tre mosse la contengono e vanno mantenute.
    SplitText, MotionPath e ogni altro plugin, e un import dinamico non li puo' scuotere
    via: sono 70 kB gz invece di 28, per animare tre link.
 
-Chi tocchera' queste animazioni deve sapere una cosa sola: **non si anima mai `.barra` ne'
-`.barra__griglia`.** Un transform su di loro le rende blocco contenitore del pannello
+Chi tocchera' queste animazioni deve sapere una cosa sola: **non si anima mai `.header` ne'
+`.header__grid`.** Un transform su di loro le rende blocco contenitore del pannello
 `fixed`, che collasserebbe dentro i 77px della barra.
 
 **La navigazione non e' piu' visibile senza un tap.** E' il costo che la deroga voleva
@@ -87,7 +87,7 @@ pannello e punterebbe a contenuto coperto.
 - Un solo listener di `matchMedia` chiude il menu quando si supera il breakpoint. Non e'
   un dettaglio: senza, chi allarga la finestra col menu aperto resta con la pagina bloccata
   e `main` inerte, senza nulla di visibile da chiudere.
-- `tests/e2e/barra.e2e.spec.ts` copre la macchina a stati, non l'animazione: apre, mostra,
+- `tests/e2e/header.e2e.spec.ts` copre la macchina a stati, non l'animazione: apre, mostra,
   chiude con Escape, restituisce il fuoco, e verifica che la barra misuri 77px. GSAP resta
   fuori dai test: un test sui tempi di una timeline e' un test che sfarfalla.
 - L'alternativa scartata e' tenere le due righe e spostare la quarta voce, quando

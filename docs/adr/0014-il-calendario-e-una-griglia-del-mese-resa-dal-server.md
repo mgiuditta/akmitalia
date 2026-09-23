@@ -51,7 +51,7 @@ verde presenza (docs/adr/0005), e una legenda di sette colori sarebbe un terzo r
 
 - La voce «Eventi» entra nella barra come quinta voce, prima di «Contatti»: il tetto di
   cinque di `Navigazione` (docs/adr/0008) esisteva per questo.
-- `pnpm importa:eventi` porta dentro gli eventi dal 2024 dall'API REST del vecchio sito,
+- `pnpm import:events` porta dentro gli eventi dal 2024 dall'API REST del vecchio sito,
   come punto di partenza. L'abbinamento al centro e' un'euristica sul nome del luogo: gli
   eventi che non trovano un centro finiscono in `luogo` e si sistemano dall'admin.
 - Un evento a mezzanotte e' un evento «senza orario»: nessun flag «tutto il giorno».

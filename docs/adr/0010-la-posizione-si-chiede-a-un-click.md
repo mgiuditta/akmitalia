@@ -43,5 +43,5 @@ traccia e' la `sessionStorage` del browser, che si svuota chiudendo la scheda ed
 non richiedere il permesso a ogni navigazione. E' scritto nella pagina privacy, perche' una
 cosa che non facciamo va detta quanto una che facciamo.
 
-Il calcolo e' `distanzaKm` in `src/componenti/dati.ts`: emisenoverso, Terra sferica. Su una
+Il calcolo e' `distanceKm` in `src/components/data.ts`: emisenoverso, Terra sferica. Su una
 regione larga 150 km l'errore sta sotto lo 0,5%, e serve a ordinare quindici righe.

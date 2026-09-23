@@ -19,7 +19,7 @@ con le tile **CARTO Dark Matter**: gratis, nessuna chiave, nessun cookie, e la b
 grigia e nera, quindi sta dentro il sistema monocromo invece di combatterlo. L'attribuzione
 OpenStreetMap e CARTO e visibile sulla mappa, come richiesto da entrambe le licenze.
 
-La geocodifica e uno script una tantum, `pnpm sedi:geocodifica`, che interroga **Nominatim**
+La geocodifica e uno script una tantum, `pnpm centers:geocode`, che interroga **Nominatim**
 (OSM, gratis, una richiesta al secondo) partendo dagli indirizzi gia in CMS e riempie i campi
 vuoti. Non gira in build e non gira a runtime.
 
