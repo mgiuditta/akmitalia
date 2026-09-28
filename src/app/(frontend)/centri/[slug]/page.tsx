@@ -16,6 +16,11 @@ import {
 } from '@/components/data'
 import { Figure } from '@/components/Figure'
 import { pageMetadata } from '@/components/seo'
+import { NetworkMap } from '@/components/NetworkMap'
+import { Stops } from '@/components/CenterNetwork'
+import { RequestForm } from '@/components/RequestForm'
+import { requestFormProps } from '@/components/requestFormProps'
+import { servedZones, splitName, toSignCenter } from '@/components/signage'
 
 /**
  * Scheda di un centro tecnico: e' la conversione. Indirizzo, orari, docenti e
@@ -110,15 +115,37 @@ export default async function CenterPage({ params }: { params: Promise<{ slug: s
     },
   })
 
+  /* La rete intera serve allo schema in testata: questo centro pieno, gli
+     altri come contesto. Il modulo arriva con le sue letture, le stesse di
+     /contatti. */
+  const [network, form] = await Promise.all([
+    payload.find({
+      collection: 'sedi',
+      depth: 0,
+      limit: 200,
+      select: { nome: true, slug: true, palestra: true, indirizzo: true, coordinate: true },
+      where: { and: [{ attivo: { equals: true } }, published] },
+    }),
+    requestFormProps(),
+  ])
+  const noCourses = new Map<number, string>()
+  const others = network.docs.map((c) => toSignCenter(c, noCourses))
+  if (!others.some((c) => c.id === center.id)) others.push(toSignCenter(center, noCourses))
+
+  const { sign, host } = splitName(center.nome)
+  const zones = servedZones(center.descrizione)
+  /* La descrizione oggi mescola due cose: le zone servite, che qui diventano
+     la linea delle fermate, e le note su come si entra («Sopra il Lidl, primo
+     piano»). Resta stampata solo la seconda. */
+  const accessNote = (center.descrizione ?? '')
+    .replace(/Il Centro Tecnico[^.]*punto di riferimento per le zone[^.]*\.?/i, '')
+    .trim()
+  const initialCenter = center.attivo
+    ? (form.sedi.find((s) => s.slug === center.slug)?.id ?? null)
+    : null
+
   const schedule = center.orari ?? []
   const instructors = (center.istruttori ?? []).filter((i) => typeof i === 'object')
-
-  const disciplines = new Map<number, string>()
-  for (const slot of schedule) {
-    if (typeof slot.disciplina === 'object' && slot.disciplina) {
-      disciplines.set(slot.disciplina.id, slot.disciplina.nome)
-    }
-  }
 
   const points: MapPoint[] =
     typeof center.coordinate?.lat === 'number' && typeof center.coordinate?.lng === 'number'
@@ -177,106 +204,128 @@ export default async function CenterPage({ params }: { params: Promise<{ slug: s
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(location) }}
       />
-      <section className="section section--black masthead">
-        <div className="container masthead__content">
-          <Link className="breadcrumb" href="/centri">
-            Torna ai centri
-          </Link>
-          <p className="eyebrow">Centro tecnico</p>
-          <h1 className="display display--md">{center.nome}</h1>
-          <p className="text detail">{readableAddress(center.indirizzo)}</p>
-          {/* Un centro non attivo resta pubblicato e sparisce dagli elenchi, ma la
-              sua scheda si apre lo stesso: ci si arriva dall'albo, da un evento
-              passato, da un vecchio link. Prima l'unico indizio era che mancava
-              il quadrato verde, cioe' niente: un'assenza non e' un'etichetta
-              (Regola dell'Etichetta). */}
-          {center.attivo ? (
-            <p className="status">Attivo in questa stagione</p>
-          ) : (
-            <p className="text detail">
-              Questo centro non è attivo in questa stagione: gli orari qui sotto sono quelli
-              dell’ultima e non sono in corso. Scrivici e ti diciamo qual è il centro più vicino
-              aperto.
+
+      {/* Prototipo C, «La segnaletica» (#66): la testata e' il cartello della
+          stazione. Il nome del posto in grande, la struttura sotto, la linea
+          delle zone che serve, e a destra lo schema della rete con questo
+          centro pieno. */}
+      <section className="section section--black masthead station">
+        <div className="container station__grid">
+          <div className="station__sign">
+            <Link className="breadcrumb" href="/centri">
+              Torna ai centri
+            </Link>
+            <p className="station__kicker">
+              {center.indirizzo?.provincia ? (
+                <span className="sign__province">{center.indirizzo.provincia}</span>
+              ) : null}
+              <span className="eyebrow">Centro tecnico</span>
             </p>
-          )}
+            <h1 className="display display--hero station__title">{sign}</h1>
+            <p className="station__host">{center.palestra || host}</p>
+            {/* Un centro non attivo resta pubblicato e sparisce dagli elenchi,
+                ma la sua scheda si apre lo stesso: lo dice a parole. */}
+            {center.attivo ? (
+              <p className="status">Attivo in questa stagione</p>
+            ) : (
+              <p className="text detail">
+                Questo centro non è attivo in questa stagione: gli orari qui sotto sono quelli
+                dell’ultima e non sono in corso. Scrivici e ti diciamo qual è il centro più vicino
+                aperto.
+              </p>
+            )}
+            {zones.length > 0 ? <Stops zones={zones} label="Punto di riferimento anche per" /> : null}
+          </div>
+
+          <div className="station__network">
+            <NetworkMap
+              centers={others}
+              focus={center.id}
+              nominalWidth={500}
+              label={`${sign} nella rete dei centri AKM Italia`}
+            />
+          </div>
         </div>
       </section>
 
-      {/* La sala di questo centro, fra la testata e la scheda: chi sceglie dove
-          allenarsi vuole vedere il posto prima degli orari. */}
-      <Figure
-        slot={center.foto}
-        label="Foto del centro"
-        format="band"
-        measure="grande"
-        sizes="100vw"
-      />
+      <section className="section section--light timetable-section">
+        <div className="container timetable-grid">
+          <div className="timetable-main">
+            <h2 className="display display--md">Orario</h2>
+            {schedule.length > 0 && !center.attivo ? (
+              <p className="detail">Programmazione dell’ultima stagione, non in corso.</p>
+            ) : null}
+            {schedule.length > 0 ? (
+              <ol className="timetable">
+                {schedule.map((slot) => {
+                  const discipline = typeof slot.disciplina === 'object' ? slot.disciplina : null
+                  const teachers = (slot.docenti ?? [])
+                    .map(instructorName)
+                    .filter(Boolean)
+                    .join(', ')
+                  return (
+                    <li className="timetable__row" key={slot.id}>
+                      <span className="display timetable__day">{readableDays(slot.giorni)}</span>
+                      <span className="display timetable__time">
+                        {slot.oraInizio}-{slot.oraFine}
+                      </span>
+                      <span className="timetable__what">
+                        {discipline ? (
+                          <Link href={`/corsi/${discipline.slug}`}>{discipline.nome}</Link>
+                        ) : null}
+                        {slot.note ? <span>{slot.note}</span> : null}
+                        {teachers ? <span>Docente: {teachers}</span> : null}
+                      </span>
+                    </li>
+                  )
+                })}
+              </ol>
+            ) : (
+              <p className="detail">Orari in aggiornamento per la stagione.</p>
+            )}
+          </div>
 
-      <section className="section section--light">
-        <div className="container card">
-          <div>
-            {center.descrizione ? <p className="text">{center.descrizione}</p> : null}
-
-            <div className="block">
-              <h2>Orari</h2>
-              {schedule.length > 0 && !center.attivo ? (
-                <p className="detail">Programmazione dell’ultima stagione, non in corso.</p>
+          <aside className="address-panel" aria-labelledby="address-title">
+            <h2 className="address-panel__title" id="address-title">
+              Indirizzo
+            </h2>
+            <p className="address-panel__street">
+              {center.palestra ? (
+                <>
+                  <strong>{center.palestra}</strong>
+                  <br />
+                </>
               ) : null}
-              {schedule.length > 0 ? (
-                <div className="schedule">
-                  {schedule.map((slot) => {
-                    const discipline =
-                      typeof slot.disciplina === 'object' ? slot.disciplina : null
-                    const teachers = (slot.docenti ?? [])
-                      .map(instructorName)
-                      .filter(Boolean)
-                      .join(', ')
-
-                    return (
-                      <div className="schedule__row" key={slot.id}>
-                        <span className="schedule__days">{readableDays(slot.giorni)}</span>
-                        <span>
-                          {slot.oraInizio}-{slot.oraFine}
-                        </span>
-                        <span>
-                          {discipline ? (
-                            <Link href={`/corsi/${discipline.slug}`}>{discipline.nome}</Link>
-                          ) : null}
-                          {teachers ? ` · Docente ${teachers}` : ''}
-                          {slot.note ? ` · ${slot.note}` : ''}
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                <p className="detail">Orari in aggiornamento per la stagione.</p>
-              )}
-            </div>
-
-            {events.docs.length > 0 ? (
-              <div className="block">
-                <h2>Prossimi eventi qui</h2>
-                <EventAgenda events={events.docs} showPlace={false} />
-                <p>
-                  <Link className="breadcrumb" href="/eventi">
-                    Tutto il calendario
-                  </Link>
-                </p>
-              </div>
+              {readableAddress(center.indirizzo)}
+            </p>
+            {accessNote ? <p className="detail address-panel__note">{accessNote}</p> : null}
+            {center.mapsUrl ? (
+              <p>
+                <a
+                  className="button button--secondary address-panel__maps"
+                  href={center.mapsUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  Apri in Maps <span className="arrow arrow--small" aria-hidden="true" />
+                </a>
+              </p>
             ) : null}
-
-            {disciplines.size > 0 ? (
-              <div className="block">
-                <h2>Cosa si pratica qui</h2>
-                <ul className="list__items">
-                  {[...disciplines.values()].map((name) => (
-                    <li key={name}>{name}</li>
-                  ))}
-                </ul>
-              </div>
+            {points.length > 0 ? (
+              <CenterMap points={points} etichetta={`Dove si trova ${center.nome}`} />
             ) : null}
+            <Figure
+              slot={center.foto}
+              label="Foto del centro in arrivo"
+              format="wide"
+              sizes="(min-width: 900px) 40vw, 100vw"
+            />
+          </aside>
 
+          {/* Chi insegna e i prossimi eventi: sul telefono vengono dopo
+              l'indirizzo, perche' orario e indirizzo sono le due cose che si
+              cercano; sopra i 1000px stanno sotto l'orario. */}
+          <div className="timetable-extra">
             {instructors.length > 0 ? (
               <div className="block">
                 <h2>Chi insegna</h2>
@@ -290,54 +339,52 @@ export default async function CenterPage({ params }: { params: Promise<{ slug: s
                 </ul>
               </div>
             ) : null}
-          </div>
 
-          <div>
-            {points.length > 0 ? (
-              <CenterMap points={points} etichetta={`Dove si trova ${center.nome}`} />
-            ) : null}
-
-            <div className="block">
-              <h2>Come arrivarci</h2>
-              <p className="detail">
-                {center.palestra ? `${center.palestra}, ` : ''}
-                {readableAddress(center.indirizzo)}
-              </p>
-              {center.mapsUrl ? (
+            {events.docs.length > 0 ? (
+              <div className="block">
+                <h2>Prossimi eventi qui</h2>
+                <EventAgenda events={events.docs} showPlace={false} />
                 <p>
-                  <a
-                    className="center__maps"
-                    href={center.mapsUrl}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    Apri su Google Maps
-                  </a>
+                  <Link className="breadcrumb" href="/eventi">
+                    Tutto il calendario
+                  </Link>
                 </p>
-              ) : null}
-              {/* L'unico bottone rosso della scheda portava via dalla conversione:
-                  PRODUCT.md misura il successo sulla richiesta con la sede
-                  selezionata, e nessuna azione apriva il modulo con questo centro
-                  gia' scelto. Ora l'azione e' quella, e l'indice dei percorsi
-                  resta dov'e' sempre stato, in barra e nel menu.
-                  Per un centro non attivo la richiesta parte senza sede: quel
-                  centro non e' fra le scelte del modulo, e mandarci qualcuno
-                  sarebbe una promessa che non possiamo tenere. */}
-              <p className="tail-action">
-                <Link
-                  className="button button--primary"
-                  href={
-                    center.attivo ? `/contatti?sede=${encodeURIComponent(center.slug)}` : '/contatti'
-                  }
-                >
-                  Richiedi informazioni
-                </Link>
-                <Link className="button button--secondary" href="/corsi">
-                  Tutti i percorsi
-                </Link>
-              </p>
-            </div>
+              </div>
+            ) : null}
           </div>
+        </div>
+      </section>
+
+      {/* Il modulo sta nella scheda e non dietro un link: la scheda e' la
+          conversione (PRODUCT.md), e il centro arriva gia' scelto. Per un
+          centro non attivo la richiesta parte senza sede, come prima. */}
+      <section className="section section--grey" id="modulo" aria-labelledby="form-title">
+        <div className="container request">
+          <div>
+            <h2 className="display display--md" id="form-title">
+              {center.attivo ? `Scrivi a ${sign}` : 'Scrivici'}
+            </h2>
+            <p className="text request__lead">
+              {center.attivo
+                ? `Il centro è già scelto nel modulo: la richiesta arriva a chi tiene le lezioni a ${sign}. AKM non pubblica telefono né email per centro.`
+                : 'Questo centro non è fra le scelte del modulo: scegli quello che ti resta comodo.'}
+            </p>
+          </div>
+          <RequestForm
+            sedi={form.sedi.map((c) => ({
+              id: c.id,
+              nome: c.nome,
+              citta: c.citta,
+              indirizzo: c.indirizzo,
+              palestra: c.palestra,
+              mapsUrl: c.mapsUrl,
+            }))}
+            corsi={form.corsi}
+            texts={form.texts}
+            options={form.options}
+            initialCenter={initialCenter}
+            turnstileSiteKey={form.turnstileSiteKey}
+          />
         </div>
       </section>
     </>
