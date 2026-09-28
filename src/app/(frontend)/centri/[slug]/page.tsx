@@ -3,24 +3,29 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import React from 'react'
 
+import type { Corsi, Istruttori } from '@/payload-types'
+
 import { openPayload } from '@/components/payload'
 import { EventAgenda } from '@/components/EventAgenda'
 import { CenterMap, type MapPoint } from '@/components/CenterMap'
-import {
-  readableDays,
-  readableAddress,
-  jsonLd,
-  instructorName,
-  published,
-  siteUrl,
-} from '@/components/data'
+import { readableDays, readableAddress, jsonLd, published, siteUrl } from '@/components/data'
 import { Figure } from '@/components/Figure'
+import { RequestForm } from '@/components/RequestForm'
+import { fullName, joinNames, splitCenterName } from '@/components/lessons'
+import { loadRequestForm } from '@/components/requestFormData'
 import { pageMetadata } from '@/components/seo'
 
 /**
- * Scheda di un centro tecnico: e' la conversione. Indirizzo, orari, docenti e
- * come arrivarci stanno tutti qui, leggibili, senza un click in mezzo.
+ * Scheda di un centro tecnico, direzione A «Fenriz ripulito» (#62, #66): e' la
+ * conversione. Nella prima schermata stanno l'indirizzo, gli orari e chi
+ * insegna, su una lastra chiara dentro l'apertura nera, senza un click in
+ * mezzo. Sotto, la persona, come arrivarci e il modulo con il centro gia'
+ * scelto. Il display compare una volta sola: il nome del luogo.
  */
+
+/* Il giorno per esteso, per raggruppare gli orari: «Giovedì» una volta, e
+   sotto le lezioni di quel giorno. */
+const DAY_ORDER = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom']
 
 export const revalidate = 60
 
@@ -111,14 +116,49 @@ export default async function CenterPage({ params }: { params: Promise<{ slug: s
   })
 
   const schedule = center.orari ?? []
-  const instructors = (center.istruttori ?? []).filter((i) => typeof i === 'object')
+  const { place, gym } = splitCenterName(center)
 
-  const disciplines = new Map<number, string>()
+  /* Il modulo sta nella scheda e non dietro un link: e' la richiesta con la
+     sede selezionata che PRODUCT.md misura, e qui la sede e' gia' decisa.
+     Un centro non attivo non e' fra le scelte del modulo: la richiesta parte
+     senza sede, come faceva il link a /contatti. */
+  const form = await loadRequestForm(payload)
+  const initialCenter = center.attivo
+    ? (form.centers.find((c) => c.id === center.id)?.id ?? null)
+    : null
+
+  /* Le lezioni raggruppate per giorno: chi guarda cerca «quando», e il giorno
+     scritto una volta sola si legge prima di tre righe che lo ripetono. */
+  const days = DAY_ORDER.map((day) => ({
+    day,
+    label: readableDays([day]),
+    slots: schedule
+      .filter((slot) => (slot.giorni ?? []).includes(day as never))
+      .sort((a, b) => a.oraInizio.localeCompare(b.oraInizio)),
+  })).filter((d) => d.slots.length > 0)
+
+  /* Chi insegna qui: i docenti delle righe d'orario, per nome intero e con le
+     credenziali dell'albo. Se le righe non ne portano, i docenti del centro. */
+  const teacherDocs = new Map<number, Istruttori>()
   for (const slot of schedule) {
-    if (typeof slot.disciplina === 'object' && slot.disciplina) {
-      disciplines.set(slot.disciplina.id, slot.disciplina.nome)
-    }
+    for (const t of slot.docenti ?? []) if (typeof t === 'object') teacherDocs.set(t.id, t)
   }
+  if (teacherDocs.size === 0) {
+    for (const t of center.istruttori ?? []) if (typeof t === 'object') teacherDocs.set(t.id, t)
+  }
+  const teachers = [...teacherDocs.values()]
+
+  /* Come si entra, corso per corso: il testo e' quello della scheda del corso
+     (campo «Ingresso»), non una frase scritta qui. */
+  const entries = [
+    ...new Map(
+      schedule
+        .map((slot) => (typeof slot.disciplina === 'object' ? slot.disciplina : null))
+        .filter((c): c is Corsi => Boolean(c?.ingresso))
+        .map((c) => [c.id, c]),
+    ).values(),
+  ]
+  const teacherNames = teachers.map((t) => fullName(t)).filter((n): n is string => Boolean(n))
 
   const points: MapPoint[] =
     typeof center.coordinate?.lat === 'number' && typeof center.coordinate?.lng === 'number'
@@ -177,167 +217,248 @@ export default async function CenterPage({ params }: { params: Promise<{ slug: s
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(location) }}
       />
-      <section className="section section--black masthead">
-        <div className="container masthead__content">
-          <Link className="breadcrumb" href="/centri">
-            Torna ai centri
-          </Link>
-          <p className="eyebrow">Centro tecnico</p>
-          <h1 className="display display--md">{center.nome}</h1>
-          <p className="text detail">{readableAddress(center.indirizzo)}</p>
-          {/* Un centro non attivo resta pubblicato e sparisce dagli elenchi, ma la
-              sua scheda si apre lo stesso: ci si arriva dall'albo, da un evento
-              passato, da un vecchio link. Prima l'unico indizio era che mancava
-              il quadrato verde, cioe' niente: un'assenza non e' un'etichetta
-              (Regola dell'Etichetta). */}
-          {center.attivo ? (
-            <p className="status">Attivo in questa stagione</p>
-          ) : (
-            <p className="text detail">
-              Questo centro non è attivo in questa stagione: gli orari qui sotto sono quelli
-              dell’ultima e non sono in corso. Scrivici e ti diciamo qual è il centro più vicino
-              aperto.
-            </p>
-          )}
-        </div>
-      </section>
 
-      {/* La sala di questo centro, fra la testata e la scheda: chi sceglie dove
-          allenarsi vuole vedere il posto prima degli orari. */}
-      <Figure
-        slot={center.foto}
-        label="Foto del centro"
-        format="band"
-        measure="grande"
-        sizes="100vw"
-      />
+      {/* ---------- apertura: il nome del luogo e la lastra dei dati ---------- */}
+      <section className="a-open a-open--center" aria-labelledby="center-title">
+        <div className="container a-open__grid">
+          <div className="a-open__words">
+            <Link className="breadcrumb" href="/centri">
+              Torna ai centri
+            </Link>
+            <p className="eyebrow">Centro tecnico AKM Italia</p>
+            <h1 className="display a-display" id="center-title">
+              {place}
+            </h1>
+            {gym ? <p className="a-open__gym">{gym}</p> : null}
+            {/* Un centro non attivo resta pubblicato e la sua scheda si apre
+                lo stesso: lo dichiara a parole (Regola dell'Etichetta). */}
+            {center.attivo ? (
+              <p className="status">Attivo in questa stagione</p>
+            ) : (
+              <p className="text">
+                Questo centro non è attivo in questa stagione: gli orari qui accanto sono quelli
+                dell’ultima e non sono in corso. Scrivici e ti diciamo qual è il centro più vicino
+                aperto.
+              </p>
+            )}
+          </div>
 
-      <section className="section section--light">
-        <div className="container card">
-          <div>
-            {center.descrizione ? <p className="text">{center.descrizione}</p> : null}
-
-            <div className="block">
-              <h2>Orari</h2>
-              {schedule.length > 0 && !center.attivo ? (
-                <p className="detail">Programmazione dell’ultima stagione, non in corso.</p>
+          <div className="a-slab a-slab--center">
+            <div className="a-slab__block">
+              <h2 className="a-slab__label">Dove</h2>
+              <p className="a-slab__address">
+                {center.indirizzo?.via ? (
+                  <>
+                    {center.indirizzo.via}
+                    <br />
+                  </>
+                ) : null}
+                {[center.indirizzo?.cap, center.indirizzo?.citta].filter(Boolean).join(' ')}
+                {center.indirizzo?.provincia ? ` (${center.indirizzo.provincia})` : ''}
+              </p>
+              {center.mapsUrl ? (
+                <p>
+                  <a
+                    className="a-slab__maps"
+                    href={center.mapsUrl}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    Apri in Maps
+                  </a>
+                </p>
               ) : null}
-              {schedule.length > 0 ? (
-                <div className="schedule">
-                  {schedule.map((slot) => {
-                    const discipline =
-                      typeof slot.disciplina === 'object' ? slot.disciplina : null
-                    const teachers = (slot.docenti ?? [])
-                      .map(instructorName)
-                      .filter(Boolean)
-                      .join(', ')
+            </div>
 
-                    return (
-                      <div className="schedule__row" key={slot.id}>
-                        <span className="schedule__days">{readableDays(slot.giorni)}</span>
-                        <span>
-                          {slot.oraInizio}-{slot.oraFine}
-                        </span>
-                        <span>
-                          {discipline ? (
-                            <Link href={`/corsi/${discipline.slug}`}>{discipline.nome}</Link>
-                          ) : null}
-                          {teachers ? ` · Docente ${teachers}` : ''}
-                          {slot.note ? ` · ${slot.note}` : ''}
-                        </span>
-                      </div>
-                    )
-                  })}
+            <div className="a-slab__block">
+              <h2 className="a-slab__label">
+                {center.attivo ? 'Quando' : 'Quando, nell’ultima stagione'}
+              </h2>
+              {days.length > 0 ? (
+                <div className="a-days">
+                  {days.map((d) => (
+                    <div key={d.day} className="a-day">
+                      <p className="a-day__name">{d.label}</p>
+                      <ul className="a-day__slots">
+                        {d.slots.map((slot) => {
+                          const course = typeof slot.disciplina === 'object' ? slot.disciplina : null
+                          const who = (slot.docenti ?? [])
+                            .map(fullName)
+                            .filter((n): n is string => Boolean(n))
+                          return (
+                            <li key={slot.id} className="a-slot">
+                              <span className="a-slot__time">
+                                {slot.oraInizio}-{slot.oraFine}
+                              </span>
+                              <span className="a-slot__what">
+                                {course ? (
+                                  <Link href={`/corsi/${course.slug}`}>{course.nome}</Link>
+                                ) : null}
+                                {slot.note ? ` · ${slot.note}` : ''}
+                              </span>
+                              {who.length > 0 ? (
+                                <span className="a-slot__who">Con {joinNames(who)}</span>
+                              ) : null}
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <p className="detail">Orari in aggiornamento per la stagione.</p>
               )}
             </div>
 
-            {events.docs.length > 0 ? (
-              <div className="block">
-                <h2>Prossimi eventi qui</h2>
-                <EventAgenda events={events.docs} showPlace={false} />
-                <p>
-                  <Link className="breadcrumb" href="/eventi">
-                    Tutto il calendario
-                  </Link>
-                </p>
-              </div>
-            ) : null}
-
-            {disciplines.size > 0 ? (
-              <div className="block">
-                <h2>Cosa si pratica qui</h2>
-                <ul className="list__items">
-                  {[...disciplines.values()].map((name) => (
-                    <li key={name}>{name}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            {instructors.length > 0 ? (
-              <div className="block">
-                <h2>Chi insegna</h2>
-                <ul className="list__items">
-                  {instructors.map((instructor) => (
-                    <li key={instructor.id}>
-                      {instructor.nome}
-                      {instructor.ruolo ? ` · ${instructor.ruolo}` : ''}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
+            <p className="a-slab__action">
+              {/* Secondario, non rosso: nella prima schermata il rosso resta
+                  uno, quello della barra (audit antislop 001, voce 24). Il
+                  rosso della scheda e' l'invio del modulo, qui sotto. */}
+              <a className="button button--secondary" href="#richiesta">
+                Scrivi al centro
+              </a>
+            </p>
           </div>
+        </div>
+      </section>
 
-          <div>
-            {points.length > 0 ? (
-              <CenterMap points={points} etichetta={`Dove si trova ${center.nome}`} />
-            ) : null}
-
-            <div className="block">
-              <h2>Come arrivarci</h2>
-              <p className="detail">
-                {center.palestra ? `${center.palestra}, ` : ''}
-                {readableAddress(center.indirizzo)}
-              </p>
-              {center.mapsUrl ? (
-                <p>
-                  <a
-                    className="center__maps"
-                    href={center.mapsUrl}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    Apri su Google Maps
-                  </a>
-                </p>
+      {/* ---------- la persona che ti accoglie ---------- */}
+      {teachers.length > 0 ? (
+        <section className="section section--light a-host" aria-labelledby="host-title">
+          <div className="container a-host__grid">
+            <header className="a-head">
+              <h2 className="a-title" id="host-title">
+                Chi ti accoglie a {place}
+              </h2>
+              {entries.length > 0 ? (
+                <dl className="a-host__entries">
+                  {entries.map((c) => (
+                    <div key={c.id}>
+                      <dt>{c.nome}</dt>
+                      <dd>{c.ingresso}</dd>
+                    </div>
+                  ))}
+                </dl>
               ) : null}
-              {/* L'unico bottone rosso della scheda portava via dalla conversione:
-                  PRODUCT.md misura il successo sulla richiesta con la sede
-                  selezionata, e nessuna azione apriva il modulo con questo centro
-                  gia' scelto. Ora l'azione e' quella, e l'indice dei percorsi
-                  resta dov'e' sempre stato, in barra e nel menu.
-                  Per un centro non attivo la richiesta parte senza sede: quel
-                  centro non e' fra le scelte del modulo, e mandarci qualcuno
-                  sarebbe una promessa che non possiamo tenere. */}
-              <p className="tail-action">
-                <Link
-                  className="button button--primary"
-                  href={
-                    center.attivo ? `/contatti?sede=${encodeURIComponent(center.slug)}` : '/contatti'
-                  }
-                >
-                  Richiedi informazioni
-                </Link>
-                <Link className="button button--secondary" href="/corsi">
-                  Tutti i percorsi
+            </header>
+            <div className="a-host__people">
+              {teachers.map((t) => (
+                <article key={t.id} className="a-person a-person--light">
+                  <h3 className="a-person__name">{t.nome}</h3>
+                  {t.ruolo ? <p className="a-person__role">{t.ruolo}</p> : null}
+                  {t.credenziali?.length ? (
+                    <ul className="a-person__creds">
+                      {t.credenziali.map((c) => (
+                        <li key={c.id ?? c.voce}>{c.voce}</li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </article>
+              ))}
+              <p>
+                <Link className="breadcrumb" href="/istruttori">
+                  L’albo degli istruttori
                 </Link>
               </p>
             </div>
           </div>
+        </section>
+      ) : null}
+
+      {/* ---------- come arrivarci ---------- */}
+      <section className="section section--grey a-reach" aria-labelledby="reach-title">
+        <div className="container a-reach__grid">
+          <div className="a-reach__words">
+            <h2 className="a-title" id="reach-title">
+              Come arrivare a {place}
+            </h2>
+            <p className="a-reach__address">
+              {center.palestra ? (
+                <>
+                  <strong>{center.palestra}</strong>
+                  <br />
+                </>
+              ) : null}
+              {readableAddress(center.indirizzo)}
+            </p>
+            {center.descrizione ? <p className="text">{center.descrizione}</p> : null}
+            {center.mapsUrl ? (
+              <p>
+                <a
+                  className="a-slab__maps"
+                  href={center.mapsUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  Apri in Maps
+                </a>
+              </p>
+            ) : null}
+            {/* Slot dichiarato (docs/adr/0012): il posto per la foto
+                dell'ingresso resta scritto finche' non arriva quella vera. */}
+            <Figure
+              slot={center.foto}
+              label="Foto del centro in arrivo"
+              format="wide"
+              measure="media"
+              sizes="(min-width: 900px) 30vw, 100vw"
+              className="a-reach__photo"
+            />
+          </div>
+          {points.length > 0 ? (
+            <div className="a-reach__map">
+              <CenterMap points={points} etichetta={`Dove si trova ${center.nome}`} />
+            </div>
+          ) : null}
+        </div>
+      </section>
+
+      {events.docs.length > 0 ? (
+        <section className="section section--light a-events" aria-labelledby="events-title">
+          <div className="container">
+            <h2 className="a-title" id="events-title">
+              Prossimi eventi a {place}
+            </h2>
+            <EventAgenda events={events.docs} showPlace={false} />
+            <p>
+              <Link className="breadcrumb" href="/eventi">
+                Tutto il calendario
+              </Link>
+            </p>
+          </div>
+        </section>
+      ) : null}
+
+      {/* ---------- il modulo, con il centro gia' scelto ---------- */}
+      <section
+        className="section section--light a-request"
+        id="richiesta"
+        aria-labelledby="request-title"
+      >
+        <div className="container a-request__grid">
+          <header className="a-head">
+            <span className="rule" aria-hidden="true" />
+            <h2 className="a-title" id="request-title">
+              {center.attivo ? `Scrivi al centro di ${place}` : 'Scrivici'}
+            </h2>
+            <p className="text">
+              {center.attivo
+                ? `Il centro è già scelto nel modulo. Ti risponde chi insegna qui${
+                    teacherNames.length > 0 ? `: ${joinNames(teacherNames)}` : ''
+                  }.`
+                : 'Scegli un centro attivo nel modulo: ti risponde chi insegna lì.'}
+            </p>
+            <p className="detail">AKM non pubblica telefono né email per centro: il contatto passa da qui.</p>
+          </header>
+          <RequestForm
+            sedi={form.centers}
+            corsi={form.courses}
+            texts={form.texts}
+            options={form.options}
+            initialCenter={initialCenter}
+            turnstileSiteKey={form.turnstileSiteKey}
+          />
         </div>
       </section>
     </>

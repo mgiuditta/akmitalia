@@ -1,0 +1,670 @@
+/*
+ * Direzione A, «Fenriz ripulito» (#62, #66): home e scheda di un centro.
+ *
+ * Classi proprie, tutte con il prefisso `a-`: le altre rotte non le vedono e
+ * nessuna classe condivisa cambia significato. I token sono quelli di
+ * tokens.css, nessuna tinta nuova.
+ *
+ * Le tre regole della direzione, in CSS:
+ * - il display (Anton) compare una volta per pagina, in `.a-display`, e non
+ *   supera 96px su desktop e 56px su telefono;
+ * - i titoli di sezione sono Roboto 700 a 22px (`.a-title`): la gerarchia la
+ *   fanno la composizione, la superficie e il dato, non una seconda scala
+ *   display;
+ * - il dato sta su una lastra chiara (`.a-slab`), anche dentro l'apertura nera.
+ */
+
+/* ---------- display, una volta sola ---------- */
+
+/* 56px a 390, 96px da 1480 in su: rapporto 1,7, sotto il 2,5 di tokens.css. */
+.a-display {
+  font-size: clamp(3.5rem, 6.5vw, 6rem);
+  max-inline-size: 12ch;
+}
+
+/* Il titolo di sezione: il tetto della scala funzionale, niente Anton. */
+.a-title {
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  text-wrap: balance;
+}
+
+.a-head {
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+  justify-items: start;
+}
+
+/* ---------- apertura ---------- */
+
+/*
+ * Nero, ma non a tutta altezza: l'eroe di oggi occupava l'88% dello schermo
+ * con il solo slogan. Qui l'altezza la decide il contenuto, e il contenuto
+ * comprende una lezione vera.
+ */
+.a-open {
+  margin-block-start: var(--header-height);
+  padding-block: clamp(var(--space-xxl), 6vw, 88px);
+  background: var(--color-surface);
+  color: var(--color-on-primary);
+  --ring: var(--color-on-primary);
+}
+
+.a-open__grid {
+  display: grid;
+  gap: clamp(var(--space-xl), 4vw, var(--space-section-sm));
+}
+
+@media (min-width: 960px) {
+  .a-open__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 30rem);
+    align-items: end;
+  }
+}
+
+.a-open__words {
+  display: grid;
+  gap: var(--space-lg);
+  justify-items: start;
+}
+
+.a-open__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm-alt);
+}
+
+/* Sul nero il secondario carbone c'e' appena: un filetto da 1px lo disegna
+   senza aggiungere superficie ne' colore. */
+.a-open .button--secondary {
+  box-shadow: inset 0 0 0 1px var(--color-ink-secondary);
+}
+
+.a-open__gym {
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-light);
+  line-height: var(--leading-tight);
+}
+
+.a-open--center .a-open__words {
+  gap: var(--space-md);
+}
+
+.a-open--center .breadcrumb {
+  margin-block-end: var(--space-xs);
+}
+
+/* ---------- la lastra del dato ---------- */
+
+.a-slab {
+  display: grid;
+  gap: var(--space-md);
+  padding: clamp(var(--space-lg), 2.4vw, var(--space-xl));
+  background: var(--color-surface-light);
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+  --ring: var(--color-ink);
+  --row-rule: var(--color-border);
+}
+
+.a-slab a {
+  text-underline-offset: 4px;
+}
+
+.a-slab__label {
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  color: var(--color-ink-secondary);
+}
+
+.a-slab__when {
+  font-weight: var(--weight-bold);
+}
+
+.a-slab__time {
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.a-slab__place {
+  display: grid;
+  gap: 2px;
+  font-size: var(--size-caption);
+}
+
+.a-slab__place a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.a-slab__facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-md);
+  padding-block-start: var(--space-md);
+  border-block-start: 1px solid var(--row-rule);
+}
+
+.a-slab__facts dt {
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+  color: var(--color-ink-secondary);
+}
+
+.a-slab__facts dd {
+  font-weight: var(--weight-bold);
+}
+
+.a-slab__after {
+  display: grid;
+  border-block-start: 1px solid var(--row-rule);
+  font-size: var(--size-caption);
+}
+
+.a-slab__after li {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  column-gap: var(--space-sm-alt);
+  align-items: center;
+  padding-block: var(--space-xs) 0;
+}
+
+.a-slab__after li > :last-child:not(a) {
+  grid-column: 2;
+  color: var(--color-ink-secondary);
+}
+
+.a-slab__after-time {
+  font-weight: var(--weight-bold);
+}
+
+.a-slab__after a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  font-weight: var(--weight-bold);
+}
+
+/* Nella scheda del centro la lastra porta indirizzo e orari: blocchi
+   separati da un filetto, senza titoli grandi. */
+.a-slab--center {
+  gap: 0;
+  padding-block: var(--space-sm) clamp(var(--space-lg), 2.4vw, var(--space-xl));
+}
+
+.a-slab__block {
+  display: grid;
+  gap: var(--space-xs);
+  padding-block: var(--space-md);
+}
+
+.a-slab__block + .a-slab__block {
+  border-block-start: 1px solid var(--row-rule);
+}
+
+.a-slab__address {
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.a-slab__maps {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.a-slab__action {
+  padding-block-start: var(--space-md);
+}
+
+/* Gli orari per giorno: il giorno una volta, sotto le lezioni. */
+.a-days {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.a-day {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.a-day__name {
+  font-weight: var(--weight-bold);
+}
+
+.a-day__slots {
+  display: grid;
+}
+
+.a-slot {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  column-gap: var(--space-sm-alt);
+  row-gap: 2px;
+  padding-block: var(--space-xs);
+  border-block-start: 1px solid var(--row-rule);
+}
+
+.a-slot__time {
+  white-space: nowrap;
+  font-size: var(--size-text);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.a-slot__what {
+  align-self: center;
+}
+
+.a-slot__who {
+  grid-column: 2;
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+}
+
+
+/* ---------- bivio: tre righe, ognuna con i suoi luoghi ---------- */
+
+.a-fork .a-head {
+  margin-block-end: clamp(var(--space-xl), 4vw, var(--space-section-sm));
+}
+
+.a-fork__rows {
+  display: grid;
+  border-block-end: 1px solid var(--row-rule);
+}
+
+.a-fork__row {
+  display: grid;
+  gap: var(--space-md) clamp(var(--space-lg), 3vw, var(--space-section-sm));
+  padding-block: clamp(var(--space-lg), 3vw, var(--space-xxl));
+  border-block-start: 1px solid var(--row-rule);
+}
+
+@media (min-width: 900px) {
+  .a-fork__row {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.a-fork__ask {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.a-fork__ask h3 {
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.a-fork__ask a {
+  text-decoration: none;
+}
+
+.a-fork__ask a:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+.a-fork__name {
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+  color: var(--color-ink-secondary);
+}
+
+.a-fork__summary {
+  max-inline-size: var(--measure);
+}
+
+.a-fork__where {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.a-fork__where a {
+  font-weight: var(--weight-bold);
+  text-underline-offset: 4px;
+}
+
+.a-fork__entry {
+  font-size: var(--size-caption);
+  color: var(--color-ink-secondary);
+}
+
+/* ---------- i centri: una directory, non un elenco di comuni ---------- */
+
+.a-head--row {
+  margin-block-end: clamp(var(--space-xl), 4vw, var(--space-section-sm));
+}
+
+@media (min-width: 900px) {
+  .a-head--row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+  }
+}
+
+.a-places__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  column-gap: var(--space-gutter);
+}
+
+.a-place {
+  display: grid;
+  gap: 2px;
+  align-content: start;
+  padding-block: var(--space-xs) var(--space-lg);
+  border-block-start: 1px solid var(--row-rule);
+  font-size: var(--size-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.a-place__name {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  min-block-size: 44px;
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  text-decoration: none;
+}
+
+.a-place__name:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.a-place__gym {
+  color: var(--color-ink-secondary);
+  margin-block-end: var(--space-xs);
+}
+
+.a-place__slots {
+  display: grid;
+  gap: 2px;
+}
+
+.a-place__day {
+  font-weight: var(--weight-bold);
+}
+
+.a-place__note {
+  color: var(--color-ink-secondary);
+}
+
+.a-place__who {
+  margin-block-start: var(--space-xs);
+  font-weight: var(--weight-bold);
+}
+
+/* ---------- chi insegna: l'unico altro blocco nero ---------- */
+
+.a-people__grid {
+  display: grid;
+  gap: clamp(var(--space-xl), 5vw, var(--space-section));
+}
+
+@media (min-width: 900px) {
+  .a-people__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  }
+}
+
+.a-people__list {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.a-person {
+  display: grid;
+  gap: var(--space-xs);
+  padding-block-start: var(--space-md);
+  border-block-start: 1px solid var(--row-rule);
+}
+
+.a-person__name {
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.a-person__role {
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+}
+
+.a-person__creds {
+  display: grid;
+  gap: 2px;
+  font-size: var(--size-caption);
+}
+
+.a-person__creds li::before {
+  content: '';
+  display: inline-block;
+  inline-size: 6px;
+  block-size: 6px;
+  margin-inline-end: var(--space-xs);
+  vertical-align: 0.15em;
+  background: currentColor;
+}
+
+.a-person__places {
+  font-size: var(--size-caption);
+}
+
+.a-people__others {
+  padding-block-start: var(--space-md);
+  border-block-start: 1px solid var(--row-rule);
+}
+
+.a-people__others span {
+  font-weight: var(--weight-bold);
+}
+
+/* ---------- la prima sera ---------- */
+
+.a-first__grid {
+  display: grid;
+  gap: clamp(var(--space-xl), 5vw, var(--space-section));
+}
+
+@media (min-width: 900px) {
+  .a-first__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+  }
+}
+
+.a-first__side {
+  display: grid;
+  gap: var(--space-xl);
+  align-content: start;
+}
+
+.a-first__points {
+  display: grid;
+  counter-reset: point;
+}
+
+.a-first__point {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  column-gap: var(--space-md);
+  row-gap: var(--space-xs);
+  padding-block: var(--space-lg);
+  border-block-start: 1px solid var(--row-rule);
+  counter-increment: point;
+}
+
+.a-first__point::before {
+  content: counter(point, decimal-leading-zero);
+  grid-row: 1 / span 3;
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+  padding-block-start: 3px;
+}
+
+.a-first__point h3 {
+  font-size: var(--size-text);
+  font-weight: var(--weight-bold);
+}
+
+.a-first__point p {
+  max-inline-size: var(--measure);
+}
+
+.a-first__hosts {
+  display: grid;
+  font-size: var(--size-caption);
+}
+
+.a-first__hosts li {
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+  min-block-size: 44px;
+  border-block-start: 1px solid var(--color-border);
+}
+
+.a-first__hosts a {
+  font-weight: var(--weight-bold);
+  text-underline-offset: 4px;
+}
+
+/* ---------- chiusura: scegli il centro, poi il modulo ---------- */
+
+.a-close .a-title {
+  font-size: var(--size-heading-lg);
+}
+
+.a-close__grid {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+@media (min-width: 900px) {
+  .a-close__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+  }
+}
+
+.a-close__form {
+  display: grid;
+  gap: var(--space-md);
+}
+
+@media (min-width: 620px) {
+  .a-close__form {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+}
+
+.a-close__form .button {
+  min-block-size: 48px;
+  cursor: pointer;
+}
+
+/* ---------- scheda centro: chi ti accoglie, come arrivare, modulo ---------- */
+
+.a-host__grid,
+.a-reach__grid,
+.a-request__grid {
+  display: grid;
+  gap: clamp(var(--space-xl), 5vw, var(--space-section));
+}
+
+@media (min-width: 900px) {
+  .a-host__grid,
+  .a-request__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    align-items: start;
+  }
+
+  .a-reach__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+    align-items: start;
+  }
+}
+
+.a-host__entries {
+  display: grid;
+  gap: var(--space-md);
+  margin-block-start: var(--space-xs);
+}
+
+.a-host__entries div {
+  display: grid;
+  gap: 2px;
+  padding-block-start: var(--space-sm);
+  border-block-start: 1px solid var(--color-border);
+}
+
+.a-host__entries dt {
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+}
+
+.a-host__entries dd {
+  max-inline-size: var(--measure);
+}
+
+.a-host__people {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.a-reach__words {
+  display: grid;
+  gap: var(--space-md);
+  justify-items: start;
+}
+
+.a-reach__address {
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-light);
+  line-height: var(--leading-tight);
+  font-variant-numeric: tabular-nums;
+}
+
+.a-reach__address strong {
+  font-weight: var(--weight-bold);
+}
+
+.a-reach__photo {
+  margin-block-start: var(--space-md);
+}
+
+.a-events .a-title {
+  margin-block-end: var(--space-lg);
+}
+
+.a-request .a-head {
+  gap: var(--space-md);
+}
+
+/* Il modulo e' quello di /contatti. Qui il centro arriva gia' scelto, quindi
+   sotto la select c'e' sempre la nota con l'indirizzo: nella stessa riga il
+   campo accanto si stirava e l'etichetta restava lontana dal suo input. */
+.a-request .form__row {
+  align-items: start;
+}

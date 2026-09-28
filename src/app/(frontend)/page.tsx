@@ -1,26 +1,28 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
 import { openPayload } from '@/components/payload'
-import { surfaceClass, disciplineId, ordinal, provinceName, published, forkTexts } from '@/components/data'
+import { disciplineId, provinceName, published, forkTexts, readableDays } from '@/components/data'
 import { Figure } from '@/components/Figure'
-import { HeroVideo } from '@/components/HeroVideo'
+import { fullName, joinNames, splitCenterName, upcomingLessons } from '@/components/lessons'
 
 /**
- * Home: orienta prima di convertire. Eroe, bivio dei percorsi, dove si pratica,
- * prima lezione, prove. Nessuna richiesta di contatto prima che il bivio sia risolto.
+ * Home, direzione A «Fenriz ripulito» (#62, #66). La stessa ossatura di oggi -
+ * barra nera, Anton, spigolo vivo, alternanza nero/chiaro - con tre correzioni:
  *
- * L'elenco completo dei centri con tutti gli orari vive in /centri e il dettaglio
- * di ogni percorso in /corsi: qui restano il bivio e il rimando.
+ * 1. ogni sezione ha una composizione sua e nomina un luogo o una persona;
+ * 2. il chiaro pesa quanto il nero: il nero resta alla barra, all'apertura e
+ *    a un blocco solo, quello di chi insegna;
+ * 3. il display compare una volta sola (l'H1, al massimo 96px), e nella prima
+ *    schermata c'e' gia' una lezione vera: centro, giorno, ora, docente.
  *
- * Il copy editoriale (eroe, prima lezione, qualifiche) sta nel global
- * Impostazioni. Le costanti qui sotto sono il ripiego: un campo svuotato
- * dall'admin non lascia un buco in home.
+ * Il copy editoriale sta nel global Impostazioni; le costanti qui sotto sono il
+ * ripiego per un campo svuotato dall'admin. I dati (lezioni, centri, persone)
+ * vengono dalle collection e non si scrivono mai a mano.
  */
 
-/* La home e' generata staticamente e ricontrollata ogni minuto: le sedi cambiano di
-   stagione, non di secondo, e cosi' una modifica dall'admin si vede senza un rebuild. */
+/* Un minuto: la prossima lezione cambia durante la sera, e cosi' una modifica
+   dall'admin si vede senza un rebuild. */
 export const revalidate = 60
 
 const DEFAULT_FIRST_TIME = [
@@ -46,20 +48,28 @@ const DEFAULT_FIRST_TIME = [
   },
 ]
 
-/* Niente numeri senza fonte: «almeno quattro anni di percorso e un esame di
-   abilitazione» era un fatto presentato come tale e non ha riscontro in `data/`,
-   in `docs/` ne' in PRODUCT.md, che nomina solo gli enti. Resta quello che il
-   sito puo' dimostrare: il tesseramento e i riconoscimenti, e le qualifiche di
-   ogni persona, che stanno scritte nell'albo una per una. Quando il cliente
-   conferma il percorso di diploma, la frase torna con il suo numero. */
+/* Niente numeri senza fonte (audit antislop 001, voce 10): restano il
+   tesseramento, i riconoscimenti e le qualifiche scritte nell'albo. */
 const DEFAULT_QUALIFICATIONS =
   'I docenti sono istruttori qualificati, tesserati e assicurati CSEN: nome, qualifica e grado di ognuno stanno nell’albo. Le qualifiche AKM sono riconosciute da CSEN-CONI, F.E.K.D.A. e P.T.D.'
+
+/* Le qualifiche che nell'albo aprono l'elenco: chi ha un ruolo e le credenziali
+   scritte si presenta con quelle, gli altri docenti con il nome. */
+const LEADING = new Set(['presidente', 'direttore-tecnico', 'maestro'])
+const DAYS = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom']
+const dayIndex = (day?: string | null) => (day ? DAYS.indexOf(day) : DAYS.length)
+
+const QUALIFICATION_LABEL: Record<string, string> = {
+  presidente: 'Presidente',
+  'direttore-tecnico': 'Direttore tecnico',
+  maestro: 'Maestro',
+}
 
 export default async function Home() {
   const payload = await openPayload()
 
-  const [settings, courses, centersFound, instructors] = await Promise.all([
-    payload.findGlobal({ slug: 'impostazioni', depth: 1 }),
+  const [settings, courses, centersFound, instructorsFound] = await Promise.all([
+    payload.findGlobal({ slug: 'impostazioni', depth: 0 }),
     payload.find({
       collection: 'corsi',
       depth: 0,
@@ -67,41 +77,64 @@ export default async function Home() {
       sort: 'ordine',
       where: { and: [{ inBivio: { equals: true } }, published] },
     }),
+    /* depth 1: la riga d'orario porta il corso e i docenti per nome. */
     payload.find({
       collection: 'sedi',
-      depth: 0,
+      depth: 1,
       limit: 200,
-      sort: 'indirizzo.citta',
-      select: { nome: true, slug: true, indirizzo: true, orari: true },
+      sort: 'nome',
+      /* Niente `select` qui: con `select` la Local API popola il corso della
+         riga d'orario ma lascia i docenti come id, e la prima schermata perdeva
+         il nome di chi insegna. */
       where: { and: [{ attivo: { equals: true } }, published] },
     }),
-    payload.count({ collection: 'istruttori', where: published }),
+    payload.find({
+      collection: 'istruttori',
+      depth: 0,
+      limit: 100,
+      sort: 'ordine',
+      select: { nome: true, nomeBreve: true, ruolo: true, qualifica: true, credenziali: true },
+      where: published,
+    }),
   ])
 
   const pathways = courses.docs
   const centers = centersFound.docs
+  const instructors = instructorsFound.docs
+  const lessons = upcomingLessons(centers)
+  const next = lessons[0] ?? null
+  /* Le due dopo, in altri centri: la prima schermata dice anche che la
+     settimana e' piena, senza dirlo a parole. */
+  const after = lessons.filter((l) => next && l.centerSlug !== next.centerSlug).slice(0, 2)
 
-  // Quante sedi tengono un dato corso: la prova che un percorso non e' un'astrazione.
-  const centersByCourse = new Map<number, number>()
+  // Per ogni corso, i centri che lo tengono: il bivio li nomina, non li conta soltanto.
+  const centersByCourse = new Map<number, { slug: string; place: string }[]>()
+  // Per ogni docente, i centri dove insegna.
+  const placesByTeacher = new Map<number, Set<string>>()
   for (const center of centers) {
-    const courseIds = new Set(
-      (center.orari ?? [])
-        .map((o) => disciplineId(o.disciplina))
-        .filter((id): id is number => id !== null),
-    )
-    for (const id of courseIds) centersByCourse.set(id, (centersByCourse.get(id) ?? 0) + 1)
+    const { place } = splitCenterName(center)
+    const seen = new Set<number>()
+    for (const slot of center.orari ?? []) {
+      const id = disciplineId(slot.disciplina)
+      if (id !== null && !seen.has(id)) {
+        seen.add(id)
+        centersByCourse.set(id, [...(centersByCourse.get(id) ?? []), { slug: center.slug, place }])
+      }
+      for (const t of slot.docenti ?? []) {
+        const tid = typeof t === 'object' ? t.id : t
+        placesByTeacher.set(tid, (placesByTeacher.get(tid) ?? new Set()).add(place))
+      }
+    }
   }
-
-  // In home bastano i primi comuni in ordine alfabetico: l'elenco vero sta in /centri.
-  const towns = [
-    ...new Set(centers.map((c) => c.indirizzo?.citta).filter((c): c is string => Boolean(c))),
-  ]
-    .sort()
-    .slice(0, 8)
 
   const provinces = new Set(
     centers.map((c) => c.indirizzo?.provincia).filter((p): p is string => Boolean(p)),
   )
+
+  const leading = instructors.filter((i) => i.qualifica && LEADING.has(i.qualifica))
+  const others = instructors
+    .filter((i) => !i.qualifica || !LEADING.has(i.qualifica))
+    .sort((a, b) => a.nome.localeCompare(b.nome, 'it'))
 
   const firstTime = settings?.home?.primaVolta?.length
     ? settings.home.primaVolta
@@ -116,26 +149,28 @@ export default async function Home() {
     bottone: settings?.home?.passoBottone || 'Richiedi informazioni',
   }
 
-  const hero = typeof settings?.immagineHero === 'object' ? settings.immagineHero : null
-  const heroUrl = hero?.sizes?.hero?.url || hero?.url || null
-  const video = typeof settings?.videoHero === 'object' ? settings.videoHero : null
-  const videoUrl = video?.url || null
-  const caption = (videoUrl ? video?.didascalia : hero?.didascalia) || null
+  /* «Con chi parli», in concreto: tre centri e chi ci insegna. I primi in
+     ordine alfabetico, cosi' la riga non cambia a ogni visita. */
+  const hosts = centers
+    .map((c) => {
+      const names = [
+        ...new Set((c.orari ?? []).flatMap((o) => (o.docenti ?? []).map(fullName))),
+      ].filter((n): n is string => Boolean(n))
+      return { slug: c.slug, place: splitCenterName(c).place, names }
+    })
+    .filter((h) => h.names.length > 0)
+    .slice(0, 3)
 
-  /* Il copy dell'eroe sta in Impostazioni > eroe, con i valori di serie come
-     ripiego: un campo svuotato dall'admin non lascia un buco in home. */
+  /* Il copy dell'eroe sta in Impostazioni > eroe. La fotografia e il video
+     dell'eroe non si mostrano: le foto di partenza sono generate (docs/adr/0012)
+     e in questa direzione la prima schermata la tiene il dato vero, non
+     un'immagine. */
   const texts = settings?.eroe
   const eyebrow = texts?.occhiello || 'Krav Maga · Milano, Monza e Brianza, Lodi, Varese'
   const title = texts?.titolo || 'Difendersi si impara'
-  // Sotto le 20 parole: la coda «prima scegli il percorso, poi la sede»
-  // ripeteva a parole quello che i due bottoni qui sotto gia' fanno.
   const row =
     texts?.testo ||
     `${centers.length > 0 ? `${centers.length} centri tecnici attivi, lezioni` : 'Lezioni'} settimanali tutto l’anno, istruttori con nome e cognome.`
-  /* L'ancora esiste solo se il bivio ha almeno una riga: senza percorsi -
-     succede nel minuto di guscio senza elenchi di docs/adr/0013, e su un
-     database appena migrato - il bottone principale non portava da nessuna
-     parte. Allora punta all'indice dei percorsi, che e' una rotta vera. */
   const primaryHref = texts?.ctaPrimariaHref || '#percorsi'
   const primary = {
     testo: texts?.ctaPrimariaEtichetta || 'Scegli il tuo percorso',
@@ -148,181 +183,208 @@ export default async function Home() {
 
   return (
     <>
-      <section className="hero" id="top">
-        {heroUrl ? (
-          <Image
-            className="hero__photo"
-            src={heroUrl}
-            alt={hero?.alt || ''}
-            fill
-            priority
-            sizes="100vw"
-          />
-        ) : null}
-        {videoUrl ? <HeroVideo src={videoUrl} /> : null}
-        {heroUrl || videoUrl ? <div className="hero__scrim" /> : null}
-        {/* Anche l'eroe dichiara la sua fotografia: e' generata come le altre
-            (docs/adr/0012), e qui e' la prima cosa che si vede. Sta in basso
-            a destra e non a sinistra, dove ci sono il titolo e i due inviti.
-            Col video acceso la didascalia e' quella del video: dice cosa si
-            vede, e cosa si vede non e' piu' la fotografia. */}
-        {caption ? <p className="hero__caption">{caption}</p> : null}
-
-        <div className="container hero__content">
-          <p className="eyebrow">{eyebrow}</p>
-          <h1 className="display display--hero hero__title">{title}</h1>
-          <p className="text">{row}</p>
-          <div className="hero__tail">
-            {/*
-              I due inviti dell'eroe sono secondari, non primari. Nella prima
-              schermata il rosso e' uno solo ed e' la CTA in barra, che porta
-              alla richiesta: l'unico esito misurabile del sito e l'unico
-              bottone che docs/adr/0008 non lascia nascondere. A 390px il titolo
-              resta a 48px e due masse rosse pesavano piu' del display, che e'
-              quello che deve dare il saluto; docs/adr/0005 lo dice gia' come
-              rimedio: ridurre quanti bottoni primari stanno nella stessa
-              schermata. Questi due non sono l'azione della pagina, sono il
-              primo bivio: portano a scegliere, non a convertire.
-
-              Un'ancora in pagina resta <a>: next/link su #percorsi rifarebbe la rotta.
-            */}
-            {primary.href.startsWith('#') ? (
-              <a className="button button--secondary" href={primary.href}>
-                {primary.testo}
-              </a>
-            ) : (
-              <Link className="button button--secondary" href={primary.href}>
-                {primary.testo}
+      {/* ---------- apertura: il nero, il titolo, una lezione vera ---------- */}
+      <section className="a-open" id="top" aria-labelledby="open-title">
+        <div className="container a-open__grid">
+          <div className="a-open__words">
+            <p className="eyebrow">{eyebrow}</p>
+            <h1 className="display a-display" id="open-title">
+              {title}
+            </h1>
+            <p className="text">{row}</p>
+            <div className="a-open__links">
+              {primary.href.startsWith('#') ? (
+                <a className="button button--secondary" href={primary.href}>
+                  {primary.testo}
+                </a>
+              ) : (
+                <Link className="button button--secondary" href={primary.href}>
+                  {primary.testo}
+                </Link>
+              )}
+              <Link className="button button--secondary" href={secondary.href}>
+                {secondary.testo}
               </Link>
-            )}
-            <Link className="button button--secondary" href={secondary.href}>
-              {secondary.testo}
-            </Link>
+            </div>
           </div>
+
+          {/* La lastra chiara dentro il nero: e' il dato, e sta sulla
+              superficie del dato. Senza orari a DB non c'e' niente da
+              promettere, e la lastra non si stampa. */}
+          {next ? (
+            <aside className="a-slab" aria-labelledby="next-title">
+              <p className="a-slab__label" id="next-title">
+                Prossima lezione
+              </p>
+              <p className="a-slab__when">
+                {next.when === 'Oggi' || next.when === 'Domani' ? `${next.when}, ` : ''}
+                {next.date}
+              </p>
+              <p className="a-slab__time">
+                {next.start}-{next.end}
+              </p>
+              <p className="a-slab__place">
+                <Link href={`/centri/${next.centerSlug}`}>{next.place}</Link>
+                {next.gym ? <span>{next.gym}</span> : null}
+              </p>
+              <dl className="a-slab__facts">
+                {next.teachers.length > 0 ? (
+                  <div>
+                    <dt>Docente</dt>
+                    <dd>{joinNames(next.teachers)}</dd>
+                  </div>
+                ) : null}
+                {next.courseName ? (
+                  <div>
+                    <dt>Corso</dt>
+                    <dd>
+                      {next.courseName}
+                      {next.note ? ` · ${next.note}` : ''}
+                    </dd>
+                  </div>
+                ) : null}
+              </dl>
+              {after.length > 0 ? (
+                <ul className="a-slab__after" aria-label="Le lezioni dopo">
+                  {after.map((l) => (
+                    <li key={l.key}>
+                      <span className="a-slab__after-time">
+                        {l.when} {l.start}
+                      </span>
+                      <Link href={`/centri/${l.centerSlug}`}>{l.place}</Link>
+                      {l.teachers.length > 0 ? <span>{joinNames(l.teachers)}</span> : null}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </aside>
+          ) : null}
         </div>
       </section>
 
+      {/* ---------- bivio: tre domande, e dove trovi la risposta ---------- */}
       {pathways.length > 0 ? (
-        <>
-          <section
-            className="section section--black fork__head"
-            id="percorsi"
-            aria-labelledby="paths-title"
-          >
-            <div className="container fork__heading">
+        <section className="section section--light a-fork" id="percorsi" aria-labelledby="paths-title">
+          <div className="container">
+            <header className="a-head">
               <p className="eyebrow">{fork.occhiello}</p>
-              <h2 className="display display--md" id="paths-title">
+              <h2 className="a-title" id="paths-title">
                 {fork.titolo}
               </h2>
               <p className="text">{fork.testo}</p>
-              {/* Il rimando all'indice sta nell'intestazione del bivio: da solo
-                  si prendeva una fascia intera - 220px di padding a 1440 - per
-                  una riga da 14px, che e' spazio avanzato, non struttura. */}
-              <Link className="breadcrumb" href="/corsi">
-                Tutti i percorsi
-              </Link>
-            </div>
-          </section>
+            </header>
 
-          <ol className="fork">
-            {pathways.map((course, i) => {
-                            const howMany = centersByCourse.get(course.id) ?? 0
-
-              return (
-                <li key={course.id} className={`reveal pathway ${surfaceClass(course.superficie)}`}>
-                  <details>
-                    <summary className="container pathway__head">
-                      <span className="pathway__index" aria-hidden="true">
-                        {ordinal(i + 1)}
-                      </span>
-                      <span className="pathway__question">
-                        <span className="display display--md">{course.domanda || course.nome}</span>
-                        <span className="pathway__name">{course.nome}</span>
-                      </span>
-                      <span className="pathway__mark" aria-hidden="true" />
-                    </summary>
-
-                    <div className="container pathway__body">
-                      <div>
-                        <p className="text">{course.sommario}</p>
-                        {course.prova ? (
-                          <p className="text detail pathway__trial">{course.prova}</p>
-                        ) : null}
-                        <p className="pathway__action">
-                          <Link className="button button--primary" href={`/corsi/${course.slug}`}>
-                            Vedi il percorso
-                          </Link>
-                        </p>
-                      </div>
-
-                      <dl className="pathway__facts">
-                        {course.aChiSiRivolge ? (
-                          <div className="pathway__fact">
-                            <dt>A chi si rivolge</dt>
-                            <dd>{course.aChiSiRivolge}</dd>
-                          </div>
-                        ) : null}
-                        {course.durata ? (
-                          <div className="pathway__fact">
-                            <dt>Come funziona</dt>
-                            <dd>{course.durata}</dd>
-                          </div>
-                        ) : null}
-                        {howMany > 0 ? (
-                          <div className="pathway__fact">
-                            <dt>Centri che lo tengono</dt>
-                            <dd>
-                              {howMany} su {centers.length}
-                            </dd>
-                          </div>
-                        ) : null}
-                      </dl>
+            <ol className="a-fork__rows">
+              {pathways.map((course) => {
+                const where = centersByCourse.get(course.id) ?? []
+                const everywhere = centers.length > 0 && where.length === centers.length
+                return (
+                  <li key={course.id} className="a-fork__row">
+                    <div className="a-fork__ask">
+                      <h3>
+                        <Link href={`/corsi/${course.slug}`}>{course.domanda || course.nome}</Link>
+                      </h3>
+                      <p className="a-fork__name">{course.nome}</p>
                     </div>
-                  </details>
-                </li>
-              )
-            })}
-          </ol>
-
-        </>
+                    <p className="a-fork__summary">{course.sommario}</p>
+                    <div className="a-fork__where">
+                      {everywhere ? (
+                        <p>
+                          <strong>In tutti i {centers.length} centri.</strong>{' '}
+                          <Link href="/centri">Vedi dove</Link>
+                        </p>
+                      ) : where.length > 0 ? (
+                        <p>
+                          <strong>
+                            {where.length === 1 ? 'In un centro:' : `In ${where.length} centri:`}
+                          </strong>{' '}
+                          {where.map((w, i) => (
+                            <React.Fragment key={w.slug}>
+                              {i > 0 ? (i === where.length - 1 ? ' e ' : ', ') : ''}
+                              <Link href={`/centri/${w.slug}`}>{w.place}</Link>
+                            </React.Fragment>
+                          ))}
+                          .
+                        </p>
+                      ) : (
+                        /* Zero centri non e' un dato da stampare («0 attivi»,
+                           docs/adr/0013): si dice com'e' e si lascia la porta
+                           aperta, con il percorso gia' scelto nel modulo. */
+                        <p>
+                          <strong>In questa stagione non è in calendario.</strong> Lascia comunque la
+                          richiesta:{' '}
+                          <Link href={`/contatti?corso=${encodeURIComponent(course.slug)}`}>
+                            scrivici
+                          </Link>
+                          .
+                        </p>
+                      )}
+                      {course.ingresso ? <p className="a-fork__entry">{course.ingresso}</p> : null}
+                    </div>
+                  </li>
+                )
+              })}
+            </ol>
+          </div>
+        </section>
       ) : null}
 
-      <section className="section section--light" id="centri" aria-labelledby="centers-title">
+      {/* ---------- i centri: nomi, giorni, ore ---------- */}
+      <section className="section section--grey a-places" id="centri" aria-labelledby="centers-title">
         <div className="container">
-          <div className="centers__heading">
-            <span className="rule" aria-hidden="true" />
-            <h2 className="display display--md" id="centers-title">
+          <header className="a-head a-head--row">
+            <h2 className="a-title" id="centers-title">
               {centers.length > 0
                 ? `${centers.length} centri in ${provinces.size} province`
                 : 'I centri tecnici'}
             </h2>
-            <p className="text">
-              Ogni percorso finisce in una sede. Indirizzo, giorni, orario e docente di ogni centro
-              stanno nella pagina dei centri, in ordine alfabetico per comune.
-            </p>
-          </div>
+            {provinces.size > 0 ? (
+              <p className="text">
+                {[...provinces].map(provinceName).sort((a, b) => a.localeCompare(b, 'it')).join(', ')}
+                . Ogni centro con il suo giorno, la sua ora e chi insegna.
+              </p>
+            ) : null}
+          </header>
 
-          {towns.length > 0 ? (
-            <ul className="towns">
-              {towns.map((town) => (
-                <li className="town" key={town}>
-                  {town}
-                </li>
-              ))}
-              {centers.length > towns.length ? (
-                <li className="town town--rest">
-                  e altri {centers.length - towns.length}
-                </li>
-              ) : null}
+          {centers.length > 0 ? (
+            <ul className="a-places__list">
+              {centers.map((center) => {
+                const { place, gym } = splitCenterName(center)
+                const slots = [...(center.orari ?? [])].sort(
+                  (a, b) =>
+                    dayIndex(a.giorni?.[0]) - dayIndex(b.giorni?.[0]) ||
+                    a.oraInizio.localeCompare(b.oraInizio),
+                )
+                const who = [
+                  ...new Set(slots.flatMap((o) => (o.docenti ?? []).map(fullName))),
+                ].filter((n): n is string => Boolean(n))
+                return (
+                  <li key={center.id} className="a-place">
+                    <Link className="a-place__name" href={`/centri/${center.slug}`}>
+                      {place}
+                    </Link>
+                    {gym ? <span className="a-place__gym">{gym}</span> : null}
+                    <ul className="a-place__slots">
+                      {slots.map((slot) => (
+                        <li key={slot.id}>
+                          <span className="a-place__day">{readableDays(slot.giorni)}</span>{' '}
+                          {slot.oraInizio}
+                          {slot.note ? <span className="a-place__note"> · {slot.note}</span> : null}
+                        </li>
+                      ))}
+                    </ul>
+                    {who.length > 0 ? <p className="a-place__who">Con {joinNames(who)}</p> : null}
+                  </li>
+                )
+              })}
             </ul>
           ) : null}
 
           <p className="tail-action">
-            <Link className="button button--primary" href="/centri">
-              Trova un centro
+            <Link className="button button--secondary" href="/centri">
+              La mappa dei centri
             </Link>
-            {/* Il secondo bottone non ripete il primo: dice come arrivarci, non
-                dove. La posizione la chiede /centri, che e' dove serve. */}
+            {/* Dice come arrivarci, non dove: la posizione la chiede /centri. */}
             <Link className="button button--secondary" href="/centri?vicino=1">
               Usa la mia posizione
             </Link>
@@ -330,96 +392,133 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* La sala prima del racconto della prima sera: chi non e' mai entrato in
-          una palestra vuole vederla, non leggerla. */}
-      <Figure
-        slot={settings?.home?.immagineIngresso}
-        label="Foto di «Cosa succede quando entri»"
-        format="band"
-        measure="grande"
-        sizes="100vw"
-      />
+      {/* ---------- chi insegna: l'unico altro blocco nero ---------- */}
+      {instructors.length > 0 ? (
+        <section className="section section--black a-people" aria-labelledby="people-title">
+          <div className="container a-people__grid">
+            <header className="a-head">
+              <span className="rule" aria-hidden="true" />
+              <h2 className="a-title" id="people-title">
+                Chi insegna
+              </h2>
+              <p className="text">{qualifications}</p>
+              <p>
+                <Link className="breadcrumb" href="/istruttori">
+                  L’albo degli istruttori
+                </Link>
+              </p>
+            </header>
 
-      <section className="section section--charcoal" id="prima-volta" aria-labelledby="first-title">
-        <div className="container first">
-          <div>
-            <h2 className="display display--md" id="first-title">
-              Cosa succede quando entri
-            </h2>
-            <p className="text first__lead">
-              La palestra intimidisce più del Krav Maga. Ecco cosa aspettarsi la prima sera, così
-              non devi chiederlo.
-            </p>
+            <div className="a-people__list">
+              {leading.map((person) => {
+                const places = [...(placesByTeacher.get(person.id) ?? [])].sort((a, b) =>
+                  a.localeCompare(b, 'it'),
+                )
+                return (
+                  <article key={person.id} className="a-person">
+                    <h3 className="a-person__name">{person.nome}</h3>
+                    <p className="a-person__role">
+                      {person.ruolo ||
+                        (person.qualifica ? QUALIFICATION_LABEL[person.qualifica] : '')}
+                    </p>
+                    {person.credenziali?.length ? (
+                      <ul className="a-person__creds">
+                        {person.credenziali.map((c) => (
+                          <li key={c.id ?? c.voce}>{c.voce}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    {places.length > 0 ? (
+                      <p className="a-person__places">Insegna a {joinNames(places)}.</p>
+                    ) : null}
+                  </article>
+                )
+              })}
+
+              {others.length > 0 ? (
+                <p className="a-people__others">
+                  <span>E nei centri:</span> {joinNames(others.map((o) => o.nome))}.
+                </p>
+              ) : null}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {/* ---------- la prima sera ---------- */}
+      <section className="section section--light a-first" id="prima-volta" aria-labelledby="first-title">
+        <div className="container a-first__grid">
+          <div className="a-first__side">
+            <header className="a-head">
+              <h2 className="a-title" id="first-title">
+                Cosa succede quando entri
+              </h2>
+              <p className="text">
+                La palestra intimidisce più del Krav Maga. Ecco cosa aspettarsi la prima sera, così
+                non devi chiederlo.
+              </p>
+            </header>
+            {/* Slot dichiarato (docs/adr/0012): la foto generata di partenza
+                non si mostra, e il posto resta scritto per quando arriva
+                quella vera. */}
+            <Figure
+              slot={null}
+              label="Foto della sala in arrivo"
+              format="wide"
+              className="a-first__photo"
+            />
           </div>
 
-          <div className="first__points">
-            {firstTime.map((point) => (
-              <div key={point.titolo} className="reveal first__point">
+          <ol className="a-first__points">
+            {firstTime.map((point, i) => (
+              <li key={point.titolo} className="a-first__point">
                 <h3>{point.titolo}</h3>
-                <p className="text">{point.testo}</p>
-              </div>
+                <p>{point.testo}</p>
+                {/* L'ultimo punto dice «con chi parli»: qui i nomi veri. */}
+                {i === firstTime.length - 1 && hosts.length > 0 ? (
+                  <ul className="a-first__hosts" aria-label="Per esempio">
+                    {hosts.map((h) => (
+                      <li key={h.slug}>
+                        <Link href={`/centri/${h.slug}`}>{h.place}</Link>: {joinNames(h.names)}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
-      <section className="section section--black" aria-labelledby="trials-title">
-        <div className="container trials">
-          <div>
-            <h2 className="display display--md" id="trials-title">
-              Le qualifiche si contano
+      {/* ---------- chiusura: la richiesta parte gia' con il centro ---------- */}
+      <section className="section section--grey a-close" aria-labelledby="step-title">
+        <div className="container a-close__grid">
+          <header className="a-head">
+            <h2 className="a-title" id="step-title">
+              {step.titolo}
             </h2>
-            <p className="text first__lead">{qualifications}</p>
-          </div>
+            <p className="text">{step.testo}</p>
+          </header>
 
-          {/* Un numero a zero non e' una prova: la riga sparisce invece di dichiarare il vuoto. */}
-          <dl className="trials__numbers">
-            {centers.length > 0 ? (
-              <div className="trial">
-                <dt className="trial__value">{centers.length}</dt>
-                <dd className="trial__item">centri tecnici attivi in questa stagione</dd>
-              </div>
-            ) : null}
-            {instructors.totalDocs > 0 ? (
-              <div className="trial">
-                <dt className="trial__value">{instructors.totalDocs}</dt>
-                <dd className="trial__item">istruttori e maestri con nome, cognome e qualifica</dd>
-              </div>
-            ) : null}
-            {provinces.size > 0 ? (
-              <div className="trial">
-                <dt className="trial__value">{provinces.size}</dt>
-                <dd className="trial__item">
-                  province coperte: {[...provinces].map(provinceName).sort().join(', ')}
-                </dd>
-              </div>
-            ) : null}
-          </dl>
-        </div>
-      </section>
-
-      {/* La chiusura: la home orienta prima di convertire, e questa e' l'unica
-          richiesta di contatto dopo il bivio. Chiara prima del footer carbone:
-          uno stacco di valore, non di tinta. Un bottone solo, con l'etichetta
-          della barra: un intento, una parola. */}
-      <section className="section section--light" aria-labelledby="step-title">
-        <div className="container">
-          {/* A 390px le tre sezioni finali collassavano sulla stessa composizione:
-              display-md, paragrafo, elenco o bottone a sinistra, e cambiava solo
-              il fondo. Le prime due hanno una forma propria - i punti con i
-              filetti, i numerali in Anton - questa no: la chiusura si prende il
-              filetto e il corpo grande, cosi' il ritmo torna a farsi anche con
-              la scala e non con il solo fondo (RHYTHM 2). */}
-          <span className="rule" aria-hidden="true" />
-          <h2 className="display display--lg step__title" id="step-title">
-            {step.titolo}
-          </h2>
-          <p className="text first__lead">{step.testo}</p>
-          <p className="tail-action">
-            <Link className="button button--primary" href="/contatti">
+          {/* Un form GET verso /contatti: scegliere il centro qui lo
+              preseleziona nel modulo (?sede=), che e' la richiesta che
+              PRODUCT.md misura. Senza JavaScript funziona uguale. */}
+          <form className="a-close__form" action="/contatti" method="get">
+            <div className="field">
+              <label htmlFor="close-center">Il centro che ti resta comodo</label>
+              <select id="close-center" name="sede" defaultValue="">
+                <option value="">Non lo so ancora</option>
+                {centers.map((c) => (
+                  <option key={c.id} value={c.slug}>
+                    {c.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button type="submit" className="button button--primary">
               {step.bottone}
-            </Link>
-          </p>
+            </button>
+          </form>
         </div>
       </section>
     </>

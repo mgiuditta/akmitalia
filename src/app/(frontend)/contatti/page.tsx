@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
 import React from 'react'
 
-import { RequestForm, type FormTexts } from '@/components/RequestForm'
-import { readableAddress, published } from '@/components/data'
+import { RequestForm } from '@/components/RequestForm'
 import { openPayload } from '@/components/payload'
-import { extraItems, type FormOptions } from './validation'
+import { loadRequestForm } from '@/components/requestFormData'
 import { Figure } from '@/components/Figure'
 import { pageMetadata } from '@/components/seo'
 
@@ -46,65 +45,11 @@ export default async function ContactPage({
 }) {
   const { corso: courseSlug, sede: centerSlug } = await searchParams
   const payload = await openPayload()
-
-  const [contacts, centers, courses] = await Promise.all([
-    payload.findGlobal({ slug: 'contatti', depth: 1 }),
-    payload.find({
-      collection: 'sedi',
-      depth: 0,
-      limit: 200,
-      sort: 'indirizzo.citta',
-      select: { nome: true, slug: true, indirizzo: true, palestra: true, mapsUrl: true },
-      where: { and: [{ attivo: { equals: true } }, published] },
-    }),
-    payload.find({
-      collection: 'corsi',
-      depth: 0,
-      limit: 50,
-      sort: 'ordine',
-      select: { nome: true, slug: true },
-      where: published,
-    }),
-  ])
-
-  const form = contacts.modulo
-  const choice = typeof form?.paginaPrivacy === 'object' ? form.paginaPrivacy : null
-
-  /* Il consenso GDPR senza il link all'informativa e' un consenso che non si
-     puo' leggere. Il campo del global e' il modo giusto di collegarla, ma il
-     ripiego non e' lasciarlo vuoto: se nessuno l'ha scelta, si cerca la pagina
-     pubblicata a /privacy, che `pnpm pages:legal` crea. */
-  const privacy =
-    choice ??
-    (
-      await payload.find({
-        collection: 'pagine',
-        depth: 0,
-        limit: 1,
-        select: { path: true },
-        where: { and: [{ path: { equals: '/privacy' } }, published] },
-      })
-    ).docs[0] ??
-    null
-
-  const formTexts: FormTexts = {
-    nota: form?.nota || 'Tutti i campi sono obbligatori, tranne percorso e messaggio.',
-    etichettaConsenso:
-      form?.etichettaConsenso ||
-      'Autorizzo il trattamento dei dati personali secondo il Regolamento UE 2016/679, per essere ricontattato da AKM Italia.',
-    etichettaInvio: form?.etichettaInvio || 'Invia la richiesta',
-    privacy: privacy?.path ? { etichetta: 'Leggi l’informativa', href: privacy.path } : null,
-  }
-
-  const options: FormOptions = {
-    dataNascita: form?.chiediDataNascita !== false,
-    pathway: form?.chiediPercorso !== false,
-    messaggio: form?.chiediMessaggio !== false,
-    altreVoci: extraItems(form),
-  }
+  const { contacts, centers, courses, texts: formTexts, options, turnstileSiteKey } =
+    await loadRequestForm(payload)
 
   const initialCourse = courseSlug
-    ? (courses.docs.find((c) => c.slug === courseSlug)?.id ?? null)
+    ? (courses.find((c) => c.slug === courseSlug)?.id ?? null)
     : null
 
   /* Da una scheda centro o da un evento: il centro arriva gia' scelto, cosi' la
@@ -113,7 +58,7 @@ export default async function ContactPage({
      Uno slug che non e' fra i centri attivi non preseleziona niente e non e' un
      errore: la select resta sul «Scegli un centro». */
   const initialCenter = centerSlug
-    ? (centers.docs.find((s) => s.slug === centerSlug)?.id ?? null)
+    ? (centers.find((s) => s.slug === centerSlug)?.id ?? null)
     : null
 
   const channels = Boolean(
@@ -144,20 +89,13 @@ export default async function ContactPage({
               Scrivici
             </h2>
             <RequestForm
-              sedi={centers.docs.map((s) => ({
-                id: s.id,
-                nome: s.nome,
-                citta: s.indirizzo?.citta ?? '',
-                indirizzo: readableAddress(s.indirizzo),
-                palestra: s.palestra ?? null,
-                mapsUrl: s.mapsUrl ?? null,
-              }))}
-              corsi={courses.docs.map((c) => ({ id: c.id, nome: c.nome }))}
+              sedi={centers}
+              corsi={courses}
               texts={formTexts}
               options={options}
               initialCourse={initialCourse}
               initialCenter={initialCenter}
-              turnstileSiteKey={process.env.TURNSTILE_SITE_KEY || null}
+              turnstileSiteKey={turnstileSiteKey}
             />
           </div>
 
