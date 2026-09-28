@@ -1,26 +1,34 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
 import { openPayload } from '@/components/payload'
-import { surfaceClass, disciplineId, ordinal, provinceName, published, forkTexts } from '@/components/data'
-import { Figure } from '@/components/Figure'
-import { HeroVideo } from '@/components/HeroVideo'
+import { disciplineId, ordinal, provinceName, published, forkTexts } from '@/components/data'
+import {
+  DAY_NAMES,
+  buildWeek,
+  lessonsLabel,
+  placeName,
+  todayKey,
+  type Lesson,
+} from '@/components/board/week'
 
 /**
- * Home: orienta prima di convertire. Eroe, bivio dei percorsi, dove si pratica,
- * prima lezione, prove. Nessuna richiesta di contatto prima che il bivio sia risolto.
+ * Home, direzione B «La bacheca della sala» (prototipo, mappa #62, ticket #66).
  *
- * L'elenco completo dei centri con tutti gli orari vive in /centri e il dettaglio
- * di ogni percorso in /corsi: qui restano il bivio e il rimando.
+ * Il foglio dell'orario appeso all'ingresso della palestra, fatto bene: chi
+ * arriva deve pensare «il giovedi' sera a Binasco c'e' una lezione, alle 20:30,
+ * la tiene Vittorio Porreca» prima di pensare «Krav Maga». L'ordine della pagina
+ * lo da' la settimana, lunedi'-sabato, e la settimana si calcola dagli orari dei
+ * centri attivi: nessuna lezione e' scritta a mano.
  *
- * Il copy editoriale (eroe, prima lezione, qualifiche) sta nel global
- * Impostazioni. Le costanti qui sotto sono il ripiego: un campo svuotato
- * dall'admin non lascia un buco in home.
+ * Chiaro per prima cosa. Il nero pieno sta in tre posti soli: la barra, il blocco
+ * della prima lezione e il piede. Anton solo per i numeri e le sigle dei giorni;
+ * i titoli sono Roboto in maiuscolo e minuscolo normale.
+ *
+ * Nessuna fotografia: le foto di partenza di Impostazioni sono generate e questa
+ * direzione non ne ha bisogno. La pagina regge senza.
  */
 
-/* La home e' generata staticamente e ricontrollata ogni minuto: le sedi cambiano di
-   stagione, non di secondo, e cosi' una modifica dall'admin si vede senza un rebuild. */
 export const revalidate = 60
 
 const DEFAULT_FIRST_TIME = [
@@ -46,20 +54,50 @@ const DEFAULT_FIRST_TIME = [
   },
 ]
 
-/* Niente numeri senza fonte: «almeno quattro anni di percorso e un esame di
-   abilitazione» era un fatto presentato come tale e non ha riscontro in `data/`,
-   in `docs/` ne' in PRODUCT.md, che nomina solo gli enti. Resta quello che il
-   sito puo' dimostrare: il tesseramento e i riconoscimenti, e le qualifiche di
-   ogni persona, che stanno scritte nell'albo una per una. Quando il cliente
-   conferma il percorso di diploma, la frase torna con il suo numero. */
 const DEFAULT_QUALIFICATIONS =
   'I docenti sono istruttori qualificati, tesserati e assicurati CSEN: nome, qualifica e grado di ognuno stanno nell’albo. Le qualifiche AKM sono riconosciute da CSEN-CONI, F.E.K.D.A. e P.T.D.'
+
+/* La qualifica e' un enum: sulla bacheca si scrive in minuscolo, sotto il nome. */
+const QUALIFICATIONS: Record<string, string> = {
+  istruttore: 'Istruttore',
+  trainer: 'Trainer',
+  maestro: 'Maestro',
+  'direttore-tecnico': 'Direttore tecnico',
+  presidente: 'Presidente',
+}
+
+function LessonCell({ lesson }: { lesson: Lesson }) {
+  return (
+    <li className="board-lesson">
+      <p className="board-lesson__time">
+        <span className="board-lesson__start">{lesson.start}</span>
+        <span className="board-lesson__end">
+          fino alle{' '}
+          {lesson.end}
+        </span>
+      </p>
+      <div className="board-lesson__body">
+        <h4 className="board-lesson__place">
+          <Link href={`/centri/${lesson.centerSlug}`}>{lesson.place}</Link>
+        </h4>
+        {lesson.gym ? <p className="board-lesson__gym">{lesson.gym}</p> : null}
+        <p className="board-lesson__course">
+          {lesson.course?.name}
+          {lesson.note ? <span className="board-lesson__note">{lesson.note}</span> : null}
+        </p>
+        {lesson.teachers.length > 0 ? (
+          <p className="board-lesson__teacher">con {lesson.teachers.join(', ')}</p>
+        ) : null}
+      </div>
+    </li>
+  )
+}
 
 export default async function Home() {
   const payload = await openPayload()
 
-  const [settings, courses, centersFound, instructors] = await Promise.all([
-    payload.findGlobal({ slug: 'impostazioni', depth: 1 }),
+  const [settings, courses, centersFound, instructorsFound] = await Promise.all([
+    payload.findGlobal({ slug: 'impostazioni', depth: 0 }),
     payload.find({
       collection: 'corsi',
       depth: 0,
@@ -69,35 +107,53 @@ export default async function Home() {
     }),
     payload.find({
       collection: 'sedi',
-      depth: 0,
+      depth: 1,
       limit: 200,
       sort: 'indirizzo.citta',
-      select: { nome: true, slug: true, indirizzo: true, orari: true },
+      /* Niente `select` qui: con `select` i docenti di ogni riga d'orario (una
+         relazione hasMany dentro un array) tornano vuoti. */
       where: { and: [{ attivo: { equals: true } }, published] },
     }),
-    payload.count({ collection: 'istruttori', where: published }),
+    payload.find({
+      collection: 'istruttori',
+      depth: 0,
+      limit: 100,
+      sort: 'ordine',
+      select: { nome: true, ruolo: true, qualifica: true, slug: true },
+      where: published,
+    }),
   ])
 
   const pathways = courses.docs
   const centers = centersFound.docs
+  const names = new Map(instructorsFound.docs.map((i) => [i.id, i.nome]))
+  const week = buildWeek(centers, names)
+  const lessons = week.flatMap((d) => d.lessons)
+  const today = todayKey()
 
-  // Quante sedi tengono un dato corso: la prova che un percorso non e' un'astrazione.
-  const centersByCourse = new Map<number, number>()
+  /* Quali centri tengono un corso: la prova che un percorso non e' un'astrazione. */
+  const centersByCourse = new Map<number, string[]>()
   for (const center of centers) {
-    const courseIds = new Set(
+    const ids = new Set(
       (center.orari ?? [])
         .map((o) => disciplineId(o.disciplina))
         .filter((id): id is number => id !== null),
     )
-    for (const id of courseIds) centersByCourse.set(id, (centersByCourse.get(id) ?? 0) + 1)
+    for (const id of ids) {
+      centersByCourse.set(id, [...(centersByCourse.get(id) ?? []), placeName(center)])
+    }
   }
 
-  // In home bastano i primi comuni in ordine alfabetico: l'elenco vero sta in /centri.
-  const towns = [
-    ...new Set(centers.map((c) => c.indirizzo?.citta).filter((c): c is string => Boolean(c))),
-  ]
-    .sort()
-    .slice(0, 8)
+  /* Chi insegna, contato sulla bacheca: quante lezioni a settimana e dove. Chi
+     non ha lezioni in calendario non entra qui (resta nell'albo): qui si legge
+     chi trovi in sala questa settimana. */
+  const teaching = instructorsFound.docs
+    .map((person) => {
+      const own = lessons.filter((l) => l.teachers.includes(person.nome))
+      return { person, lessons: own.length, places: [...new Set(own.map((l) => l.place))] }
+    })
+    .filter((t) => t.lessons > 0)
+    .sort((a, b) => b.lessons - a.lessons || a.person.nome.localeCompare(b.person.nome, 'it'))
 
   const provinces = new Set(
     centers.map((c) => c.indirizzo?.provincia).filter((p): p is string => Boolean(p)),
@@ -116,26 +172,12 @@ export default async function Home() {
     bottone: settings?.home?.passoBottone || 'Richiedi informazioni',
   }
 
-  const hero = typeof settings?.immagineHero === 'object' ? settings.immagineHero : null
-  const heroUrl = hero?.sizes?.hero?.url || hero?.url || null
-  const video = typeof settings?.videoHero === 'object' ? settings.videoHero : null
-  const videoUrl = video?.url || null
-  const caption = (videoUrl ? video?.didascalia : hero?.didascalia) || null
-
-  /* Il copy dell'eroe sta in Impostazioni > eroe, con i valori di serie come
-     ripiego: un campo svuotato dall'admin non lascia un buco in home. */
   const texts = settings?.eroe
   const eyebrow = texts?.occhiello || 'Krav Maga · Milano, Monza e Brianza, Lodi, Varese'
   const title = texts?.titolo || 'Difendersi si impara'
-  // Sotto le 20 parole: la coda «prima scegli il percorso, poi la sede»
-  // ripeteva a parole quello che i due bottoni qui sotto gia' fanno.
   const row =
     texts?.testo ||
     `${centers.length > 0 ? `${centers.length} centri tecnici attivi, lezioni` : 'Lezioni'} settimanali tutto l’anno, istruttori con nome e cognome.`
-  /* L'ancora esiste solo se il bivio ha almeno una riga: senza percorsi -
-     succede nel minuto di guscio senza elenchi di docs/adr/0013, e su un
-     database appena migrato - il bottone principale non portava da nessuna
-     parte. Allora punta all'indice dei percorsi, che e' una rotta vera. */
   const primaryHref = texts?.ctaPrimariaHref || '#percorsi'
   const primary = {
     testo: texts?.ctaPrimariaEtichetta || 'Scegli il tuo percorso',
@@ -145,281 +187,270 @@ export default async function Home() {
     testo: texts?.ctaSecondariaEtichetta || 'Trova un centro',
     href: texts?.ctaSecondariaHref || '/centri',
   }
+  const centersWord = centers.length === 1 ? 'centro' : 'centri'
 
   return (
     <>
-      <section className="hero" id="top">
-        {heroUrl ? (
-          <Image
-            className="hero__photo"
-            src={heroUrl}
-            alt={hero?.alt || ''}
-            fill
-            priority
-            sizes="100vw"
-          />
-        ) : null}
-        {videoUrl ? <HeroVideo src={videoUrl} /> : null}
-        {heroUrl || videoUrl ? <div className="hero__scrim" /> : null}
-        {/* Anche l'eroe dichiara la sua fotografia: e' generata come le altre
-            (docs/adr/0012), e qui e' la prima cosa che si vede. Sta in basso
-            a destra e non a sinistra, dove ci sono il titolo e i due inviti.
-            Col video acceso la didascalia e' quella del video: dice cosa si
-            vede, e cosa si vede non e' piu' la fotografia. */}
-        {caption ? <p className="hero__caption">{caption}</p> : null}
-
-        <div className="container hero__content">
-          <p className="eyebrow">{eyebrow}</p>
-          <h1 className="display display--hero hero__title">{title}</h1>
-          <p className="text">{row}</p>
-          <div className="hero__tail">
-            {/*
-              I due inviti dell'eroe sono secondari, non primari. Nella prima
-              schermata il rosso e' uno solo ed e' la CTA in barra, che porta
-              alla richiesta: l'unico esito misurabile del sito e l'unico
-              bottone che docs/adr/0008 non lascia nascondere. A 390px il titolo
-              resta a 48px e due masse rosse pesavano piu' del display, che e'
-              quello che deve dare il saluto; docs/adr/0005 lo dice gia' come
-              rimedio: ridurre quanti bottoni primari stanno nella stessa
-              schermata. Questi due non sono l'azione della pagina, sono il
-              primo bivio: portano a scegliere, non a convertire.
-
-              Un'ancora in pagina resta <a>: next/link su #percorsi rifarebbe la rotta.
-            */}
-            {primary.href.startsWith('#') ? (
-              <a className="button button--secondary" href={primary.href}>
-                {primary.testo}
-              </a>
-            ) : (
-              <Link className="button button--secondary" href={primary.href}>
-                {primary.testo}
+      {/* ---------- testata: il titolo del foglio e l'indice dei giorni ---------- */}
+      <section className="board board--white board-head" aria-labelledby="board-title">
+        <div className="container board-head__grid">
+          <div className="board-head__intro">
+            <p className="board-eyebrow">{eyebrow}</p>
+            <h1 className="board-title board-title--page" id="board-title">
+              {title}
+            </h1>
+            <p className="board-lead">{row}</p>
+            {/* Due inviti secondari, come oggi: nella prima schermata il rosso
+                resta uno, la CTA in barra (docs/adr/0005, audit voce 24). */}
+            <p className="board-actions">
+              {primary.href.startsWith('#') ? (
+                <a className="button button--secondary" href={primary.href}>
+                  {primary.testo}
+                </a>
+              ) : (
+                <Link className="button button--secondary" href={primary.href}>
+                  {primary.testo}
+                </Link>
+              )}
+              <Link className="board-link" href={secondary.href}>
+                {secondary.testo}
               </Link>
-            )}
-            <Link className="button button--secondary" href={secondary.href}>
-              {secondary.testo}
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {pathways.length > 0 ? (
-        <>
-          <section
-            className="section section--black fork__head"
-            id="percorsi"
-            aria-labelledby="paths-title"
-          >
-            <div className="container fork__heading">
-              <p className="eyebrow">{fork.occhiello}</p>
-              <h2 className="display display--md" id="paths-title">
-                {fork.titolo}
-              </h2>
-              <p className="text">{fork.testo}</p>
-              {/* Il rimando all'indice sta nell'intestazione del bivio: da solo
-                  si prendeva una fascia intera - 220px di padding a 1440 - per
-                  una riga da 14px, che e' spazio avanzato, non struttura. */}
-              <Link className="breadcrumb" href="/corsi">
-                Tutti i percorsi
-              </Link>
-            </div>
-          </section>
-
-          <ol className="fork">
-            {pathways.map((course, i) => {
-                            const howMany = centersByCourse.get(course.id) ?? 0
-
-              return (
-                <li key={course.id} className={`reveal pathway ${surfaceClass(course.superficie)}`}>
-                  <details>
-                    <summary className="container pathway__head">
-                      <span className="pathway__index" aria-hidden="true">
-                        {ordinal(i + 1)}
-                      </span>
-                      <span className="pathway__question">
-                        <span className="display display--md">{course.domanda || course.nome}</span>
-                        <span className="pathway__name">{course.nome}</span>
-                      </span>
-                      <span className="pathway__mark" aria-hidden="true" />
-                    </summary>
-
-                    <div className="container pathway__body">
-                      <div>
-                        <p className="text">{course.sommario}</p>
-                        {course.prova ? (
-                          <p className="text detail pathway__trial">{course.prova}</p>
-                        ) : null}
-                        <p className="pathway__action">
-                          <Link className="button button--primary" href={`/corsi/${course.slug}`}>
-                            Vedi il percorso
-                          </Link>
-                        </p>
-                      </div>
-
-                      <dl className="pathway__facts">
-                        {course.aChiSiRivolge ? (
-                          <div className="pathway__fact">
-                            <dt>A chi si rivolge</dt>
-                            <dd>{course.aChiSiRivolge}</dd>
-                          </div>
-                        ) : null}
-                        {course.durata ? (
-                          <div className="pathway__fact">
-                            <dt>Come funziona</dt>
-                            <dd>{course.durata}</dd>
-                          </div>
-                        ) : null}
-                        {howMany > 0 ? (
-                          <div className="pathway__fact">
-                            <dt>Centri che lo tengono</dt>
-                            <dd>
-                              {howMany} su {centers.length}
-                            </dd>
-                          </div>
-                        ) : null}
-                      </dl>
-                    </div>
-                  </details>
-                </li>
-              )
-            })}
-          </ol>
-
-        </>
-      ) : null}
-
-      <section className="section section--light" id="centri" aria-labelledby="centers-title">
-        <div className="container">
-          <div className="centers__heading">
-            <span className="rule" aria-hidden="true" />
-            <h2 className="display display--md" id="centers-title">
-              {centers.length > 0
-                ? `${centers.length} centri in ${provinces.size} province`
-                : 'I centri tecnici'}
-            </h2>
-            <p className="text">
-              Ogni percorso finisce in una sede. Indirizzo, giorni, orario e docente di ogni centro
-              stanno nella pagina dei centri, in ordine alfabetico per comune.
             </p>
           </div>
 
-          {towns.length > 0 ? (
-            <ul className="towns">
-              {towns.map((town) => (
-                <li className="town" key={town}>
-                  {town}
+          {lessons.length > 0 ? (
+            <nav className="board-index" aria-labelledby="board-index-label">
+              <p className="board-index__label" id="board-index-label">
+                La settimana, in {centers.length} {centersWord}
+              </p>
+              <ol className="board-index__days">
+                {week.map((day) => (
+                  <li key={day.key}>
+                    <a className="board-index__day" href={`#giorno-${day.key}`}>
+                      <span className="board-index__short" aria-hidden="true">
+                        {DAY_NAMES[day.key].short}
+                      </span>
+                      <span className="board-sr">{DAY_NAMES[day.key].long}: </span>
+                      <span className="board-index__count">
+                        {day.lessons.length > 0
+                          ? `${day.lessons.length} ${lessonsLabel(day.lessons.length)}`
+                          : 'nessuna lezione'}
+                      </span>
+                      {day.key === today ? <span className="board-today">Oggi</span> : null}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          ) : null}
+        </div>
+      </section>
+
+      {/* ---------- la settimana: il cuore della bacheca ---------- */}
+      {lessons.length > 0 ? (
+        <section className="board board--grey board-week" id="settimana" aria-labelledby="week-title">
+          <div className="container">
+            <header className="board-section-head">
+              <h2 className="board-title" id="week-title">
+                La settimana
+              </h2>
+              <p className="board-section-head__aside">
+                {lessons.length} {lessonsLabel(lessons.length)} in {centers.length} {centersWord}, in
+                ordine di giorno e di ora. Il nome del centro porta a indirizzo, orari e richiesta.
+              </p>
+            </header>
+
+            <ol className="board-days">
+              {week.map((day) => (
+                <li
+                  className={`board-day${day.key === today ? ' board-day--today' : ''}`}
+                  key={day.key}
+                  id={`giorno-${day.key}`}
+                >
+                  <div className="board-day__head">
+                    <h3 className="board-day__title">
+                      <span className="board-day__short" aria-hidden="true">
+                        {DAY_NAMES[day.key].short}
+                      </span>
+                      <span className="board-day__long">{DAY_NAMES[day.key].long}</span>
+                    </h3>
+                    <p className="board-day__count">
+                      {day.lessons.length > 0
+                        ? `${day.lessons.length} ${lessonsLabel(day.lessons.length)}`
+                        : 'Nessuna lezione'}
+                    </p>
+                    {day.key === today ? <p className="board-today">Oggi</p> : null}
+                  </div>
+                  {day.lessons.length > 0 ? (
+                    <ol className="board-day__lessons">
+                      {day.lessons.map((lesson) => (
+                        <LessonCell lesson={lesson} key={lesson.key} />
+                      ))}
+                    </ol>
+                  ) : null}
                 </li>
               ))}
-              {centers.length > towns.length ? (
-                <li className="town town--rest">
-                  e altri {centers.length - towns.length}
-                </li>
-              ) : null}
-            </ul>
+            </ol>
+          </div>
+        </section>
+      ) : null}
+
+      {/* ---------- il bivio, come righe di un programma di stagione ---------- */}
+      {pathways.length > 0 ? (
+        <section className="board board--white" id="percorsi" aria-labelledby="paths-title">
+          <div className="container">
+            <header className="board-section-head">
+              <h2 className="board-title" id="paths-title">
+                {fork.titolo}
+              </h2>
+              <p className="board-section-head__aside">
+                {fork.testo}{' '}
+                <Link className="board-link board-link--inline" href="/corsi">
+                  Tutti i percorsi
+                </Link>
+              </p>
+            </header>
+
+            <ol className="board-paths">
+              {pathways.map((course, i) => {
+                const where = centersByCourse.get(course.id) ?? []
+                const everywhere = where.length > 1 && where.length === centers.length
+                return (
+                  <li className="board-path" key={course.id}>
+                    <span className="board-path__index" aria-hidden="true">
+                      {ordinal(i + 1)}
+                    </span>
+                    <div className="board-path__question">
+                      <h3 className="board-path__title">
+                        <Link href={`/corsi/${course.slug}`}>{course.domanda || course.nome}</Link>
+                      </h3>
+                      <p className="board-path__name">{course.nome}</p>
+                    </div>
+                    <p className="board-path__summary">{course.sommario}</p>
+                    <div className="board-path__where">
+                      {where.length > 0 ? (
+                        <>
+                          <p className="board-path__count">
+                            <span className="board-path__number">{where.length}</span>
+                            <span>
+                              {everywhere
+                                ? 'centri, cioè tutti'
+                                : where.length === 1
+                                  ? 'centro'
+                                  : 'centri'}
+                            </span>
+                          </p>
+                          {!everywhere ? (
+                            <p className="board-path__places">{where.join(', ')}</p>
+                          ) : null}
+                        </>
+                      ) : (
+                        /* Un percorso senza centro attivo non stampa «0»: dice
+                           com'e' e lascia comunque la porta aperta. */
+                        <p className="board-path__places">
+                          In questa stagione non ha un centro in calendario.{' '}
+                          <Link
+                            className="board-link board-link--inline"
+                            href={`/contatti?corso=${encodeURIComponent(course.slug ?? '')}`}
+                          >
+                            Lascia comunque una richiesta
+                          </Link>
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                )
+              })}
+            </ol>
+          </div>
+        </section>
+      ) : null}
+
+      {/* ---------- il blocco nero: la prima lezione ---------- */}
+      <section className="board board--black" id="prima-volta" aria-labelledby="first-title">
+        <div className="container">
+          <header className="board-section-head">
+            <h2 className="board-title" id="first-title">
+              La prima lezione
+            </h2>
+            <p className="board-section-head__aside">
+              La palestra intimidisce più del Krav Maga. Ecco cosa aspettarsi la prima sera, così non
+              devi chiederlo.
+            </p>
+          </header>
+          <ol className="board-first">
+            {firstTime.map((point, i) => (
+              <li className="board-first__point" key={point.titolo}>
+                <span className="board-first__index" aria-hidden="true">
+                  {ordinal(i + 1)}
+                </span>
+                <h3 className="board-first__title">{point.titolo}</h3>
+                <p className="board-first__text">{point.testo}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ---------- chi insegna, contato sulla bacheca ---------- */}
+      <section className="board board--white" aria-labelledby="teachers-title">
+        <div className="container">
+          <header className="board-section-head">
+            <h2 className="board-title" id="teachers-title">
+              Chi tiene le lezioni
+            </h2>
+            <p className="board-section-head__aside">
+              {qualifications}{' '}
+              <Link className="board-link board-link--inline" href="/istruttori">
+                L’albo degli istruttori
+              </Link>
+            </p>
+          </header>
+
+          {teaching.length > 0 ? (
+            <ol className="board-teachers">
+              {teaching.map(({ person, lessons: n, places }) => {
+                const qualification =
+                  person.ruolo || (person.qualifica ? QUALIFICATIONS[person.qualifica] : '')
+                return (
+                  <li className="board-teacher" key={person.id}>
+                    <p className="board-teacher__count">
+                      <span className="board-teacher__number">{n}</span>
+                      <span className="board-teacher__unit">
+                        {lessonsLabel(n)} a settimana
+                      </span>
+                    </p>
+                    <h3 className="board-teacher__name">{person.nome}</h3>
+                    {qualification ? <p className="board-teacher__role">{qualification}</p> : null}
+                    <p className="board-teacher__places">{places.join(', ')}</p>
+                  </li>
+                )
+              })}
+            </ol>
           ) : null}
 
-          <p className="tail-action">
-            <Link className="button button--primary" href="/centri">
-              Trova un centro
-            </Link>
-            {/* Il secondo bottone non ripete il primo: dice come arrivarci, non
-                dove. La posizione la chiede /centri, che e' dove serve. */}
-            <Link className="button button--secondary" href="/centri?vicino=1">
-              Usa la mia posizione
-            </Link>
-          </p>
-        </div>
-      </section>
-
-      {/* La sala prima del racconto della prima sera: chi non e' mai entrato in
-          una palestra vuole vederla, non leggerla. */}
-      <Figure
-        slot={settings?.home?.immagineIngresso}
-        label="Foto di «Cosa succede quando entri»"
-        format="band"
-        measure="grande"
-        sizes="100vw"
-      />
-
-      <section className="section section--charcoal" id="prima-volta" aria-labelledby="first-title">
-        <div className="container first">
-          <div>
-            <h2 className="display display--md" id="first-title">
-              Cosa succede quando entri
-            </h2>
-            <p className="text first__lead">
-              La palestra intimidisce più del Krav Maga. Ecco cosa aspettarsi la prima sera, così
-              non devi chiederlo.
+          {provinces.size > 0 ? (
+            <p className="board-provinces">
+              Province: {[...provinces].map(provinceName).sort().join(', ')}.
             </p>
-          </div>
-
-          <div className="first__points">
-            {firstTime.map((point) => (
-              <div key={point.titolo} className="reveal first__point">
-                <h3>{point.titolo}</h3>
-                <p className="text">{point.testo}</p>
-              </div>
-            ))}
-          </div>
+          ) : null}
         </div>
       </section>
 
-      <section className="section section--black" aria-labelledby="trials-title">
-        <div className="container trials">
-          <div>
-            <h2 className="display display--md" id="trials-title">
-              Le qualifiche si contano
-            </h2>
-            <p className="text first__lead">{qualifications}</p>
-          </div>
-
-          {/* Un numero a zero non e' una prova: la riga sparisce invece di dichiarare il vuoto. */}
-          <dl className="trials__numbers">
-            {centers.length > 0 ? (
-              <div className="trial">
-                <dt className="trial__value">{centers.length}</dt>
-                <dd className="trial__item">centri tecnici attivi in questa stagione</dd>
-              </div>
-            ) : null}
-            {instructors.totalDocs > 0 ? (
-              <div className="trial">
-                <dt className="trial__value">{instructors.totalDocs}</dt>
-                <dd className="trial__item">istruttori e maestri con nome, cognome e qualifica</dd>
-              </div>
-            ) : null}
-            {provinces.size > 0 ? (
-              <div className="trial">
-                <dt className="trial__value">{provinces.size}</dt>
-                <dd className="trial__item">
-                  province coperte: {[...provinces].map(provinceName).sort().join(', ')}
-                </dd>
-              </div>
-            ) : null}
-          </dl>
-        </div>
-      </section>
-
-      {/* La chiusura: la home orienta prima di convertire, e questa e' l'unica
-          richiesta di contatto dopo il bivio. Chiara prima del footer carbone:
-          uno stacco di valore, non di tinta. Un bottone solo, con l'etichetta
-          della barra: un intento, una parola. */}
-      <section className="section section--light" aria-labelledby="step-title">
-        <div className="container">
-          {/* A 390px le tre sezioni finali collassavano sulla stessa composizione:
-              display-md, paragrafo, elenco o bottone a sinistra, e cambiava solo
-              il fondo. Le prime due hanno una forma propria - i punti con i
-              filetti, i numerali in Anton - questa no: la chiusura si prende il
-              filetto e il corpo grande, cosi' il ritmo torna a farsi anche con
-              la scala e non con il solo fondo (RHYTHM 2). */}
-          <span className="rule" aria-hidden="true" />
-          <h2 className="display display--lg step__title" id="step-title">
+      {/* ---------- la chiusura: un bottone rosso, uno solo ---------- */}
+      <section className="board board--grey board-step" aria-labelledby="step-title">
+        <div className="container board-step__grid">
+          <h2 className="board-title board-title--page" id="step-title">
             {step.titolo}
           </h2>
-          <p className="text first__lead">{step.testo}</p>
-          <p className="tail-action">
-            <Link className="button button--primary" href="/contatti">
-              {step.bottone}
-            </Link>
-          </p>
+          <div>
+            <p className="board-lead">{step.testo}</p>
+            <p className="board-actions">
+              <Link className="button button--primary" href="/contatti">
+                {step.bottone}
+              </Link>
+            </p>
+          </div>
         </div>
       </section>
     </>

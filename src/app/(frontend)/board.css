@@ -1,0 +1,871 @@
+/*
+ * Direzione B «La bacheca della sala» (prototipo, mappa #62, ticket #66).
+ *
+ * Il foglio dell'orario appeso all'ingresso della palestra, fatto bene. Vale per
+ * la home e per la scheda di un centro; tutte le classi portano il prefisso
+ * `board`, quindi le altre rotte non ne sentono niente.
+ *
+ * Chiaro per prima cosa: bianco e grigio carta, inchiostro. Il nero pieno sta in
+ * tre posti: la barra, il blocco della prima lezione e il piede. Filetti da 1px:
+ * grigio riga su bianco, inchiostro su grigio carta, #333 su nero.
+ *
+ * Anton solo per numeri e sigle dei giorni. I titoli sono Roboto, in maiuscolo e
+ * minuscolo normale, anche sopra i 22px: qui lo stacco fra i due caratteri lo fa
+ * il ruolo (numero contro parola), non la misura. E' una deviazione dichiarata
+ * dalla Regola dello Stacco Netto di DESIGN.md, scritta nel NOTE.md del prototipo.
+ * Cifre tabulari ovunque, cosi' gli orari si incolonnano.
+ */
+
+/* ---------- superfici ---------- */
+
+.board {
+  padding-block: clamp(var(--space-section-sm), 7vw, 96px);
+  font-variant-numeric: tabular-nums;
+}
+
+.board--white {
+  background: var(--color-surface-light);
+  color: var(--color-ink);
+  --rule: var(--color-border);
+  --row-rule: var(--color-border);
+  --ring: var(--color-ink);
+  --soft: var(--color-ink-secondary);
+}
+
+.board--grey {
+  background: var(--color-muted);
+  color: var(--color-ink);
+  --rule: var(--color-ink);
+  --row-rule: var(--color-ink);
+  --ring: var(--color-ink);
+  --soft: var(--color-ink-secondary);
+}
+
+.board--black {
+  background: var(--color-surface);
+  color: var(--color-on-primary);
+  --rule: var(--color-ink-secondary);
+  --row-rule: var(--color-ink-secondary);
+  --ring: var(--color-on-primary);
+  /* #333 non regge sul nero: il testo de-enfatizzato resta bianco. */
+  --soft: var(--color-on-primary);
+}
+
+/* Il verde di presenza su bianco e su carta passa alla variante scura. */
+.board--white .status::before,
+.board--grey .status::before {
+  background: var(--color-presence-dark);
+}
+
+/* La barra e' fissa: la prima sezione le lascia il suo spazio. */
+.board-head {
+  padding-block-start: calc(var(--header-height) + clamp(var(--space-xl), 5vw, 72px));
+}
+
+.board-sr {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- tipografia ---------- */
+
+.board-eyebrow {
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-loose);
+}
+
+.board-title {
+  font-family: var(--font-body);
+  font-weight: var(--weight-bold);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.board-title--page {
+  font-size: clamp(2.5rem, 6.2vw, 5.25rem);
+  line-height: 1.02;
+}
+
+.board-lead {
+  max-width: 36rem;
+  font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
+  line-height: var(--leading-loose);
+  text-wrap: pretty;
+}
+
+.board-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md) var(--space-lg);
+}
+
+/* Un link isolato: 44px di bersaglio, sottolineato sempre. Sulla bacheca un
+   link si riconosce dal tratto sotto, non da un colore. */
+.board-link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  font-weight: var(--weight-bold);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+}
+
+.board-link:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Dentro una frase il link resta della misura del testo (DESIGN.md §7). */
+.board-link--inline {
+  display: inline;
+  min-block-size: 0;
+}
+
+.board-today {
+  display: inline-block;
+  padding: 2px var(--space-xs);
+  background: var(--color-ink);
+  color: var(--color-surface-light);
+  font-family: var(--font-body);
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-loose);
+}
+
+/* L'intestazione di sezione: titolo a sinistra, la riga che lo spiega a destra,
+   un filetto sotto. E' la testata di una colonna del foglio. */
+.board-section-head {
+  display: grid;
+  gap: var(--space-md);
+  padding-block-end: var(--space-lg);
+  margin-block-end: clamp(var(--space-lg), 3vw, var(--space-xxl));
+  border-block-end: 1px solid var(--rule);
+}
+
+.board-section-head__aside {
+  max-width: 40rem;
+  color: var(--soft);
+  line-height: var(--leading-loose);
+}
+
+@media (min-width: 900px) {
+  .board-section-head {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: end;
+    gap: var(--space-xxl);
+  }
+}
+
+/* ---------- testata ---------- */
+
+.board-head__grid {
+  display: grid;
+  gap: clamp(var(--space-xxl), 5vw, 72px);
+}
+
+.board-head__intro {
+  display: grid;
+  gap: clamp(var(--space-md), 2vw, var(--space-lg));
+  align-content: start;
+  justify-items: start;
+}
+
+@media (min-width: 1024px) {
+  .board-head__grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: end;
+  }
+}
+
+/* L'indice dei giorni: un riquadro di carta con i filetti in inchiostro, come la
+   colonna dei giorni sul foglio. Ogni giorno porta all'ancora sotto. */
+.board-index {
+  background: var(--color-muted);
+  color: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  --ring: var(--color-ink);
+}
+
+.board-index__label {
+  padding: var(--space-sm-alt) var(--space-md);
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+  border-block-end: 1px solid var(--color-ink);
+}
+
+.board-index__days {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.board-index__days > li {
+  border-inline-end: 1px solid var(--color-ink);
+  border-block-end: 1px solid var(--color-ink);
+}
+
+.board-index__days > li:nth-child(3n) {
+  border-inline-end: 0;
+}
+
+.board-index__days > li:nth-last-child(-n + 3):nth-child(3n + 1),
+.board-index__days > li:nth-last-child(-n + 3):nth-child(3n + 1) ~ li {
+  border-block-end: 0;
+}
+
+.board-index__day {
+  display: grid;
+  gap: 2px;
+  align-content: start;
+  min-block-size: 44px;
+  padding: var(--space-sm-alt) var(--space-md) var(--space-md);
+  text-decoration: none;
+  position: relative;
+}
+
+.board-index__day:hover {
+  background: var(--color-surface-light);
+}
+
+.board-index__short {
+  font-family: var(--font-display);
+  font-size: clamp(2.0625rem, 3.4vw, 3rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.board-index__count {
+  font-size: var(--size-caption);
+}
+
+.board-index__day .board-today {
+  justify-self: start;
+  margin-block-start: var(--space-xs);
+}
+
+/* ---------- la settimana ---------- */
+
+.board-days {
+  display: grid;
+}
+
+.board-day {
+  display: grid;
+  gap: var(--space-lg);
+  padding-block: clamp(var(--space-lg), 3vw, var(--space-xxl));
+  border-block-start: 1px solid var(--rule);
+}
+
+.board-day:first-child {
+  border-block-start: 0;
+  padding-block-start: 0;
+}
+
+.board-day__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-xs) var(--space-md);
+  align-self: start;
+}
+
+.board-day__title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+  margin: 0;
+}
+
+.board-day__short {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  font-size: clamp(3rem, 6.4vw, 5.625rem);
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.board-day__long {
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-bold);
+}
+
+.board-day__count {
+  font-size: var(--size-caption);
+  color: var(--soft);
+}
+
+.board-day__lessons {
+  display: grid;
+}
+
+@media (min-width: 900px) {
+  .board-day {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+    gap: var(--space-xxl);
+  }
+
+  /* Il giorno resta in vista mentre si scorrono le sue lezioni: il giovedi' ne
+     ha sei. Sticky e non animato: e' posizione, non movimento. */
+  .board-day__head {
+    flex-direction: column;
+    align-items: flex-start;
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-lg));
+  }
+
+  .board-day__title {
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .board-day__lessons {
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    row-gap: var(--space-xxl);
+  }
+}
+
+/* Una lezione: l'ora grande, poi dove, cosa e con chi. */
+.board-lesson {
+  display: grid;
+  gap: var(--space-sm);
+  align-content: start;
+}
+
+.board-lesson__time {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--space-sm);
+}
+
+.board-lesson__start,
+.board-slot__start {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  font-size: clamp(2.0625rem, 3vw, 2.75rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.board-lesson__end,
+.board-slot__end {
+  font-size: var(--size-caption);
+  white-space: nowrap;
+}
+
+.board-lesson__body {
+  display: grid;
+  gap: 2px;
+}
+
+.board-lesson__place {
+  margin: 0;
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.board-lesson__place a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+}
+
+.board-lesson__place a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.board-lesson__gym,
+.board-lesson__note {
+  font-size: var(--size-caption);
+  color: var(--soft);
+}
+
+.board-lesson__course {
+  display: grid;
+  font-weight: var(--weight-regular);
+}
+
+.board-lesson__teacher {
+  font-weight: var(--weight-bold);
+  margin-block-start: var(--space-xs);
+}
+
+@media (min-width: 900px) {
+  .board-lesson {
+    padding-inline: var(--space-lg);
+    border-inline-start: 1px solid var(--rule);
+  }
+}
+
+/*
+ * Sotto i 900px la settimana e' un elenco per giorno, mai una tabella da
+ * scorrere di lato: l'ora in una colonna stretta a sinistra, il resto accanto,
+ * un filetto fra una lezione e l'altra.
+ */
+@media (max-width: 899px) {
+  .board-day {
+    gap: var(--space-md);
+  }
+
+  .board-lesson {
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    column-gap: var(--space-md);
+    padding-block: var(--space-md);
+    border-block-start: 1px solid var(--rule);
+  }
+
+  .board-lesson__time {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .board-lesson__start {
+    font-size: 2.0625rem;
+  }
+}
+
+/* ---------- il bivio ---------- */
+
+.board-paths {
+  display: grid;
+}
+
+.board-path {
+  display: grid;
+  gap: var(--space-md);
+  padding-block: clamp(var(--space-lg), 3vw, var(--space-xxl));
+  border-block-start: 1px solid var(--rule);
+}
+
+.board-path:first-child {
+  border-block-start: 0;
+  padding-block-start: 0;
+}
+
+.board-path__index,
+.board-first__index {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  font-size: clamp(2.0625rem, 3.4vw, 3.4375rem);
+  line-height: 1;
+}
+
+.board-path__title {
+  font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.board-path__title a {
+  text-decoration: none;
+}
+
+.board-path__title a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+
+.board-path__name {
+  margin-block-start: var(--space-xs);
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+  color: var(--soft);
+}
+
+.board-path__summary {
+  max-width: 34rem;
+  line-height: var(--leading-loose);
+}
+
+.board-path__where {
+  display: grid;
+  gap: var(--space-xs);
+  align-content: start;
+}
+
+.board-path__count {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  font-weight: var(--weight-bold);
+}
+
+.board-path__number,
+.board-teacher__number {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  font-size: clamp(2.0625rem, 3.4vw, 3.4375rem);
+  line-height: 1;
+}
+
+.board-path__places {
+  font-size: var(--size-caption);
+  line-height: var(--leading-loose);
+}
+
+@media (min-width: 900px) {
+  .board-path {
+    grid-template-columns: 5rem minmax(0, 4fr) minmax(0, 4fr) minmax(0, 3fr);
+    gap: var(--space-xxl);
+    align-items: start;
+  }
+}
+
+/* ---------- il blocco nero: la prima lezione ---------- */
+
+.board-first {
+  display: grid;
+  gap: var(--space-xxl);
+}
+
+.board-first__point {
+  display: grid;
+  gap: var(--space-sm);
+  align-content: start;
+}
+
+.board-first__title {
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.board-first__text {
+  max-width: 34rem;
+  line-height: var(--leading-loose);
+}
+
+@media (min-width: 900px) {
+  .board-first {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  .board-first--center {
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  }
+
+  .board-first__point {
+    padding-inline: var(--space-lg);
+    border-inline-start: 1px solid var(--rule);
+  }
+
+  .board-first__point:first-child {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+}
+
+@media (max-width: 899px) {
+  .board-first__point + .board-first__point {
+    padding-block-start: var(--space-xl);
+    border-block-start: 1px solid var(--rule);
+  }
+}
+
+/* ---------- chi tiene le lezioni ---------- */
+
+.board-teachers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--space-xxl) var(--space-lg);
+}
+
+.board-teacher {
+  display: grid;
+  gap: 2px;
+  align-content: start;
+  padding-block-start: var(--space-md);
+  border-block-start: 1px solid var(--color-ink);
+}
+
+.board-teacher__count {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  margin-block-end: var(--space-sm);
+}
+
+.board-teacher__unit {
+  font-size: var(--size-caption);
+}
+
+.board-teacher__name {
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-bold);
+}
+
+.board-teacher__role,
+.board-teacher__places {
+  font-size: var(--size-caption);
+  line-height: var(--leading-loose);
+}
+
+.board-teacher__role {
+  font-weight: var(--weight-bold);
+}
+
+.board-teacher__places {
+  color: var(--soft);
+}
+
+.board-provinces {
+  margin-block-start: clamp(var(--space-xl), 4vw, var(--space-section-sm));
+  font-size: var(--size-caption);
+  color: var(--soft);
+}
+
+/* ---------- chiusura ---------- */
+
+.board-step__grid {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.board-step__grid > div {
+  display: grid;
+  gap: var(--space-lg);
+  justify-items: start;
+}
+
+@media (min-width: 900px) {
+  .board-step__grid {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    align-items: end;
+    gap: var(--space-xxl);
+  }
+}
+
+/* ---------- scheda centro: testata ---------- */
+
+.board-center__place {
+  display: block;
+}
+
+.board-center__gym {
+  display: block;
+  margin-block-start: var(--space-xs);
+  font-size: clamp(1.375rem, 2.6vw, 2.25rem);
+  font-weight: var(--weight-light);
+  line-height: var(--leading-tight);
+}
+
+/* I fatti della scheda, leggibili senza un click: un riquadro di carta con i
+   filetti in inchiostro, come l'indice dei giorni in home. */
+.board-facts {
+  display: grid;
+  margin: 0;
+  background: var(--color-muted);
+  color: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  --ring: var(--color-ink);
+}
+
+.board-fact {
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-md) var(--space-lg);
+}
+
+.board-fact + .board-fact {
+  border-block-start: 1px solid var(--color-ink);
+}
+
+.board-fact dt {
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+}
+
+.board-fact dd {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  margin: 0;
+  line-height: var(--leading-loose);
+}
+
+.board-fact__strong {
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+@media (min-width: 620px) and (max-width: 1023px) {
+  .board-facts {
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+
+  .board-fact + .board-fact {
+    border-block-start: 0;
+    border-inline-start: 1px solid var(--color-ink);
+  }
+}
+
+/* ---------- scheda centro: l'orario ---------- */
+
+.board-schedule {
+  display: grid;
+}
+
+.board-schedule__day {
+  display: grid;
+  gap: var(--space-lg);
+  padding-block: clamp(var(--space-lg), 3vw, var(--space-xxl));
+  border-block-start: 1px solid var(--rule);
+}
+
+.board-schedule__day:first-child {
+  border-block-start: 0;
+  padding-block-start: 0;
+}
+
+.board-schedule__title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+  align-self: start;
+}
+
+.board-day__short--xl {
+  font-size: clamp(4.5rem, 13vw, 11rem);
+  line-height: 0.85;
+}
+
+.board-schedule__lessons {
+  display: grid;
+}
+
+.board-slot {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, auto) minmax(0, 1fr);
+  gap: var(--space-md) clamp(var(--space-lg), 3vw, var(--space-xxl));
+  padding-block: var(--space-lg);
+  border-block-start: 1px solid var(--rule);
+}
+
+.board-slot:first-child {
+  border-block-start: 0;
+  padding-block-start: 0;
+}
+
+.board-slot__time {
+  display: grid;
+  gap: var(--space-xs);
+  align-content: start;
+}
+
+.board-slot__start {
+  font-size: clamp(2.5rem, 5.6vw, 5rem);
+}
+
+.board-slot__end {
+  font-size: var(--size-text);
+}
+
+.board-slot__body {
+  display: grid;
+  gap: var(--space-xs);
+  align-content: start;
+  padding-block-start: var(--space-xs);
+}
+
+.board-slot__course {
+  font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.board-slot__course a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 6px;
+}
+
+.board-slot__course a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.board-slot__note {
+  font-size: var(--size-text);
+}
+
+.board-slot__teacher {
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-light);
+}
+
+@media (min-width: 900px) {
+  .board-schedule__day {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--space-xxl);
+  }
+
+  .board-schedule__title {
+    flex-direction: column;
+    gap: var(--space-sm);
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-lg));
+  }
+}
+
+/* ---------- scheda centro: la richiesta ---------- */
+
+.board-request__grid {
+  display: grid;
+  gap: clamp(var(--space-xxl), 6vw, var(--space-section));
+}
+
+.board-request__head {
+  display: grid;
+  gap: var(--space-md);
+  padding-block-end: var(--space-lg);
+  margin-block-end: var(--space-xl);
+  border-block-end: 1px solid var(--rule);
+}
+
+.board-request__aside {
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+}
+
+.board-request__subtitle {
+  font-size: var(--size-heading-lg);
+  font-weight: var(--weight-bold);
+  padding-block-end: var(--space-sm-alt);
+  border-block-end: 1px solid var(--rule);
+}
+
+.board-request__address {
+  line-height: var(--leading-loose);
+}
+
+/* Lo slot della foto, dichiarato su carta: il nero in questa direzione e'
+   riservato alla prima lezione. */
+.board-photo {
+  display: grid;
+  place-items: end start;
+  aspect-ratio: 4 / 3;
+  padding: var(--space-md);
+  background: var(--color-muted);
+  border: 1px solid var(--color-ink);
+  font-size: var(--size-caption);
+  font-weight: var(--weight-bold);
+}
+
+@media (min-width: 1024px) {
+  .board-request__grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+}
