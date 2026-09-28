@@ -5,27 +5,38 @@ import React from 'react'
 
 import { openPayload } from '@/components/payload'
 import { EventAgenda } from '@/components/EventAgenda'
-import { CenterMap, type MapPoint } from '@/components/CenterMap'
+import { readableAddress, jsonLd, published, siteUrl } from '@/components/data'
 import {
-  readableDays,
-  readableAddress,
-  jsonLd,
-  instructorName,
-  published,
-  siteUrl,
-} from '@/components/data'
+  DAY_NAMES,
+  WEEK,
+  dateInDays,
+  daysUntil,
+  descriptionWithoutZones,
+  lessonsOf,
+  minutesOf,
+  placeName,
+  referenceZones,
+  romeNow,
+  teacherRounds,
+  type CenterLike,
+  type DayKey,
+  type Lesson,
+} from '@/components/evenings'
 import { Figure } from '@/components/Figure'
+import { RequestForm, type FormTexts } from '@/components/RequestForm'
+import { extraItems, type FormOptions } from '../../contatti/validation'
 import { pageMetadata } from '@/components/seo'
 
 /**
- * Scheda di un centro tecnico: e' la conversione. Indirizzo, orari, docenti e
- * come arrivarci stanno tutti qui, leggibili, senza un click in mezzo.
+ * Scheda di un centro, prototipo D: «Ospiti di sera». E' la locandina della
+ * serata: chi ospita, il giorno in grande, orari e docente, la prossima data
+ * vera, da dove ci si arriva, «Apri in Maps», e il modulo gia' su questo centro
+ * nella stessa pagina (la scelta e il perche' stanno nel NOTE.md del prototipo).
  */
 
 export const revalidate = 60
 
-/* I giorni di schema.org sono in inglese: la mappa serve solo al JSON-LD, il
-   testo visibile resta quello di giorniLeggibili. */
+/* I giorni di schema.org sono in inglese: la mappa serve solo al JSON-LD. */
 const SCHEMA_DAYS: Record<string, string> = {
   lun: 'Monday',
   mar: 'Tuesday',
@@ -59,9 +70,6 @@ export async function generateStaticParams() {
   return centers.docs.map((center) => ({ slug: center.slug }))
 }
 
-/* Quando la scheda non c'e' la rotta chiama notFound() e rende not-found.tsx:
-   il titolo del documento lo decide comunque questa funzione, e «AKM Italia»
-   su una pagina che dice «questa pagina non c'e'» e' una riga che si contraddice. */
 const TITLE_404 = { title: 'Pagina non trovata' }
 
 export async function generateMetadata({
@@ -87,55 +95,116 @@ export default async function CenterPage({ params }: { params: Promise<{ slug: s
   const center = await findCenter(slug)
   if (!center) notFound()
 
-  /* Gli eventi di questo centro da oggi in poi: uno stage e' datato e
-     straordinario, l'orario e' ricorrente. Stanno sotto gli orari, non dentro. */
   const payload = await openPayload()
   const now = new Date().toISOString()
-  const events = await payload.find({
-    collection: 'eventi',
-    depth: 0,
-    limit: 5,
-    sort: 'dataInizio',
-    where: {
-      and: [
-        published,
-        { sede: { equals: center.id } },
-        {
-          or: [
-            { dataFine: { greater_than_equal: now } },
-            { dataInizio: { greater_than_equal: now } },
-          ],
-        },
-      ],
-    },
-  })
+  const [events, active, contacts, courses] = await Promise.all([
+    payload.find({
+      collection: 'eventi',
+      depth: 0,
+      limit: 5,
+      sort: 'dataInizio',
+      where: {
+        and: [
+          published,
+          { sede: { equals: center.id } },
+          {
+            or: [
+              { dataFine: { greater_than_equal: now } },
+              { dataInizio: { greater_than_equal: now } },
+            ],
+          },
+        ],
+      },
+    }),
+    payload.find({
+      collection: 'sedi',
+      depth: 1,
+      limit: 200,
+      sort: 'indirizzo.citta',
+      where: { and: [{ attivo: { equals: true } }, published] },
+    }),
+    payload.findGlobal({ slug: 'contatti', depth: 1 }),
+    payload.find({
+      collection: 'corsi',
+      depth: 0,
+      limit: 50,
+      sort: 'ordine',
+      select: { nome: true, slug: true },
+      where: published,
+    }),
+  ])
 
-  const schedule = center.orari ?? []
-  const instructors = (center.istruttori ?? []).filter((i) => typeof i === 'object')
+  const place = placeName(center)
+  const lessons = lessonsOf(center as unknown as CenterLike)
+  const today = romeNow()
 
-  const disciplines = new Map<number, string>()
-  for (const slot of schedule) {
-    if (typeof slot.disciplina === 'object' && slot.disciplina) {
-      disciplines.set(slot.disciplina.id, slot.disciplina.nome)
-    }
+  /* Le lezioni raggruppate per sera: il giorno si scrive una volta, in grande. */
+  const byDay = WEEK.map((day) => ({
+    day,
+    lessons: lessons
+      .filter((l) => l.day === day)
+      .sort((a, b) => minutesOf(a.start) - minutesOf(b.start)),
+  })).filter((d) => d.lessons.length > 0)
+
+  /* La prossima lezione vera, per un centro attivo: «giovedì 1 ottobre, 20:30». */
+  const next: (Lesson & { offset: number }) | null = center.attivo
+    ? (lessons
+        .map((l) => ({ ...l, offset: daysUntil(l.day as DayKey, minutesOf(l.end), today) }))
+        .sort((a, b) => a.offset - b.offset || minutesOf(a.start) - minutesOf(b.start))[0] ??
+      null)
+    : null
+
+  const zones = referenceZones(center.descrizione)
+  const note = zones.length > 0 ? descriptionWithoutZones(center.descrizione) : center.descrizione
+
+  /* Chi insegna qui, e in quali altre sale porta la serata. */
+  const rounds = teacherRounds(active.docs as unknown as CenterLike[])
+  const teachers = (center.istruttori ?? [])
+    .filter((i) => typeof i === 'object' && i !== null)
+    .map((i) => {
+      const round = rounds.find((r) => r.id === i.id)
+      const elsewhere = round
+        ? [
+            ...new Map(
+              round.lessons
+                .filter((l) => l.centerId !== center.id)
+                .map((l) => [l.centerId, { slug: l.slug, town: l.town }]),
+            ).values(),
+          ]
+        : []
+      return { id: i.id, name: i.nome, role: i.ruolo, slug: i.slug, elsewhere }
+    })
+
+  /* Il modulo, con gli stessi testi e interruttori di /contatti. */
+  const form = contacts.modulo
+  const choice = typeof form?.paginaPrivacy === 'object' ? form.paginaPrivacy : null
+  const privacy =
+    choice ??
+    (
+      await payload.find({
+        collection: 'pagine',
+        depth: 0,
+        limit: 1,
+        select: { path: true },
+        where: { and: [{ path: { equals: '/privacy' } }, published] },
+      })
+    ).docs[0] ??
+    null
+  const formTexts: FormTexts = {
+    nota: form?.nota || 'Tutti i campi sono obbligatori, tranne percorso e messaggio.',
+    etichettaConsenso:
+      form?.etichettaConsenso ||
+      'Autorizzo il trattamento dei dati personali secondo il Regolamento UE 2016/679, per essere ricontattato da AKM Italia.',
+    etichettaInvio: form?.etichettaInvio || 'Invia la richiesta',
+    privacy: privacy?.path ? { etichetta: 'Leggi l’informativa', href: privacy.path } : null,
+  }
+  const options: FormOptions = {
+    dataNascita: form?.chiediDataNascita !== false,
+    pathway: form?.chiediPercorso !== false,
+    messaggio: form?.chiediMessaggio !== false,
+    altreVoci: extraItems(form),
   }
 
-  const points: MapPoint[] =
-    typeof center.coordinate?.lat === 'number' && typeof center.coordinate?.lng === 'number'
-      ? [
-          {
-            id: center.id,
-            nome: center.nome,
-            citta: center.indirizzo?.citta ?? '',
-            slug: center.slug,
-            lat: center.coordinate.lat,
-            lng: center.coordinate.lng,
-          },
-        ]
-      : []
-
-  /* Il centro e' un luogo fisico con indirizzo, coordinate e orari ricorrenti:
-     senza JSON-LD un motore di ricerca deve indovinarlo dal testo. */
   const location = {
     '@context': 'https://schema.org',
     '@type': 'SportsActivityLocation',
@@ -158,7 +227,7 @@ export default async function CenterPage({ params }: { params: Promise<{ slug: s
             longitude: center.coordinate.lng,
           }
         : undefined,
-    openingHoursSpecification: schedule.flatMap((slot) =>
+    openingHoursSpecification: (center.orari ?? []).flatMap((slot) =>
       (slot.giorni ?? [])
         .map((g) => SCHEMA_DAYS[g as string])
         .filter(Boolean)
@@ -177,166 +246,207 @@ export default async function CenterPage({ params }: { params: Promise<{ slug: s
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(location) }}
       />
-      <section className="section section--black masthead">
-        <div className="container masthead__content">
+
+      {/* La locandina: chi ospita, dove, e la sera in grande. Tutto leggibile
+          senza un click, gia' nella prima schermata. */}
+      <section className="section section--black ev-poster">
+        <div className="container">
           <Link className="breadcrumb" href="/centri">
             Torna ai centri
           </Link>
-          <p className="eyebrow">Centro tecnico</p>
-          <h1 className="display display--md">{center.nome}</h1>
-          <p className="text detail">{readableAddress(center.indirizzo)}</p>
-          {/* Un centro non attivo resta pubblicato e sparisce dagli elenchi, ma la
-              sua scheda si apre lo stesso: ci si arriva dall'albo, da un evento
-              passato, da un vecchio link. Prima l'unico indizio era che mancava
-              il quadrato verde, cioe' niente: un'assenza non e' un'etichetta
-              (Regola dell'Etichetta). */}
-          {center.attivo ? (
-            <p className="status">Attivo in questa stagione</p>
-          ) : (
-            <p className="text detail">
-              Questo centro non è attivo in questa stagione: gli orari qui sotto sono quelli
-              dell’ultima e non sono in corso. Scrivici e ti diciamo qual è il centro più vicino
-              aperto.
-            </p>
-          )}
-        </div>
-      </section>
+          <div className="ev-poster__grid">
+            <div>
+              <p className="eyebrow ev-poster__host">
+                {center.palestra ? `Centro tecnico AKM, ospite di ${center.palestra}` : 'Centro tecnico AKM'}
+              </p>
+              <h1 className="ev-poster__title">
+                <span className="display ev-poster__place">{place}</span>
+                {center.palestra ? (
+                  <span className="ev-poster__room">{center.palestra}</span>
+                ) : null}
+              </h1>
+              {center.attivo ? (
+                <p className="status">Attivo in questa stagione</p>
+              ) : (
+                <p className="text detail">
+                  Questo centro non è attivo in questa stagione: gli orari qui sotto sono quelli
+                  dell’ultima e non sono in corso. Scrivici e ti diciamo qual è il centro più
+                  vicino aperto.
+                </p>
+              )}
 
-      {/* La sala di questo centro, fra la testata e la scheda: chi sceglie dove
-          allenarsi vuole vedere il posto prima degli orari. */}
-      <Figure
-        slot={center.foto}
-        label="Foto del centro"
-        format="band"
-        measure="grande"
-        sizes="100vw"
-      />
-
-      <section className="section section--light">
-        <div className="container card">
-          <div>
-            {center.descrizione ? <p className="text">{center.descrizione}</p> : null}
-
-            <div className="block">
-              <h2>Orari</h2>
-              {schedule.length > 0 && !center.attivo ? (
-                <p className="detail">Programmazione dell’ultima stagione, non in corso.</p>
-              ) : null}
-              {schedule.length > 0 ? (
-                <div className="schedule">
-                  {schedule.map((slot) => {
-                    const discipline =
-                      typeof slot.disciplina === 'object' ? slot.disciplina : null
-                    const teachers = (slot.docenti ?? [])
-                      .map(instructorName)
-                      .filter(Boolean)
-                      .join(', ')
-
-                    return (
-                      <div className="schedule__row" key={slot.id}>
-                        <span className="schedule__days">{readableDays(slot.giorni)}</span>
-                        <span>
-                          {slot.oraInizio}-{slot.oraFine}
-                        </span>
-                        <span>
-                          {discipline ? (
-                            <Link href={`/corsi/${discipline.slug}`}>{discipline.nome}</Link>
-                          ) : null}
-                          {teachers ? ` · Docente ${teachers}` : ''}
-                          {slot.note ? ` · ${slot.note}` : ''}
-                        </span>
-                      </div>
-                    )
-                  })}
+              {byDay.length > 0 ? (
+                <div className="ev-nights">
+                  {byDay.map((d) => (
+                    <div className="ev-night" key={d.day}>
+                      <p className="display ev-night__day">{DAY_NAMES[d.day]}</p>
+                      <ul className="ev-night__list">
+                        {d.lessons.map((l) => (
+                          <li className="ev-night__row" key={`${l.day}-${l.start}`}>
+                            <span className="ev-night__time">
+                              {l.start}-{l.end}
+                            </span>
+                            <span className="ev-night__what">
+                              <span className="ev-night__course">{l.course}</span>
+                              {l.note ? <span className="detail">{l.note}</span> : null}
+                            </span>
+                            {l.teachers ? (
+                              <span className="ev-night__teacher">con {l.teachers}</span>
+                            ) : null}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
                 </div>
               ) : (
-                <p className="detail">Orari in aggiornamento per la stagione.</p>
+                <p className="text detail">Orari in aggiornamento per la stagione.</p>
               )}
+
+              {next ? (
+                <p className="ev-poster__next">
+                  <span className="ev-poster__next-label">La prossima sera</span>{' '}
+                  {next.offset === 0 ? 'è oggi, ' : next.offset === 1 ? 'è domani, ' : 'è '}
+                  {dateInDays(next.offset, today.now)}
+                </p>
+              ) : null}
             </div>
 
-            {events.docs.length > 0 ? (
-              <div className="block">
-                <h2>Prossimi eventi qui</h2>
-                <EventAgenda events={events.docs} showPlace={false} />
-                <p>
-                  <Link className="breadcrumb" href="/eventi">
-                    Tutto il calendario
-                  </Link>
-                </p>
-              </div>
-            ) : null}
-
-            {disciplines.size > 0 ? (
-              <div className="block">
-                <h2>Cosa si pratica qui</h2>
-                <ul className="list__items">
-                  {[...disciplines.values()].map((name) => (
-                    <li key={name}>{name}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            {instructors.length > 0 ? (
-              <div className="block">
-                <h2>Chi insegna</h2>
-                <ul className="list__items">
-                  {instructors.map((instructor) => (
-                    <li key={instructor.id}>
-                      {instructor.nome}
-                      {instructor.ruolo ? ` · ${instructor.ruolo}` : ''}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-          </div>
-
-          <div>
-            {points.length > 0 ? (
-              <CenterMap points={points} etichetta={`Dove si trova ${center.nome}`} />
-            ) : null}
-
-            <div className="block">
-              <h2>Come arrivarci</h2>
-              <p className="detail">
-                {center.palestra ? `${center.palestra}, ` : ''}
+            <aside className="ev-address" aria-label="Dove si trova">
+              <p className="ev-address__label">Indirizzo</p>
+              <p className="ev-address__street">
+                {center.palestra ? (
+                  <>
+                    {center.palestra}
+                    <br />
+                  </>
+                ) : null}
                 {readableAddress(center.indirizzo)}
               </p>
-              {center.mapsUrl ? (
-                <p>
+              {note ? <p className="detail ev-address__note">{note}</p> : null}
+              <p className="ev-address__actions">
+                {center.mapsUrl ? (
                   <a
-                    className="center__maps"
+                    className="button button--secondary ev-address__maps"
                     href={center.mapsUrl}
                     target="_blank"
                     rel="noreferrer noopener"
                   >
-                    Apri su Google Maps
+                    Apri in Maps
                   </a>
-                </p>
+                ) : null}
+                <a className="button button--secondary" href="#richiesta">
+                  Scrivi a questo centro
+                </a>
+              </p>
+              {zones.length > 0 ? (
+                <div className="ev-address__zones">
+                  <p className="ev-address__label">Ci arrivano anche da</p>
+                  <ul className="ev-zones">
+                    {zones.map((z) => (
+                      <li key={z}>{z}</li>
+                    ))}
+                  </ul>
+                </div>
               ) : null}
-              {/* L'unico bottone rosso della scheda portava via dalla conversione:
-                  PRODUCT.md misura il successo sulla richiesta con la sede
-                  selezionata, e nessuna azione apriva il modulo con questo centro
-                  gia' scelto. Ora l'azione e' quella, e l'indice dei percorsi
-                  resta dov'e' sempre stato, in barra e nel menu.
-                  Per un centro non attivo la richiesta parte senza sede: quel
-                  centro non e' fra le scelte del modulo, e mandarci qualcuno
-                  sarebbe una promessa che non possiamo tenere. */}
-              <p className="tail-action">
-                <Link
-                  className="button button--primary"
-                  href={
-                    center.attivo ? `/contatti?sede=${encodeURIComponent(center.slug)}` : '/contatti'
-                  }
-                >
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      {/* Chi insegna, e dove altro porta la serata; poi la sala che ospita. */}
+      <section className="section section--light ev-host">
+        <div className="container ev-host__grid">
+          <div>
+            {teachers.length > 0 ? (
+              <>
+                <h2 className="display display--sm">Chi insegna qui</h2>
+                <ul className="ev-teachers">
+                  {teachers.map((t) => (
+                    <li className="ev-teacher" key={t.id}>
+                      <p className="ev-teacher__name">{t.name}</p>
+                      {t.role ? <p className="detail">{t.role}</p> : null}
+                      {t.elsewhere.length > 0 ? (
+                        <p className="detail ev-teacher__also">
+                          Porta la serata anche a{' '}
+                          {t.elsewhere.map((e, i) => (
+                            <React.Fragment key={e.slug}>
+                              {i > 0 ? (i === t.elsewhere.length - 1 ? ' e ' : ', ') : ''}
+                              <Link href={`/centri/${e.slug}`}>{e.town}</Link>
+                            </React.Fragment>
+                          ))}
+                          .
+                        </p>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+
+            {events.docs.length > 0 ? (
+              <div className="ev-host__events">
+                <h2 className="display display--sm">Prossimi eventi qui</h2>
+                <EventAgenda events={events.docs} showPlace={false} />
+              </div>
+            ) : null}
+          </div>
+
+          {/* ADR-0012: lo slot si dichiara. Con la foto vera della sala, la
+              mostra; senza, il segnaposto dice che cosa arrivera'. */}
+          <Figure
+            slot={center.foto}
+            label="Foto della sala in arrivo"
+            format="wide"
+            sizes="(min-width: 900px) 45vw, 100vw"
+            className="ev-host__photo"
+          />
+        </div>
+      </section>
+
+      {/* Il modulo nella scheda, con questo centro gia' scelto. Per un centro
+          non attivo il centro non e' fra le scelte: la richiesta parte da
+          /contatti, senza sede. */}
+      <section className="section section--grey ev-request" id="richiesta" aria-labelledby="req-title">
+        <div className="container ev-request__grid">
+          <div className="ev-request__head">
+            <span className="rule" aria-hidden="true" />
+            <h2 className="display display--md" id="req-title">
+              {center.attivo ? `Scrivi a ${place}` : 'Scrivici'}
+            </h2>
+            <p className="text">
+              La prima lezione si concorda con il docente del centro. Non chiede di essere allenati
+              per cominciare.
+            </p>
+            <p className="text detail">
+              AKM non pubblica un telefono per ogni centro: la richiesta arriva a chi tiene le
+              lezioni qui, e ti risponde quella persona.
+            </p>
+          </div>
+          <div>
+            {center.attivo ? (
+              <RequestForm
+                sedi={active.docs.map((s) => ({
+                  id: s.id,
+                  nome: s.nome,
+                  citta: s.indirizzo?.citta ?? '',
+                  indirizzo: readableAddress(s.indirizzo),
+                  palestra: s.palestra ?? null,
+                  mapsUrl: s.mapsUrl ?? null,
+                }))}
+                corsi={courses.docs.map((c) => ({ id: c.id, nome: c.nome }))}
+                texts={formTexts}
+                options={options}
+                initialCenter={center.id}
+                turnstileSiteKey={process.env.TURNSTILE_SITE_KEY || null}
+              />
+            ) : (
+              <p>
+                <Link className="button button--primary" href="/contatti">
                   Richiedi informazioni
                 </Link>
-                <Link className="button button--secondary" href="/corsi">
-                  Tutti i percorsi
-                </Link>
               </p>
-            </div>
+            )}
           </div>
         </div>
       </section>
