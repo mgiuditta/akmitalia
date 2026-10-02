@@ -175,7 +175,20 @@ function FormSection({
     ) : null
 
   return (
-    <form className="form" action={send} noValidate aria-busy={inProgress}>
+    <form
+      className="form"
+      action={send}
+      noValidate
+      aria-busy={inProgress}
+      /* Invio sulla select (e sugli altri campi) apriva l'invio implicito del
+         form: si invia solo dal bottone, l'a capo resta nella textarea. */
+      onKeyDown={(e) => {
+        const target = e.target as HTMLElement
+        if (e.key === 'Enter' && !['TEXTAREA', 'BUTTON', 'A'].includes(target.tagName)) {
+          e.preventDefault()
+        }
+      }}
+    >
       {state.messaggio ? (
         <div ref={notice} tabIndex={-1} role="alert" className="form__notice">
           {state.messaggio}
