@@ -11,7 +11,10 @@
 # container a parte, prima di far ripartire l'app. Vedi il README.
 
 FROM node:22.17.0-alpine AS base
-RUN corepack enable pnpm
+# pnpm fissato e installato con npm, non con corepack: senza versione corepack
+# prende l'ultima pnpm, e il corepack di Node 22.17 non sa avviare la 12
+# («Cannot find module .../pnpm.cjs»). Stessa versione dello sviluppo.
+RUN npm install -g pnpm@12.8.1
 
 FROM base AS deps
 # Perche' libc6-compat serva su alpine:
