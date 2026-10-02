@@ -2,7 +2,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import type { Sedi } from '@/payload-types'
-import { readableDays, readableAddress, instructorName } from './data'
+import { byWeekday, readableDays, readableAddress, instructorName } from './data'
 
 /**
  * Una riga dell'elenco centri: nome, indirizzo, orari veri. Il dato sta a corpo
@@ -31,7 +31,7 @@ export function CenterCard({
   nearest?: boolean
 }) {
   const Title = title
-  const schedule = center.orari ?? []
+  const schedule = byWeekday(center.orari ?? [])
 
   return (
     <li className={`reveal center${nearest ? ' center--nearest' : ''}`}>

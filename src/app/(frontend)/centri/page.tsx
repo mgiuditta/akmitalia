@@ -75,7 +75,16 @@ export default async function CentersPage({
 
   return (
     <>
-      <section className="section section--black masthead">
+      <section className="section section--black masthead masthead--cover">
+        <Figure
+          className="masthead__figure"
+          slot={settings?.fotoPagine?.centri}
+          label="Foto della pagina Centri"
+          format="band"
+          measure="grande"
+          sizes="100vw"
+          priority
+        />
         <div className="container masthead__content">
           <h1 className="display display--lg">
             {centers.length > 0 ? `${centers.length} centri, orari veri` : 'I centri tecnici'}
@@ -86,19 +95,6 @@ export default async function CentersPage({
           </p>
         </div>
       </section>
-
-      {/* Una banda a tutta larghezza fra la testata e l'elenco: stacca il nero
-          dal chiaro e mostra dove si pratica prima di elencarlo. */}
-      {/* `priority`: su queste pagine la banda e' l'LCP, la testata sopra e'
-          tipografica e non ha niente da caricare. */}
-      <Figure
-        slot={settings?.fotoPagine?.centri}
-        label="Foto della pagina Centri"
-        format="band"
-        measure="grande"
-        sizes="100vw"
-        priority
-      />
 
       <section className="section section--light" aria-labelledby="list-title">
         <div className="container">

@@ -36,19 +36,21 @@ const FOLDER = path.resolve(process.cwd(), 'data/immagini')
 const CAPTION = 'Immagine generata: non ritrae una lezione o persone reali.'
 const MODEL = process.env.NANOBANANA_MODEL || 'gemini-2.5-flash-image'
 
-/* Il registro visivo, uguale per tutte: e' il trattamento di DESIGN.md portato
-   in fotografia. Nessun colore, nessuna posa, nessuna vignettatura finta. */
+/* Il registro visivo, uguale per tutte: bianco e nero da reportage, come il
+   sito. Nessun colore, nessuna posa, nessuna vignettatura finta. */
 const REGISTRY =
   'Documentary black and white reportage photograph, grainy 35mm film look, high contrast, deep blacks, cold fluorescent light, plain Italian municipal gymnasium with wooden parquet, wall bars and crash mats. People in plain black t-shirts and dark trousers. Natural and unposed. Full-frame edge to edge exposure with no vignette, no dark border, no rounded corners. No colour, no logos, no text, no watermark.'
 
 type Shot = {
   /** Il nome del file in data/immagini e in Media. */
   nome: string
-  format: '16:9' | '21:9'
+  format: '16:9' | '21:9' | '4:5'
   /** L'eroe tiene il titolo a sinistra: la foto va specchiata. */
   mirror?: boolean
   alt: string
   subject: string
+  /** Lo slug del percorso a cui va la foto, per le foto ravvicinate dei corsi. */
+  corso?: string
 }
 
 const SHOTS: Shot[] = [
@@ -94,6 +96,33 @@ const SHOTS: Shot[] = [
     alt: 'Una sala piena per uno stage: l’istruttore in piedi che spiega, gli allievi seduti a terra in ascolto',
     subject:
       'Wide panoramic frame of a crowded seminar: about thirty adults of mixed ages sitting on the parquet in loose rows, seen from behind and slightly above, all facing one instructor standing at the far end of the hall mid explanation. Sports bags along the wall.',
+  },
+  /* Le foto dei percorsi sono in campo stretto, al contrario delle bande: mani,
+     prese, una correzione. Il sito fino a qui mostrava solo sale viste da
+     lontano, e senza un primo piano non arriva ne' il gesto ne' la calma. */
+  {
+    nome: 'akm-corso-adulti',
+    format: '4:5',
+    corso: 'krav-maga-self-defense-system',
+    alt: 'Le mani di un istruttore che sistemano la guardia di un allievo, da vicino',
+    subject:
+      "Close-up at chest height: an instructor's hands adjusting a student's raised guard, forearms and fists filling the frame, the student's face partly visible, concentrated and calm. Shallow depth of field, background softly out of focus.",
+  },
+  {
+    nome: 'akm-corso-kids',
+    format: '4:5',
+    corso: 'krav-maga-antibullismo',
+    alt: 'Un istruttore inginocchiato all’altezza di due ragazzi di undici anni che provano a liberarsi da una presa al polso',
+    subject:
+      'Medium close shot: a calm adult instructor kneeling at the height of a girl and a boy around eleven years old, guiding them through a simple release from a wrist grab. The children are focused, one of them smiling. Safe, friendly, patient atmosphere.',
+  },
+  {
+    nome: 'akm-donne-distanza',
+    format: '4:5',
+    corso: 'krav-maga-antiaggressione-femminile',
+    alt: 'Una donna tiene la distanza con le mani aperte davanti a sé, l’istruttrice accanto le corregge il braccio',
+    subject:
+      'Medium close shot, waist up: a woman in her forties with short grey hair stands with both open palms raised in front of her chest, keeping distance, calm and concentrated; beside her a female instructor in her thirties with long dark hair tied back gently corrects the height of her elbow with one hand. A third woman, younger, curly hair, watches in the soft-focus background. Three clearly different women, different faces, builds and hairstyles.',
   },
 ]
 
@@ -155,9 +184,13 @@ for (const shot of SHOTS) {
   const file = await generate(shot)
   const filename = `${shot.nome}.jpg`
 
+  /* `like` e non `equals`: se il file esiste gia' sul disco di Media, Payload
+     lo carica come akm-eroe-sala-1.jpg, e il confronto esatto lo ricaricava a
+     ogni giro. Il piu' vecchio vince. */
   const already = await payload.find({
     collection: 'media',
-    where: { filename: { equals: filename } },
+    where: { filename: { like: shot.nome } },
+    sort: 'id',
     limit: 1,
     depth: 0,
   })
@@ -209,6 +242,15 @@ await payload.updateGlobal({
   },
 })
 console.log('= Impostazioni aggiornate')
+
+for (const shot of SHOTS.filter((s) => s.corso)) {
+  const updated = await payload.update({
+    collection: 'corsi',
+    where: { slug: { equals: shot.corso } },
+    data: { foto: id(shot.nome) },
+  })
+  console.log(updated.docs.length ? `= Percorso ${shot.corso}: foto assegnata` : `! Percorso ${shot.corso} non trovato`)
+}
 
 /* La foto della pagina contatti c'era gia' in libreria e non era assegnata a
    niente: e' l'unica vera del gruppo, un istruttore che corregge un allievo. */

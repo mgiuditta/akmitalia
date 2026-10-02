@@ -5,19 +5,7 @@ import type { Media } from '@/payload-types'
 
 /**
  * Uno slot immagine del sito. Riceve quello che Payload restituisce per un
- * campo `upload` e decide: se c'e' un file lo mostra, se non c'e' compone un
- * segnaposto.
- *
- * Il segnaposto non e' un rettangolo rotto e non e' un'icona di errore: e' una
- * superficie carbone con lo stemma in filigrana e scritto sopra che cosa ci va.
- * Serve a due lettori diversi e a entrambi dice il vero. Al visitatore dice che
- * li' andra' una fotografia e intanto non buca il ritmo della pagina; al
- * cliente, che apre il sito prima di aprire l'admin, dice quale campo compilare.
- *
- * Non e' in contrasto con la regola per cui una riga senza dato sparisce: quella
- * vale per un dato (un telefono, un orario), che se manca non esiste. Uno slot
- * editoriale invece esiste sempre, e' la composizione che lo prevede: toglierlo
- * cambierebbe la pagina, non la completerebbe.
+ * campo `upload`: se c'e' un file lo mostra, se non c'e' non rende niente.
  *
  * ponytail: nessuna variante di skeleton, nessun blur-up. Le immagini arrivano
  * dal disco del sito, non da una rete lenta.
@@ -47,7 +35,6 @@ export function urlMedia(slot: Slot, measure: keyof typeof SIZE = 'media') {
 
 export function Figure({
   slot,
-  label,
   format = 'wide',
   measure = 'media',
   sizes = '100vw',
@@ -55,8 +42,8 @@ export function Figure({
   className,
 }: {
   slot: Slot
-  /** Che cosa ci va. Finisce nel segnaposto, scritto, quando lo slot e' vuoto. */
-  label: string
+  /** Che cosa ci va: documenta lo slot nel punto in cui e' usato. */
+  label?: string
   format?: Format
   measure?: keyof typeof SIZE
   sizes?: string
@@ -68,23 +55,10 @@ export function Figure({
   const caption = typeof slot === 'object' && slot ? slot.didascalia || '' : ''
   const crop = CROP[format]
 
-  if (!url) {
-    return (
-      <div
-        className={`placeholder${className ? ` ${className}` : ''}`}
-        style={{ aspectRatio: crop }}
-        /* E' un vuoto dichiarato, non un'immagine: chi legge con lo schermo
-           sente l'etichetta una volta e non un file inesistente. */
-        role="img"
-        aria-label={`${label}: immagine non ancora caricata`}
-      >
-        <span className="placeholder__brand" aria-hidden="true">
-          AKM
-        </span>
-        <span className="placeholder__item">{label}</span>
-      </div>
-    )
-  }
+  // Uno slot vuoto non si vede: un riquadro con scritto «Foto del centro»
+  // diceva al visitatore che il sito non era finito. Il cliente trova il campo
+  // nell'admin, e la composizione regge senza (testata solo tipografica).
+  if (!url) return null
 
   return (
     <figure className={`figure${className ? ` ${className}` : ''}`} style={{ aspectRatio: crop }}>
@@ -101,8 +75,7 @@ export function Figure({
           a chi non le vede: sotto «Le qualifiche si contano» un istruttore
           generato si legge come un maestro dell'albo, e chi guarda ha diritto di
           sapere cos'e' che sta guardando quanto chi ascolta. Sta sovrapposta in
-          fondo alla foto, che e' dove DESIGN.md §4 mette le didascalie, su una
-          lastra piena: nessun velo, nessun vetro. */}
+          fondo alla foto, su una lastra piena: nessun velo, nessun vetro. */}
       {caption ? <figcaption className="figure__caption">{caption}</figcaption> : null}
     </figure>
   )

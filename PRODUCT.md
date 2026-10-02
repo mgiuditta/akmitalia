@@ -37,7 +37,7 @@ Il contenuto è gestito interamente da Payload CMS (Sedi, Corsi, Istruttori, Eve
 - **Emozione target**: sollievo competente. «Questi sanno quello che fanno e non mi faranno sentire fuori posto.»
 - **Prova**: nomi, indirizzi, orari, volti di istruttori con qualifiche verificabili (CSEN-CONI, F.E.K.D.A., P.T.D.). La credibilità viene dai dati, non dagli aggettivi.
 
-Vincolo di marca dato dal cliente: il wordmark **AKM ITALIA in verde, bianco e rosso** (tricolore). È un dato di partenza, non una scelta aperta. `DESIGN.md` lo confina al solo wordmark: il sistema visivo è monocromo e non porta alcun accento cromatico, quindi il tricolore non si estende a percorsi, sezioni o componenti.
+Vincolo di marca dato dal cliente: il wordmark **AKM ITALIA in verde, bianco e rosso** (tricolore). È un dato di partenza, non una scelta aperta. Il tricolore resta al wordmark e al filetto di barra e piede: non si estende a percorsi, sezioni o componenti. Il rosso del sistema è un'altra cosa: dice azione, sui bottoni e sulla fascia di chiusura che chiede di scrivere (docs/adr/0005).
 
 ## Anti-references
 
@@ -49,7 +49,7 @@ Tre trappole, tutte da evitare:
 
 Divieto trasversale: **niente foto stock**. Meglio nessuna immagine che una comprata.
 
-**Il registro visivo da palestra da combattimento è una scelta, non un incidente.** Era la prima anti-reference di questo documento fino al 2026-09-01: nero, altissimo contrasto, display condensato sovradimensionato. Il sistema di `DESIGN.md` adotta quel registro deliberatamente, ripulito dai suoi cliché: niente camo, niente teschi, niente rosso sangue, niente foto di pugni in controluce, nessun accento cromatico di alcun tipo. La durezza sta nella scala tipografica e nel contrasto di superficie, non nell'iconografia. Il costo è dichiarato in `docs/adr/0004`: questo registro parla forte all'adulto che cerca sicurezza quotidiana e chiede più lavoro di copy per non tagliare fuori genitori e prime praticanti.
+**Il registro visivo da palestra da combattimento è una scelta, non un incidente.** Era la prima anti-reference di questo documento fino al 2026-09-01: nero, altissimo contrasto, display condensato sovradimensionato. Il sito adotta quel registro deliberatamente, ripulito dai suoi cliché: niente camo, niente teschi, niente rosso sangue, niente foto di pugni in controluce. La durezza sta nella scala tipografica, nel contrasto di superficie e nel rosso usato una volta per pagina, non nell'iconografia. Dal redesign del 2026-10-02 le fotografie entrano anche in campo stretto (mani, prese, una correzione), perché la calma si vede da vicino. Il costo è dichiarato in `docs/adr/0004`: questo registro parla forte all'adulto che cerca sicurezza quotidiana e chiede più lavoro di copy per non tagliare fuori genitori e prime praticanti.
 
 ## Design Principles
 

@@ -6,7 +6,8 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import React from 'react'
 
 import { openPayload } from '@/components/payload'
-import { readableDays, disciplineId, readableAddress, published } from '@/components/data'
+import { byWeekday, readableDays, disciplineId, readableAddress, published } from '@/components/data'
+import { Figure } from '@/components/Figure'
 import { pageMetadata } from '@/components/seo'
 
 /**
@@ -192,7 +193,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
 
   return (
     <>
-      <section className="section section--black masthead masthead--pathway">
+      <section className="section section--black masthead masthead--pathway masthead--split">
         {/* Il segno e' inchiostro su trasparente: sul nero va invertito, come la
             fotografia dell'eroe entra nel sistema come valore e non come colore. */}
         {markUrl ? (
@@ -207,43 +208,54 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
           />
         ) : null}
 
-        <div className="container masthead__content">
-          <Link className="breadcrumb" href="/corsi">
-            Torna ai percorsi
-          </Link>
-          <p className="eyebrow">{course.occhiello || 'Percorso'}</p>
-          <h1 className="display display--lg">{course.domanda || course.nome}</h1>
-          <p className="text masthead__text">{course.sommario}</p>
-
-          <dl className="masthead__facts">
-            <div>
-              <dt>Il corso</dt>
-              <dd>{course.nome}</dd>
-            </div>
-            {course.aChiSiRivolge ? (
-              <div>
-                <dt>A chi si rivolge</dt>
-                <dd>{course.aChiSiRivolge}</dd>
-              </div>
-            ) : null}
-            {centers.length > 0 ? (
-              <div>
-                <dt>Dove si pratica</dt>
-                <dd>
-                  {centers.length} {centers.length === 1 ? 'centro' : 'centri'}
-                </dd>
-              </div>
-            ) : null}
-          </dl>
-
-          <p className="masthead__action">
-            <Link
-              className="button button--primary"
-              href={`/contatti?corso=${encodeURIComponent(course.slug)}`}
-            >
-              {course.azione || 'Chiedi una prova'}
+        <div className="container masthead__grid">
+          <div className="masthead__content">
+            <Link className="breadcrumb" href="/corsi">
+              Torna ai percorsi
             </Link>
-          </p>
+            <p className="eyebrow">{course.occhiello || 'Percorso'}</p>
+            <h1 className="display display--lg">{course.domanda || course.nome}</h1>
+            <p className="text masthead__text">{course.sommario}</p>
+
+            <dl className="masthead__facts">
+              <div>
+                <dt>Il corso</dt>
+                <dd>{course.nome}</dd>
+              </div>
+              {course.aChiSiRivolge ? (
+                <div>
+                  <dt>A chi si rivolge</dt>
+                  <dd>{course.aChiSiRivolge}</dd>
+                </div>
+              ) : null}
+              {centers.length > 0 ? (
+                <div>
+                  <dt>Dove si pratica</dt>
+                  <dd>
+                    {centers.length} {centers.length === 1 ? 'centro' : 'centri'}
+                  </dd>
+                </div>
+              ) : null}
+            </dl>
+
+            <p className="masthead__action">
+              <Link
+                className="button button--primary"
+                href={`/contatti?corso=${encodeURIComponent(course.slug)}`}
+              >
+                {course.azione || 'Chiedi una prova'}
+              </Link>
+            </p>
+          </div>
+          {/* La foto ravvicinata del percorso: il gesto, non la sala. */}
+          <Figure
+            className="masthead__figure"
+            slot={course.foto}
+            format="portrait"
+            measure="grande"
+            sizes="(min-width: 900px) 45vw, 100vw"
+            priority
+          />
         </div>
       </section>
 
@@ -269,7 +281,6 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
       <section className="section section--light" aria-labelledby="place-title">
         <div className="container">
           <div className="centers__heading">
-            <span className="rule" aria-hidden="true" />
             <h2 className="display display--md" id="place-title">
               Dove si pratica
             </h2>
@@ -283,7 +294,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
           {centers.length > 0 ? (
             <ul className="centers__list">
               {centers.map((center) => {
-                const own = (center.orari ?? []).filter((o) => disciplineId(o.disciplina) === course.id)
+                const own = byWeekday((center.orari ?? []).filter((o) => disciplineId(o.disciplina) === course.id))
 
                 return (
                   <li className="reveal center" key={center.id}>

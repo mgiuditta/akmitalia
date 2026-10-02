@@ -7,7 +7,7 @@ I documenti che spiegano il perché delle cose:
 
 - `PRODUCT.md` — a chi parla il sito e qual è l'unico esito che conta.
 - `CONTEXT.md` — il glossario del dominio: centro, orario, docente, corso, percorso.
-- `DESIGN.md` — il sistema visivo, con le sue regole nominate.
+- `src/app/(frontend)/tokens.css` — il sistema visivo: palette, scala, caratteri.
 - `docs/adr/` — le decisioni, una per file, con il motivo per cui si è scelto così.
 
 ## Sviluppo

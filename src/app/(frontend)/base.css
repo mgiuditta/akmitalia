@@ -32,9 +32,10 @@ body {
   color: var(--color-on-primary);
   font-family: var(--font-body);
   font-size: var(--size-text);
-  font-weight: var(--weight-light);
+  font-weight: var(--weight-regular);
   line-height: var(--leading-text);
   font-kerning: normal;
+  text-rendering: optimizeLegibility;
 }
 
 img {
@@ -113,6 +114,16 @@ ol {
   --ring: var(--color-ink);
 }
 
+/* Il rosso pieno: una volta per pagina, sulla chiusura che chiede di scrivere.
+   E' la stessa tinta del bottone primario portata a superficie, quindi dice
+   ancora azione. Bianco sopra sta a 4.86:1, sopra la soglia AA. */
+.section--action {
+  background: var(--color-action);
+  color: var(--color-on-primary);
+  --row-rule: rgb(255 255 255 / 0.4);
+  --ring: var(--color-on-primary);
+}
+
 .section--grey {
   background: var(--color-muted);
   color: var(--color-ink);
@@ -148,10 +159,34 @@ ol {
   font-size: var(--size-display-sm);
 }
 
-.eyebrow {
-  font-size: var(--size-caption);
-  font-weight: var(--weight-bold);
-  line-height: var(--leading-display);
+/* L'etichetta: Archivo espanso, maiuscolo, spaziato. E' la voce che sta sopra
+   i titoli e accanto ai dati, e non si confonde mai con il testo corrente. */
+.eyebrow,
+.label-caps {
+  font-size: var(--size-label);
+  font-weight: var(--weight-semibold);
+  font-stretch: var(--stretch-expanded);
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Il gradino intermedio: Archivo condensato nero, maiuscolo. Parla la lingua
+   del display senza la sua stazza, per nomi di centri, persone e punti. */
+.heading {
+  font-size: var(--size-heading-md);
+  font-weight: var(--weight-black);
+  font-stretch: var(--stretch-condensed);
+  line-height: var(--leading-heading);
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.lead {
+  font-size: var(--size-lead);
+  line-height: 1.45;
+  max-width: 40rem;
+  text-wrap: pretty;
 }
 
 .text {
@@ -162,6 +197,7 @@ ol {
 
 .detail {
   font-size: var(--size-caption);
+  font-weight: var(--weight-medium);
   font-variant-numeric: tabular-nums;
 }
 
@@ -196,7 +232,7 @@ ol {
   align-items: center;
   gap: var(--space-xs);
   font-size: var(--size-caption);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
 }
 
 .status::before {
@@ -220,7 +256,9 @@ ol {
   padding: var(--space-md) var(--space-lg);
   font-size: var(--size-link);
   font-weight: var(--weight-bold);
-  line-height: var(--leading-text);
+  font-stretch: var(--stretch-expanded);
+  letter-spacing: 0.02em;
+  line-height: var(--leading-tight);
   text-decoration: none;
   border: 0;
   border-radius: var(--radius);
@@ -239,7 +277,6 @@ ol {
 .button--primary {
   background: var(--color-action);
   color: var(--color-on-primary);
-  box-shadow: var(--shadow-button);
 }
 
 .button--primary:hover,
@@ -250,10 +287,41 @@ ol {
 .button--secondary {
   background: var(--color-surface-alt);
   color: var(--color-on-primary);
+  box-shadow: inset 0 0 0 1px var(--color-surface-alt);
 }
 
 .button--secondary:hover {
   background: var(--color-surface);
+}
+
+/* Sul nero il carbone non si vedeva: il secondario diventa un contorno bianco
+   che all'hover si riempie. */
+.section--black .button--secondary,
+.section--charcoal .button--secondary,
+.section--action .button--secondary,
+.hero .button--secondary {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.7);
+}
+
+.section--black .button--secondary:hover,
+.section--charcoal .button--secondary:hover,
+.section--action .button--secondary:hover,
+.hero .button--secondary:hover {
+  background: var(--color-on-primary);
+  color: var(--color-ink);
+}
+
+/* Bianco pieno su rosso: il bottone della chiusura in rosso. Testo rosso su
+   bianco sta a 4.86:1. */
+.button--inverse {
+  background: var(--color-on-primary);
+  color: var(--color-action-pressed);
+}
+
+.button--inverse:hover {
+  background: var(--color-ink);
+  color: var(--color-on-primary);
 }
 
 .skip {

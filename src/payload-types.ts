@@ -624,6 +624,10 @@ export interface Corsi {
    */
   immagine?: (number | null) | Media;
   /**
+   * Una fotografia ravvicinata del percorso: mani, una presa, un istruttore che corregge. Sta nella testata della scheda e accanto alla riga in elenco. Se manca, la testata resta solo tipografica.
+   */
+  foto?: (number | null) | Media;
+  /**
    * Compilato dagli orari delle schede centro: qui non si modifica.
    */
   sedi?: {
@@ -1046,6 +1050,7 @@ export interface CorsiSelect<T extends boolean = true> {
   prova?: T;
   azione?: T;
   immagine?: T;
+  foto?: T;
   sedi?: T;
   meta?:
     | T

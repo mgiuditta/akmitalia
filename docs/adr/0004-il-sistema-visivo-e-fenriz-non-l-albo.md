@@ -1,5 +1,7 @@
 # Il sistema visivo e Fenriz, non l'Albo
 
+> **Superata in parte il 2026-10-02.** `DESIGN.md` è stato tolto col redesign. Resta il registro (nero, Anton, foto in bianco e nero, palette invariata); cadono il vincolo monocromo-piatto, Roboto 300 e i tre pesi. Il rosso diventa superficie una volta per pagina, Archivo sostituisce Roboto, le foto entrano anche in campo stretto. I token stanno in `src/app/(frontend)/tokens.css`.
+
 `DESIGN.md` portava una north star chiamata «L'Albo»: registro civico, tricolore come
 tassonomia a tre percorsi, Fira Sans, neutri tinti verso il verde di marca, superfici piatte
 con righe a 1px. Il primo «Don't» di quel documento e la prima anti-reference di `PRODUCT.md`

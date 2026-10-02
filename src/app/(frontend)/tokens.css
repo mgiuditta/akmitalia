@@ -1,8 +1,9 @@
 /*
- * Token del sistema di DESIGN.md, importato da Fenriz (docs/adr/0004).
+ * Token del sistema visivo. Il registro viene da Fenriz (docs/adr/0004); il
+ * redesign del 2026-10-02 ha tolto il vincolo monocromo-piatto, la palette resta.
  * Un solo tema, dark-first: non esiste un blocco di token per la modalita' chiara,
  * le sezioni chiare sono uno stacco di ritmo, non una modalita' alternativa.
- * I file di font si scaricano con `pnpm fonts:download` e non stanno nel repo.
+ * I file di font stanno in public/font/; scripts/download-fonts.sh li rifa'.
  */
 
 @font-face {
@@ -13,10 +14,15 @@
   font-display: swap;
 }
 
+/* Archivo, grottesca variabile su due assi: il peso fa la gerarchia, la
+   larghezza fa le voci. Condensata per i titoli intermedi (parente di Anton
+   senza esserne una copia), espansa per le etichette, normale per leggere.
+   Subset latino in woff2, 92 KB per tutta la famiglia. */
 @font-face {
-  font-family: 'Roboto';
-  src: url('/font/Roboto-Variable.ttf') format('truetype-variations');
-  font-weight: 300 700;
+  font-family: 'Archivo';
+  src: url('/font/Archivo-Variable.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
   font-style: normal;
   font-display: swap;
 }
@@ -45,35 +51,41 @@
   --tricolor-green: #00973f; /* solo filetto: il valore esatto dello stemma, mai testo */
   --tricolor-red: #e30917;
 
-  /* Due famiglie e non tre. Anton per le affermazioni, Roboto per la funzione. */
+  /* Due famiglie. Anton urla le affermazioni, Archivo fa tutto il resto e con
+     la sua larghezza variabile copre i livelli che Anton da solo lasciava vuoti. */
   --font-display: 'Anton', 'Oswald', 'Arial Narrow', sans-serif;
-  --font-body: 'Roboto', system-ui, sans-serif;
+  --font-body: 'Archivo', system-ui, sans-serif;
 
-  /* Tre pesi e non di piu': il 500 non esiste in questo sistema. */
-  --weight-light: 300;
   --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
   --weight-bold: 700;
+  --weight-black: 800;
 
-  /* Scala: display da 33px in su, funzionale da 22px in giu'. Non si sovrappongono.
-     I valori di DESIGN.md sono il tetto desktop; sotto, clamp() li riduce senza
-     introdurre gradini nuovi. Ogni clamp resta entro 2.5x fra minimo e massimo,
-     oltre quel rapporto lo zoom del browser si comporta male. */
-  --size-hero-display: clamp(3rem, 10.5vw, 7.5rem); /* 48 -> 120 */
-  --size-display-lg: clamp(2.5rem, 8vw, 5.625rem); /* 40 -> 90 */
+  --stretch-condensed: 72%;
+  --stretch-expanded: 115%;
+
+  /* Scala fluida, rapporto >= 1.25 fra i gradini. Ogni clamp resta entro 2.5x
+     fra minimo e massimo, oltre quel rapporto lo zoom del browser si comporta male.
+     heading-md e' il gradino che mancava: Archivo condensato nero fra il display
+     e il testo, per i nomi di centri, persone e punti. */
+  --size-hero-display: clamp(3.5rem, 13vw, 10rem); /* 56 -> 160 */
+  --size-display-lg: clamp(2.75rem, 9vw, 6.5rem); /* 44 -> 104 */
   --size-display-md: clamp(2rem, 5.4vw, 3.4375rem); /* 32 -> 55 */
   --size-display-sm: clamp(1.5rem, 3vw, 2.0625rem); /* 24 -> 33 */
-  --size-heading-lg: clamp(1.125rem, 1.6vw, 1.375rem); /* 18 -> 22 */
+  --size-heading-md: clamp(1.5rem, 2.6vw, 2.25rem); /* 24 -> 36 */
+  --size-heading-lg: clamp(1.1875rem, 1.6vw, 1.375rem); /* 19 -> 22 */
+  --size-lead: clamp(1.1875rem, 1.7vw, 1.5rem); /* 19 -> 24 */
   --size-link: 1rem;
-  --size-caption: 0.875rem;
-  /* Deviazione dichiarata da DESIGN.md: il paragrafo corrente sta a 16px, non a 14.
-     Il traffico e' quasi tutto da telefono di sera e 14px di Roboto 300 su nero puro
-     tremola. Il 14px resta dov'e' un dato denso: orari, indirizzi, etichette. */
-  --size-text: 1rem;
+  --size-caption: 0.9375rem; /* 15: orari, indirizzi, dati densi, a peso 500 */
+  --size-label: 0.8125rem; /* 13: etichette espanse in maiuscolo */
+  --size-text: 1.0625rem; /* 17 */
 
-  --leading-display: 1;
+  --leading-display: 0.95;
+  --leading-heading: 1.05;
   --leading-tight: 1.2;
-  --leading-text: 1.4;
-  --leading-loose: 1.5;
+  --leading-text: 1.55;
+  --leading-loose: 1.6;
 
   /* Spaziatura tarata a mano: base ~8px con passi irregolari per il ritmo.
      Padding di componente a 24px, ritmo di sezione nella fascia 48-100px. */
@@ -88,18 +100,17 @@
   --space-xxl: 40px;
   --space-section-sm: 48px;
   --space-section: 80px;
-  --space-section-lg: 100px;
+  --space-section-lg: 140px;
   --header-height: 77px;
 
   /* Il ritmo macro e' generoso, il margine di pagina no: su telefono il dato deve
      arrivare al bordo, come su un manifesto affisso. */
   --page-margin: clamp(20px, 4vw, 60px);
   --page-width: 1400px;
-  --measure: 34rem; /* la colonna stretta da 500-600px di DESIGN.md */
+  --measure: 36rem; /* ~65 caratteri di Archivo a 17px */
 
-  /* Elevazione: livello 0 ovunque, 1 solo per button-primary, 2 solo per card.
+  /* Elevazione: livello 0 ovunque, 2 solo per card.
      Il cromo strutturale non proietta mai ombra. */
-  --shadow-button: rgba(69, 69, 69, 0.2) 0 8px 8px 0, rgba(69, 69, 69, 0.23) 0 2px 5px 0;
   --shadow-card: rgba(0, 0, 0, 0.1) 0 8px 18px 0, rgba(0, 0, 0, 0.09) 0 33px 33px 0;
 
   /* Nessun token di raggio esiste. Lo spigolo vivo e' un confine duro del sistema. */

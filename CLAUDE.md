@@ -21,11 +21,12 @@ Single-context: `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/do
 
 Il frontend pubblico sta sotto le skill `antislop:antislop` e `antislop:antislop-ui`. Prima di
 scrivere UI, leggi l'ultimo report in `docs/antislop/`: le 39 voci del primo audit hanno tutte un
-esito scritto, e diverse sono diventate regole in `DESIGN.md` o emendamenti a un ADR.
+esito scritto, e diverse sono diventate emendamenti a un ADR. `DESIGN.md` è stato tolto il
+2026-10-02 col redesign: il sistema visivo vive nei token di `src/app/(frontend)/tokens.css`.
 
 Due regole di metodo, che vengono da quell'audit:
 
-- **Nessuna gerarchia fissa fra antislop e `DESIGN.md` / `docs/adr/`.** Una voce che si scontra con
+- **Nessuna gerarchia fissa fra antislop e `docs/adr/`.** Una voce che si scontra con
   una scelta scritta lì non si corregge d'ufficio: diventa una decisione a sé, e quando è presa
   emenda il documento con cui si scontrava oppure dichiara perché quel documento resta com'è.
 - **Un'affermazione sui fatti non è un problema di UI.** «Quattro anni di percorso», «anche in

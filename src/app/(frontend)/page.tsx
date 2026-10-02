@@ -290,7 +290,6 @@ export default async function Home() {
       <section className="section section--light" id="centri" aria-labelledby="centers-title">
         <div className="container">
           <div className="centers__heading">
-            <span className="rule" aria-hidden="true" />
             <h2 className="display display--md" id="centers-title">
               {centers.length > 0
                 ? `${centers.length} centri in ${provinces.size} province`
@@ -402,7 +401,7 @@ export default async function Home() {
           richiesta di contatto dopo il bivio. Chiara prima del footer carbone:
           uno stacco di valore, non di tinta. Un bottone solo, con l'etichetta
           della barra: un intento, una parola. */}
-      <section className="section section--light" aria-labelledby="step-title">
+      <section className="section section--action" aria-labelledby="step-title">
         <div className="container">
           {/* A 390px le tre sezioni finali collassavano sulla stessa composizione:
               display-md, paragrafo, elenco o bottone a sinistra, e cambiava solo
@@ -410,13 +409,12 @@ export default async function Home() {
               filetti, i numerali in Anton - questa no: la chiusura si prende il
               filetto e il corpo grande, cosi' il ritmo torna a farsi anche con
               la scala e non con il solo fondo (RHYTHM 2). */}
-          <span className="rule" aria-hidden="true" />
           <h2 className="display display--lg step__title" id="step-title">
             {step.titolo}
           </h2>
           <p className="text first__lead">{step.testo}</p>
           <p className="tail-action">
-            <Link className="button button--primary" href="/contatti">
+            <Link className="button button--inverse" href="/contatti">
               {step.bottone}
             </Link>
           </p>

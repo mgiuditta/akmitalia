@@ -8,8 +8,8 @@ import { Menu, type MenuItem } from '@/components/Menu'
 /**
  * Barra fissa, nera e opaca a ogni posizione di scroll: nessun bordo, nessun
  * blur, chiusa in fondo dal filetto tricolore. Il marchio e' un lockup a due
- * piani in Roboto: lo stemma resta emblema e la scritta non usa Anton, che
- * sotto i 33px viola la Regola dello Stacco Netto di DESIGN.md.
+ * piani in Archivo: lo stemma resta emblema e la scritta non usa Anton, che
+ * sotto i 33px non regge.
  *
  * 77px su ogni breakpoint. Sopra i 1024px in riga stanno marchio, voci e CTA:
  * la riga e' server, senza JavaScript. Sotto, in riga restano marchio, CTA e

@@ -81,8 +81,8 @@
     white-space: nowrap;
   }
 
-  /* Il token nav-link di DESIGN.md: Roboto 16, peso 300. Il segno di hover e'
-     una sottolineatura staccata, non un colore: la Regola del Valore. */
+  /* La voce di navigazione: Archivo 16, peso 500. Il segno di hover e' una
+     sottolineatura staccata, non un colore. */
   .header__item {
     display: inline-flex;
     align-items: center;
@@ -91,7 +91,7 @@
     min-block-size: 44px;
     padding-block: var(--space-sm);
     font-size: var(--size-link);
-    font-weight: var(--weight-light);
+    font-weight: var(--weight-medium);
     line-height: var(--leading-text);
     text-decoration: none;
   }
@@ -132,10 +132,9 @@
 }
 
 /*
- * Il wordmark e' un lockup di marca, non un token tipografico: e' l'unico punto
- * del sistema dove il tracking e' ammesso (eccezione dichiarata in DESIGN.md
- * alla Regola della Spaziatura Normale). Anton resta fuori dalla barra perche'
- * sotto i 33px viola la Regola dello Stacco Netto: qui il carattere e' Roboto.
+ * Il wordmark e' un lockup di marca, non un token tipografico: spaziatura larga
+ * e maiuscolo. Anton resta fuori dalla barra, sotto i 33px non regge: qui il
+ * carattere e' quello del testo.
  */
 .header__lockup {
   display: grid;
@@ -282,8 +281,7 @@
 }
 
 /* Il filetto resta il tab da 96px del sistema: steso a tutta larghezza
-   leggerebbe come una bandiera, ed e' l'errore contro cui DESIGN.md mette in
-   guardia. Sta al bordo interno del pannello e non sopra il tab della barra,
+   leggerebbe come una bandiera. Sta al bordo interno del pannello e non sopra il tab della barra,
    che con il foglio da destra non e' piu' allineato: il tab statico si spegne
    mentre il menu e' aperto, quindi la firma si sposta invece di sdoppiarsi. */
 .menu__rule {
@@ -334,7 +332,7 @@
 .menu__ordinal {
   display: block;
   font-size: var(--size-caption);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
   line-height: 1;
   font-variant-numeric: tabular-nums;
   opacity: 0;
@@ -381,7 +379,7 @@
   display: block;
   padding-block-start: var(--space-xs);
   font-size: var(--size-caption);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
 }
 
 /* flex invece di block cosi' il pallino di .status resta allineato al testo. */
@@ -390,7 +388,7 @@
   align-items: center;
   gap: var(--space-xs);
   font-size: var(--size-caption);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
   font-variant-numeric: tabular-nums;
   opacity: 0;
 }
@@ -453,7 +451,7 @@
   overflow: hidden;
   block-size: 1em;
   font-size: var(--size-caption);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
   line-height: 1;
 }
 
@@ -612,7 +610,7 @@
 
 .footer__title {
   font-size: var(--size-caption);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
   padding-block-end: var(--space-md);
 }
 
@@ -628,7 +626,7 @@
   align-items: center;
   min-block-size: 44px;
   font-size: var(--size-caption);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
   text-decoration: none;
 }
 

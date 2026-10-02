@@ -11,8 +11,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
  * sopra i 700px, ed e' una regola di CSS. Non esistono due elenchi di link,
  * quindi non esistono due landmark e nessuna voce e' letta due volte.
  *
- * Perche' un menu anche su desktop, dopo che DESIGN.md aveva scritto il
- * contrario e docs/adr/0006 lo aveva limitato al telefono: docs/adr/0007.
+ * Perche' un menu anche su desktop, dopo che docs/adr/0006 lo aveva limitato
+ * al telefono: docs/adr/0007.
  *
  * ponytail: GSAP non e' importato in testa al file. Chi ha
  * prefers-reduced-motion e chi non apre mai il menu non lo scarica. Il primo

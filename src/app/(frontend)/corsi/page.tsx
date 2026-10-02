@@ -5,7 +5,7 @@ import React from 'react'
 
 import { openPayload } from '@/components/payload'
 import { surfaceClass, disciplineId, ordinal, published, forkTexts } from '@/components/data'
-import { Figure } from '@/components/Figure'
+import { Figure, urlMedia } from '@/components/Figure'
 import { pageMetadata } from '@/components/seo'
 
 /**
@@ -14,9 +14,8 @@ import { pageMetadata } from '@/components/seo'
  * portano anche la loro domanda in prima persona.
  *
  * Ogni riga e' una fascia a tutta larghezza sul proprio ruolo di superficie
- * (`corso.superficie`), che e' il modo in cui DESIGN.md distingue un corso da
- * un altro: il sistema non ha accenti cromatici, quindi si cambia il valore del
- * fondo, e sempre con il nome scritto accanto (Regola dell'Etichetta).
+ * (`corso.superficie`): un corso si distingue dal valore del fondo, mai da una
+ * tinta, e sempre con il nome scritto accanto.
  * E' lo stesso trattamento del bivio in home, senza il ripiegamento a fisarmonica:
  * qui la riga porta direttamente alla scheda.
  */
@@ -66,34 +65,35 @@ export default async function CoursesPage() {
 
   return (
     <>
-      <section className="section section--black masthead fork__head">
-        <div className="container masthead__content">
-          <h1 className="display display--lg">{fork.titolo}</h1>
-          <p className="text masthead__text">{fork.testo}</p>
-          {/* Il conteggio sta qui e non in una sezione sua: una fascia intera per
-              una riga di titolo era un blocco vuoto fra due blocchi pieni. */}
-          {courses.docs.length > 0 ? (
-            <p className="detail">{courses.docs.length} percorsi, in ordine di lettura.</p>
-          ) : null}
+      <section className="section section--black masthead masthead--split fork__head">
+        <div className="container masthead__grid">
+          <div className="masthead__content">
+            <h1 className="display display--lg">{fork.titolo}</h1>
+            <p className="text masthead__text">{fork.testo}</p>
+            {/* Il conteggio sta qui e non in una sezione sua: una fascia intera per
+                una riga di titolo era un blocco vuoto fra due blocchi pieni. */}
+            {courses.docs.length > 0 ? (
+              <p className="detail">{courses.docs.length} percorsi, in ordine di lettura.</p>
+            ) : null}
+          </div>
+          <Figure
+            className="masthead__figure"
+            slot={settings?.fotoPagine?.corsi}
+            label="Foto della pagina Percorsi"
+            format="portrait"
+            measure="grande"
+            sizes="(min-width: 900px) 45vw, 100vw"
+            priority
+          />
         </div>
       </section>
-
-      {/* `priority`: su queste pagine la banda e' l'LCP, la testata sopra e'
-          tipografica e non ha niente da caricare. */}
-      <Figure
-        slot={settings?.fotoPagine?.corsi}
-        label="Foto della pagina Percorsi"
-        format="band"
-        measure="grande"
-        sizes="100vw"
-        priority
-      />
 
       {courses.docs.length > 0 ? (
         <ol className="fork" aria-label="I percorsi">
           {courses.docs.map((course, i) => {
                         const howMany = centersByCourse.get(course.id) ?? 0
             const mark = typeof course.immagine === 'object' ? course.immagine : null
+            const photo = urlMedia(course.foto, 'media')
 
             return (
               <li className={`reveal pathway ${surfaceClass(course.superficie)}`} key={course.id}>
@@ -121,9 +121,13 @@ export default async function CoursesPage() {
                     </span>
                   </span>
 
-                  {/* Il segno e' inchiostro su trasparente: sulle superfici scure
-                      si inverte, non si nasconde. */}
-                  {mark?.url ? (
+                  {/* La foto ravvicinata del percorso, se c'e'; se no il segno, che e'
+                      inchiostro su trasparente e sulle superfici scure si inverte. */}
+                  {photo ? (
+                    <span className="pathway__photo" aria-hidden="true">
+                      <Image src={photo} alt="" fill sizes="220px" />
+                    </span>
+                  ) : mark?.url ? (
                     <Image
                       className="pathway__mark-logo"
                       src={mark.url}
@@ -153,9 +157,8 @@ export default async function CoursesPage() {
           superfici uguali dove doveva esserci il cambio di valore che chiude
           (Regola del Valore). Una fascia chiara chiude sempre, e porta l'azione
           che la pagina fin qui non aveva. */}
-      <section className="section section--light" aria-labelledby="courses-tail-title">
+      <section className="section section--action" aria-labelledby="courses-tail-title">
         <div className="container">
-          <span className="rule" aria-hidden="true" />
           <h2 className="display display--md step__title" id="courses-tail-title">
             Non sai quale è il tuo
           </h2>
@@ -164,7 +167,7 @@ export default async function CoursesPage() {
             centro si tiene, senza impegno.
           </p>
           <p className="tail-action">
-            <Link className="button button--primary" href="/contatti">
+            <Link className="button button--inverse" href="/contatti">
               Richiedi informazioni
             </Link>
             <Link className="button button--secondary" href="/centri">

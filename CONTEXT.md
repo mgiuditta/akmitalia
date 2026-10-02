@@ -44,7 +44,7 @@ Cio' che si pratica: la disciplina a cui punta la riga di un **orario**, e insie
 
 I **destinatari** dicono a chi si rivolge il corso (adulti, ragazzi, bambini, donne, istruttori, aziende e forze dell'ordine). Non sono un percorso: un corso solo puo' rivolgersi a piu' di un pubblico, e infatti quasi tutti gli orari del corso regolare dicono «Adulti e Ragazzi».
 
-Il **ruolo di superficie** e' uno dei quattro valori di fondo di `DESIGN.md` (Nero, Carbone, Bianco, Grigio). E' un ruolo, non una tinta: il sistema non ha accenti cromatici, quindi un corso si distingue dal valore del fondo su cui viene composto, e sempre insieme al nome scritto. Si assegna scegliendo fra i quattro, non si sceglie un colore.
+Il **ruolo di superficie** e' uno dei quattro valori di fondo del sito (Nero, Carbone, Bianco, Grigio). E' un ruolo, non una tinta: un corso si distingue dal valore del fondo su cui viene composto, e sempre insieme al nome scritto. Si assegna scegliendo fra i quattro, non si sceglie un colore.
 
 ## Percorso
 

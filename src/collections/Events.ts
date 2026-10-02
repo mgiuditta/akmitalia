@@ -9,7 +9,7 @@ import { authenticated, authenticatedOrPublished } from '../access'
  *
  * Il tipo ricalca le sette categorie del calendario WordPress, cosi' l'import
  * non inventa niente. Si scrive, non si colora: la categoria e' un'etichetta
- * (DESIGN.md, Regola dell'Etichetta; docs/adr/0005).
+ * (docs/adr/0005).
  */
 
 export const EVENT_TYPES = [

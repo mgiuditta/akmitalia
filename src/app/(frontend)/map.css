@@ -18,8 +18,8 @@
  * non la misura del segno. Il disegno - targhetta da 14px piu' asta da 13 - sta
  * in fondo al nodo, dove cade l'ancora, cosi' la punta resta sulle coordinate e
  * i 17px di aria sopra si prendono il dito senza spostare niente sulla carta.
- * Prima il nodo era 28x28, e DESIGN.md ne dichiarava 24 chiamandolo «bersaglio
- * da dito»: due misure diverse, tutte e due sotto la soglia.
+ * Prima il nodo era 28x28, e la documentazione ne dichiarava 24 chiamandolo
+ * «bersaglio da dito»: due misure diverse, tutte e due sotto la soglia.
  */
 .map__mark {
   background: transparent;
@@ -103,7 +103,7 @@
   background: var(--color-surface);
   color: var(--color-on-primary);
   font-size: var(--size-caption);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
   white-space: nowrap;
   box-shadow: 0 0 0 1px var(--color-surface-light);
 }

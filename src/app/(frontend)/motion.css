@@ -3,11 +3,13 @@
  * e' l'apertura del pannello del menu e vive in Menu.tsx perche' e' l'unica
  * affidata a GSAP (docs/adr/0006).
  *
- * Il repertorio e' chiuso (DESIGN.md, Regola dell'Indice): l'entrata scandita
- * di .reveal, la sequenza a tempo dell'eroe, l'apertura dei details del bivio,
- * l'ingresso in cascata dei marker di mappa, l'apertura del menu. La sesta, il
- * video dell'eroe, e' contenuto e non coreografia: sta in home.css e in
- * VideoEroe.tsx (docs/adr/0015).
+ * Il repertorio: l'entrata scandita di .reveal, la sequenza a tempo dell'eroe
+ * con il titolo che sale da sotto una maschera, i titoli di sezione che entrano
+ * allo scorrimento, la foto dell'eroe che si allarga uscendo, l'apertura dei
+ * details del bivio, l'hover delle righe-percorso, l'ingresso dei marker di
+ * mappa, l'apertura del menu. Il video dell'eroe e' contenuto e non
+ * coreografia: sta in home.css e in HeroVideo.tsx (docs/adr/0015).
+ * Ease-out esponenziale ovunque, niente rimbalzi, niente proprieta' di layout.
  */
 
 /* ---------- coreografia ---------- */
@@ -81,9 +83,25 @@
    apre una volta sola, e la sequenza serve a dare l'ordine di lettura
    (occhiello, titolo, testo, azioni), non a intrattenere. Stessi fotogrammi di
    .reveal, nessuna curva elastica, come vuole la Regola dell'Indice. */
+/* Il titolo sale da sotto una maschera: clip-path e transform, niente layout. */
+@keyframes rise {
+  from {
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(0.35em);
+  }
+  to {
+    clip-path: inset(0 0 -0.2em 0);
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .hero__content > * {
     animation: reveal var(--duration-reveal) var(--ease) both;
+  }
+
+  .hero__content > .hero__title {
+    animation: rise 900ms var(--ease) both;
   }
 
   .hero__content > *:nth-child(2) {
@@ -104,3 +122,57 @@
    come composizione, leggeva come un allineamento sbagliato. Vale lo stesso
    motivo per cui l'eroe della home non l'aveva mai avuto. Una colonna sola a
    filo del margine, su ogni testata e su ogni intestazione di sezione. */
+
+/* ---------- allo scorrimento ---------- */
+
+@keyframes drift {
+  to {
+    transform: scale(1.12) translateY(4%);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* I titoli di sezione entrano come quello dell'eroe, ma guidati dallo
+       scorrimento: arrivano completi prima di meta' schermo. */
+    .section h2.display {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 28%;
+    }
+
+    /* La foto dell'eroe si allarga mentre esce: la sala resta dietro mentre
+       la pagina scorre via, senza parallasse sul testo. */
+    .hero__photo {
+      animation: drift linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+
+    .masthead--cover .figure__photo {
+      animation: drift linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+
+/* ---------- hover delle righe ---------- */
+
+/* Il numero del percorso prende il rosso e avanza: la riga dice «questa si
+   apre» prima del clic. Solo dove c'e' un puntatore. */
+.pathway__index {
+  transition:
+    color var(--duration) var(--ease),
+    opacity var(--duration) var(--ease),
+    transform var(--duration) var(--ease);
+}
+
+@media (hover: hover) {
+  .pathway__head:hover .pathway__index,
+  .pathway__row:hover .pathway__index {
+    color: var(--color-action);
+    opacity: 1;
+    transform: translateX(6px);
+  }
+}

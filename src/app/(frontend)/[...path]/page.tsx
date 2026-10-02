@@ -91,24 +91,23 @@ export default async function EditorialPage({
 
   return (
     <>
-      <section className="section section--black masthead">
-        <div className="container masthead__content">
-          {page.occhiello ? <p className="eyebrow">{page.occhiello}</p> : null}
-          <h1 className="display display--lg">{page.titolo}</h1>
-          {page.sommario ? <p className="text masthead__text">{page.sommario}</p> : null}
+      <section className="section section--black masthead masthead--split">
+        <div className="container masthead__grid">
+          <div className="masthead__content">
+            {page.occhiello ? <p className="eyebrow">{page.occhiello}</p> : null}
+            <h1 className="display display--lg">{page.titolo}</h1>
+            {page.sommario ? <p className="text masthead__text">{page.sommario}</p> : null}
+          </div>
+          <Figure
+            className="masthead__figure"
+            slot={page.immagineHero}
+            label="Foto della testata"
+            format="portrait"
+            measure="grande"
+            sizes="(min-width: 900px) 45vw, 100vw"
+          />
         </div>
       </section>
-
-      {/* Lo stesso slot di tutte le altre testate, non un <Image> a parte: cosi'
-          quando la foto manca resta il segnaposto invece di un buco, che e'
-          quello che docs/adr/0012 decide proprio per questa testata. */}
-      <Figure
-        slot={page.immagineHero}
-        label="Foto della testata"
-        format="band"
-        measure="grande"
-        sizes="100vw"
-      />
 
       <section className="section section--light">
         <div className="container editorial">

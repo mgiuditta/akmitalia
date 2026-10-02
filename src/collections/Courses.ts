@@ -66,7 +66,7 @@ export const Courses: CollectionConfig = {
           type: 'select',
           required: true,
           label: 'Ruolo di superficie',
-          // Enum chiuso sui quattro valori di superficie di DESIGN.md: si sceglie quale
+          // Enum chiuso sui quattro valori di superficie del sito: si sceglie quale
           // ruolo, mai quale tinta. Il sistema non ha accenti cromatici, quindi la
           // distinzione fra corsi passa per il valore del fondo, e sempre insieme al nome
           // scritto: la Regola dell'Etichetta non ammette un fondo senza etichetta.
@@ -174,6 +174,16 @@ export const Courses: CollectionConfig = {
       admin: {
         description:
           'Il marchio grafico del percorso, non una fotografia: inchiostro su trasparente, quadrato. Sta in filigrana dietro la testata e accanto alla riga in elenco.',
+      },
+    },
+    {
+      name: 'foto',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Fotografia',
+      admin: {
+        description:
+          'Una fotografia ravvicinata del percorso: mani, una presa, un istruttore che corregge. Sta nella testata della scheda e accanto alla riga in elenco. Se manca, la testata resta solo tipografica.',
       },
     },
     {

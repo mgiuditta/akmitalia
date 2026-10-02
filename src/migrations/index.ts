@@ -5,6 +5,7 @@ import * as migration_20260902_180253_bivio_passo_altre_voci from './20260902_18
 import * as migration_20260902_181923_eventi_calendario from './20260902_181923_eventi_calendario';
 import * as migration_20260916_224500_bivio_tre_momenti from './20260916_224500_bivio_tre_momenti';
 import * as migration_20260917_175638_video_eroe from './20260917_175638_video_eroe';
+import * as migration_20261002_162749_corsi_foto from './20261002_162749_corsi_foto';
 
 export const migrations = [
   {
@@ -40,6 +41,11 @@ export const migrations = [
   {
     up: migration_20260917_175638_video_eroe.up,
     down: migration_20260917_175638_video_eroe.down,
-    name: '20260917_175638_video_eroe'
+    name: '20260917_175638_video_eroe',
+  },
+  {
+    up: migration_20261002_162749_corsi_foto.up,
+    down: migration_20261002_162749_corsi_foto.down,
+    name: '20261002_162749_corsi_foto'
   },
 ];

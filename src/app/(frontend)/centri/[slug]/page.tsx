@@ -13,6 +13,7 @@ import {
   instructorName,
   published,
   siteUrl,
+  byWeekday,
 } from '@/components/data'
 import { Figure } from '@/components/Figure'
 import { pageMetadata } from '@/components/seo'
@@ -110,7 +111,7 @@ export default async function CenterPage({ params }: { params: Promise<{ slug: s
     },
   })
 
-  const schedule = center.orari ?? []
+  const schedule = byWeekday(center.orari ?? [])
   const instructors = (center.istruttori ?? []).filter((i) => typeof i === 'object')
 
   const disciplines = new Map<number, string>()
@@ -177,40 +178,40 @@ export default async function CenterPage({ params }: { params: Promise<{ slug: s
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(location) }}
       />
-      <section className="section section--black masthead">
-        <div className="container masthead__content">
-          <Link className="breadcrumb" href="/centri">
-            Torna ai centri
-          </Link>
-          <p className="eyebrow">Centro tecnico</p>
-          <h1 className="display display--md">{center.nome}</h1>
-          <p className="text detail">{readableAddress(center.indirizzo)}</p>
-          {/* Un centro non attivo resta pubblicato e sparisce dagli elenchi, ma la
-              sua scheda si apre lo stesso: ci si arriva dall'albo, da un evento
-              passato, da un vecchio link. Prima l'unico indizio era che mancava
-              il quadrato verde, cioe' niente: un'assenza non e' un'etichetta
-              (Regola dell'Etichetta). */}
-          {center.attivo ? (
-            <p className="status">Attivo in questa stagione</p>
-          ) : (
-            <p className="text detail">
-              Questo centro non è attivo in questa stagione: gli orari qui sotto sono quelli
-              dell’ultima e non sono in corso. Scrivici e ti diciamo qual è il centro più vicino
-              aperto.
-            </p>
-          )}
+      <section className="section section--black masthead masthead--split">
+        <div className="container masthead__grid">
+          <div className="masthead__content">
+            <Link className="breadcrumb" href="/centri">
+              Torna ai centri
+            </Link>
+            <p className="eyebrow">Centro tecnico</p>
+            <h1 className="display display--md">{center.nome}</h1>
+            <p className="text detail">{readableAddress(center.indirizzo)}</p>
+            {/* Un centro non attivo resta pubblicato e sparisce dagli elenchi, ma la
+                sua scheda si apre lo stesso: ci si arriva dall'albo, da un evento
+                passato, da un vecchio link. Prima l'unico indizio era che mancava
+                il quadrato verde, cioe' niente: un'assenza non e' un'etichetta
+                (Regola dell'Etichetta). */}
+            {center.attivo ? (
+              <p className="status">Attivo in questa stagione</p>
+            ) : (
+              <p className="text detail">
+                Questo centro non è attivo in questa stagione: gli orari qui sotto sono quelli
+                dell’ultima e non sono in corso. Scrivici e ti diciamo qual è il centro più vicino
+                aperto.
+              </p>
+            )}
+          </div>
+          <Figure
+            className="masthead__figure"
+            slot={center.foto}
+            label="Foto del centro"
+            format="portrait"
+            measure="grande"
+            sizes="(min-width: 900px) 45vw, 100vw"
+          />
         </div>
       </section>
-
-      {/* La sala di questo centro, fra la testata e la scheda: chi sceglie dove
-          allenarsi vuole vedere il posto prima degli orari. */}
-      <Figure
-        slot={center.foto}
-        label="Foto del centro"
-        format="band"
-        measure="grande"
-        sizes="100vw"
-      />
 
       <section className="section section--light">
         <div className="container card">

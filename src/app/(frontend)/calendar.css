@@ -25,7 +25,7 @@
   align-items: center;
   min-block-size: 44px;
   font-size: var(--size-caption);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
   text-decoration: none;
   white-space: nowrap;
 }
@@ -71,7 +71,7 @@
 
 .calendar th {
   font-size: var(--size-caption);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
   text-align: start;
   padding-block: var(--space-xs);
   border-block-end: 1px solid var(--row-rule);
@@ -94,13 +94,13 @@
    lo distingue e il contrasto resta quello dell'inchiostro secondario. */
 .calendar__day--outside .calendar__number {
   color: var(--color-ink-secondary);
-  font-weight: var(--weight-light);
+  font-weight: var(--weight-regular);
 }
 
 .calendar__number {
   display: inline-block;
   font-size: var(--size-caption);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
   line-height: 1.6;
   min-inline-size: 1.6em;
   text-align: center;

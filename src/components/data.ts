@@ -53,6 +53,18 @@ export function readableDays(days?: (string | null)[] | null) {
   return `${items.slice(0, -1).join(', ')} e ${items[items.length - 1]}`
 }
 
+const WEEK = Object.keys(DAYS)
+
+/** Le righe di orario da lunedi' a domenica, e a parita' di giorno per ora di
+ *  inizio. Nel CMS stanno nell'ordine in cui sono state inserite, e un elenco
+ *  «Venerdi', Martedi', Venerdi'» costringe a rileggerlo per capirlo. */
+export function byWeekday<T extends { giorni?: (string | null)[] | null; oraInizio?: string | null }>(
+  slots: T[],
+): T[] {
+  const first = (s: T) => Math.min(...(s.giorni ?? []).map((g) => WEEK.indexOf(g ?? '')).filter((i) => i >= 0), 99)
+  return [...slots].sort((a, b) => first(a) - first(b) || (a.oraInizio ?? '').localeCompare(b.oraInizio ?? ''))
+}
+
 export function instructorName(i: unknown) {
   if (typeof i !== 'object' || i === null) return null
   const doc = i as { nome?: string; nomeBreve?: string }
